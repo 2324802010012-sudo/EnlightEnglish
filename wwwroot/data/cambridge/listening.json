@@ -1,0 +1,37 @@
+﻿[
+  {
+    "Id": 1,
+    "Audio": "audio.mp3",
+    "QuestionText": "What time will the class start?",
+    "Options": [ "Eight o’clock", "Nine o’clock", "Ten o’clock", "Eleven o’clock" ],
+    "Answer": 2
+  },
+  {
+    "Id": 2,
+    "Audio": "audio.mp3",
+    "QuestionText": "What should students bring to the class?",
+    "Options": [ "Book", "Notebook and pencil", "Phone", "Computer" ],
+    "Answer": 2
+  },
+  {
+    "Id": 3,
+    "Audio": "audio.mp3",
+    "QuestionText": "What is the purpose of the class?",
+    "Options": [ "To learn math", "To practice English conversation", "To write essays", "To do homework" ],
+    "Answer": 2
+  },
+  {
+    "Id": 4,
+    "Audio": "audio.mp3",
+    "QuestionText": "Who is the message for?",
+    "Options": [ "Teachers", "Parents", "Students", "Visitors" ],
+    "Answer": 3
+  },
+  {
+    "Id": 5,
+    "Audio": "audio.mp3",
+    "QuestionText": "How should students listen to the questions?",
+    "Options": [ "Carelessly", "Quickly", "Carefully", "Silently" ],
+    "Answer": 3
+  }
+]

@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Kết quả bài test Ngữ pháp";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center">
+            <h3>KẾT QUẢ TEST NGỮ PHÁP</h3>
+        </div>
+        <div class="card-body p-4 text-center">
+            <h4 class="mb-3">🎯 Bạn đã hoàn thành phần trắc nghiệm 15 câu!</h4>
+
+            <p>
+                <b>Điểm Ngữ pháp:</b>
+                <span class="fs-3 text-success fw-bold">@ViewBag.Score.ToString("0.0")</span> / 10
+            </p>
+
+            <p>
+                <b>Khóa học đề xuất:</b>
+                <span class="badge bg-info text-dark">@ViewBag.DeXuat</span>
+            </p>
+
+            <hr />
+            <p>
+                Cảm ơn bạn đã hoàn thành phần kiểm tra đầu vào.<br />
+                Trung tâm sẽ sắp lịch kiểm tra Nghe – Nói – Viết trong thời gian sớm nhất.
+            </p>
+
+            <a href="/HocVien/Index" class="btn btn-outline-primary mt-3">
+                <i class="fa-solid fa-arrow-left me-1"></i> Quay lại trang học viên
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,307 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var userName = HttpContextAccessor.HttpContext?.Session.GetString("TenDangNhap");
+    var userRole = HttpContextAccessor.HttpContext?.Session.GetString("VaiTro");
+    var loginSuccess = TempData["LoginSuccess"] != null ? TempData["LoginSuccess"].ToString() : null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - ENLIGHT</title>
+
+    <!-- Bootstrap + Icons + FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <style>
+        /* Navbar */
+        .navbar-brand i {
+            color: #0d6efd;
+            font-size: 1.6rem;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .navbar-brand:hover i {
+            transform: rotate(-10deg) scale(1.1);
+            color: #007bff;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #333 !important;
+            transition: color 0.3s ease;
+        }
+
+            .nav-link:hover {
+                color: #0d6efd !important;
+            }
+
+        .dropdown-menu a:hover {
+            background-color: #eef3ff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Thanh menu -->
+    <header class="border-bottom shadow-sm fixed-top bg-white">
+        <nav class="navbar navbar-expand-lg navbar-light container py-2">
+            <a class="navbar-brand fw-bold text-uppercase d-flex align-items-center" href="/">
+                <i class="fa-solid fa-book-open-reader me-2"></i>
+                <span class="text-primary">ENLIGHT</span>
+                <span class="text-dark fw-semibold ms-2" style="font-size: 0.95rem;">Trung tâm Anh ngữ Online</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Home/About">Giới thiệu</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Courses">Khóa học</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Schedule">Lịch khai giảng</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Teachers">Giáo viên</a></li>
+
+                    @if (string.IsNullOrEmpty(userName))
+                    {
+                        <li class="nav-item ms-3">
+                            <a class="btn btn-outline-primary px-3" href="/Account/Login">
+                                <i class="fa-solid fa-right-to-bracket me-1"></i> Đăng nhập
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle fw-semibold text-success" href="#" data-bs-toggle="dropdown">
+                                <i class="fa-solid fa-user-circle me-1"></i> @userName <small> (@userRole)</small>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                <li><a class="dropdown-item" href="/Account/Profile"><i class="fa-solid fa-id-card me-2"></i> Hồ sơ cá nhân</a></li>
+
+                                @if (userRole == "Admin")
+                                {
+                                    <li><a class="dropdown-item" href="/Admin/Index"><i class="fa-solid fa-gears me-2"></i> Quản trị hệ thống</a></li>
+                                }
+                                else if (userRole == "Phòng đào tạo")
+                                {
+                                    <li><a class="dropdown-item" href="/TestDauVao/DanhSach"><i class="fa-solid fa-list-check me-2"></i> Duyệt test đầu vào</a></li>
+                                }
+                                else if (userRole == "Giáo viên")
+                                {
+                                    <li><a class="dropdown-item" href="/GiaoVien/LopDay"><i class="fa-solid fa-book-open me-2"></i> Lớp đang dạy</a></li>
+                                }
+                                else if (userRole == "Kế toán")
+                                {
+                                    <li><a class="dropdown-item" href="/HocPhi/Index"><i class="fa-solid fa-receipt me-2"></i> Quản lý học phí</a></li>
+                                }
+                                else if (userRole == "Học viên")
+                                {
+                                    <li><a class="dropdown-item" href="/TestDauVao/Index"><i class="fa-solid fa-pen-to-square me-2"></i> Đăng ký Test đầu vào</a></li>
+                                    <li><a class="dropdown-item" href="/TestDauVao/KetQua"><i class="fa-solid fa-file-lines me-2"></i> Kết quả Test</a></li>
+                                }
+
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item text-danger" href="/Account/Logout"><i class="fa-solid fa-right-from-bracket me-2"></i> Đăng xuất</a></li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Nội dung -->
+    <main class="container-fluid p-0" style="margin-top:80px;">
+        <div class="container mt-3">
+            @RenderBody()
+        </div>
+    </main>
+
+    <!-- 🌟 Modal Chào mừng -->
+    <div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-primary text-white rounded-top-4">
+                    <h5 class="modal-title" id="welcomeModalLabel"><i class="fa-solid fa-hand-peace me-2"></i> Chào mừng!</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="fa-solid fa-user-circle fa-4x text-primary mb-3"></i>
+                    <h4 class="fw-bold mb-2">Xin chào, <span class="text-primary">@userName</span>!</h4>
+                    <p class="text-muted mb-0">Bạn đang đăng nhập với vai trò: <b>@userRole</b>.</p>
+                    <p class="small text-secondary mt-2">Chúc bạn một ngày học tập & làm việc hiệu quả 🌟</p>
+                </div>
+                <div class="modal-footer border-0 text-center">
+                    <button type="button" class="btn btn-success rounded-pill px-4" data-bs-dismiss="modal">Bắt đầu ngay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <!-- ========== FOOTER ENLIGHT ========== -->
+    <footer class="footer text-white pt-5 pb-3 mt-5">
+        <div class="container">
+            <div class="row gy-4">
+                <!-- Cột 1: Giới thiệu -->
+                <div class="col-md-4">
+                    <h4 class="fw-bold text-uppercase mb-3">ENLIGHT English Center</h4>
+                    <p class="small">
+                        Trung tâm Anh ngữ ENLIGHT là nền tảng đào tạo tiếng Anh trực tuyến uy tín, giúp hàng nghìn học viên trên toàn quốc
+                        đạt chứng chỉ quốc tế như <b>IELTS, TOEIC và Cambridge</b>. Với đội ngũ giảng viên giàu kinh nghiệm và lộ trình học linh hoạt,
+                        ENLIGHT giúp bạn <b>tự tin chinh phục tiếng Anh – mọi lúc, mọi nơi 🌍</b>.
+                    </p>
+                </div>
+
+                <!-- Cột 2: Liên hệ -->
+                <div class="col-md-4">
+                    <h5 class="fw-bold text-uppercase mb-3">Liên hệ</h5>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-geo-alt-fill text-info me-2"></i> 123 Nguyễn Văn Cừ, TP. Thủ Dầu Một, Bình Dương</li>
+                        <li><i class="bi bi-telephone-fill text-info me-2"></i> 0927 040 630</li>
+                        <li><i class="bi bi-envelope-fill text-info me-2"></i> enlightcenter@gmail.com</li>
+                        <li><i class="bi bi-clock-fill text-info me-2"></i> Thứ 2 – Chủ nhật: 7h30 - 21h00</li>
+                    </ul>
+                </div>
+
+                <!-- Cột 3: Mạng xã hội -->
+                <div class="col-md-4">
+                    <h5 class="fw-bold text-uppercase mb-3">Kết nối với chúng tôi</h5>
+                    <div class="d-flex gap-3 justify-content-md-start justify-content-center mb-3">
+                        <a href="https://www.facebook.com" target="_blank" class="social-icon"><i class="bi bi-facebook"></i></a>
+                        <a href="https://zalo.me" target="_blank" class="social-icon"><i class="bi bi-chat-dots-fill"></i></a>
+                        <a href="https://www.youtube.com" target="_blank" class="social-icon"><i class="bi bi-youtube"></i></a>
+                        <a href="https://www.instagram.com" target="_blank" class="social-icon"><i class="bi bi-instagram"></i></a>
+                    </div>
+
+                    <img src="~/WebTTImages/lobct.png"
+                         alt="Đã thông báo Bộ Công Thương"
+                         width="160" height="auto"
+                         class="rounded shadow-sm border border-light" />
+                </div>
+            </div>
+
+            <hr class="border-light my-4">
+
+            <div class="text-center small">
+                © @DateTime.Now.Year <b>ENLIGHT English Center</b> | Thiết kế bởi <span class="text-info">Nhóm 13</span>.
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .footer {
+            background: linear-gradient(135deg, #004aad, #0097d8);
+            color: #f8f9fa;
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .footer::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: radial-gradient(circle at top left, rgba(255,255,255,0.1), transparent 60%);
+                z-index: 0;
+            }
+
+            .footer .container {
+                position: relative;
+                z-index: 1;
+            }
+
+            .footer h4, .footer h5 {
+                color: #fff;
+                letter-spacing: 0.5px;
+            }
+
+            .footer ul li {
+                margin-bottom: 8px;
+            }
+
+            .footer .social-icon {
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.25rem;
+                transition: all 0.3s ease;
+            }
+
+                .footer .social-icon:hover {
+                    background: #fff;
+                    color: #007bff;
+                    transform: translateY(-3px);
+                    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.3);
+                }
+
+            .footer hr {
+                opacity: 0.3;
+            }
+
+            .footer img[alt*="Bộ Công Thương"] {
+                display: block;
+                margin: 10px auto 0;
+                transition: transform 0.3s ease;
+            }
+
+                .footer img[alt*="Bộ Công Thương"]:hover {
+                    transform: scale(1.05);
+                }
+    </style>
+
+    <div class="container mt-3">
+        @if (TempData["TestRegisterSuccess"] != null)
+        {
+            <div class="alert alert-info alert-dismissible fade show text-center shadow-sm" role="alert">
+                @TempData["TestRegisterSuccess"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["TestConfirmed"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show text-center shadow-sm" role="alert">
+                @TempData["TestConfirmed"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @RenderBody()
+    </div>
+
+  
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    @* Khi đăng nhập thành công thì tự bật modal *@
+    @if (loginSuccess != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const modal = new bootstrap.Modal(document.getElementById('welcomeModal'));
+                modal.show();
+            });
+        </script>
+    }
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

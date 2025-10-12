@@ -1,0 +1,92 @@
+﻿[
+  {
+    "Id": 1,
+    "QuestionText": "Choose the correct form: She ___ to the gym every morning.",
+    "Options": [ "go", "goes", "going", "gone" ],
+    "Answer": 2
+  },
+  {
+    "Id": 2,
+    "QuestionText": "Which word means the same as 'big'?",
+    "Options": [ "tiny", "huge", "thin", "narrow" ],
+    "Answer": 2
+  },
+  {
+    "Id": 3,
+    "QuestionText": "There ___ many people in the park today.",
+    "Options": [ "is", "are", "was", "has" ],
+    "Answer": 2
+  },
+  {
+    "Id": 4,
+    "QuestionText": "___ apple a day keeps the doctor away.",
+    "Options": [ "A", "An", "The", "No article" ],
+    "Answer": 2
+  },
+  {
+    "Id": 5,
+    "QuestionText": "Which of these is a verb?",
+    "Options": [ "Quickly", "Happiness", "Run", "Beautiful" ],
+    "Answer": 3
+  },
+  {
+    "Id": 6,
+    "QuestionText": "What is the opposite of 'polite'?",
+    "Options": [ "Kind", "Rude", "Respectful", "Gentle" ],
+    "Answer": 2
+  },
+  {
+    "Id": 7,
+    "QuestionText": "I’m interested ___ learning English.",
+    "Options": [ "in", "on", "to", "for" ],
+    "Answer": 1
+  },
+  {
+    "Id": 8,
+    "QuestionText": "What is the past tense of 'teach'?",
+    "Options": [ "Teached", "Taught", "Teach", "Teaching" ],
+    "Answer": 2
+  },
+  {
+    "Id": 9,
+    "QuestionText": "Which sentence is correct?",
+    "Options": [ "She can sings.", "She can singing.", "She can sing.", "She sings can." ],
+    "Answer": 3
+  },
+  {
+    "Id": 10,
+    "QuestionText": "Which is a synonym of 'clever'?",
+    "Options": [ "Smart", "Tall", "Fast", "Kind" ],
+    "Answer": 1
+  },
+  {
+    "Id": 11,
+    "QuestionText": "If I ___ time, I would travel more.",
+    "Options": [ "have", "had", "has", "having" ],
+    "Answer": 2
+  },
+  {
+    "Id": 12,
+    "QuestionText": "Which sentence is passive?",
+    "Options": [ "She wrote the letter.", "The letter was written by her.", "She is writing the letter.", "She will write the letter." ],
+    "Answer": 2
+  },
+  {
+    "Id": 13,
+    "QuestionText": "He said, 'I am tired.' →",
+    "Options": [ "He said he was tired.", "He said I was tired.", "He said he is tired.", "He said that was tired." ],
+    "Answer": 1
+  },
+  {
+    "Id": 14,
+    "QuestionText": "The book, ___ you lent me, was very interesting.",
+    "Options": [ "that", "which", "what", "who" ],
+    "Answer": 2
+  },
+  {
+    "Id": 15,
+    "QuestionText": "Find the correct sentence.",
+    "Options": [ "He don’t like coffee.", "He doesn’t likes coffee.", "He doesn’t like coffee.", "He not like coffee." ],
+    "Answer": 3
+  }
+]

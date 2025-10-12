@@ -1,0 +1,44 @@
+﻿@model EnlightEnglishCenter.Models.TestDangKyViewModel
+
+<section class="register-test-section py-5 bg-light mt-5 rounded shadow-sm">
+    <div class="container text-center">
+        <h3 class="fw-bold text-primary mb-3">
+            <i class="fa-solid fa-clipboard-check me-2"></i>Đăng ký Test đầu vào
+        </h3>
+        <p class="text-muted mb-4">
+            Chọn đăng ký để gửi yêu cầu làm bài test đầu vào cho khóa học
+            <b class="text-primary">@Model.KhoaHocDeXuat</b>.
+        </p>
+
+        <form asp-controller="Courses" asp-action="DangKyTest" method="post" class="d-inline-block">
+            <input type="hidden" name="KhoaHocDeXuat" value="@Model.KhoaHocDeXuat" />
+
+            <button type="submit" class="btn btn-lg btn-primary px-4 shadow-sm">
+                <i class="fa-solid fa-paper-plane me-2"></i> Gửi đăng ký Test
+            </button>
+        </form>
+
+        <div class="mt-4">
+            <small class="text-muted">
+                Sau khi đăng ký, phòng đào tạo sẽ xác nhận và gửi lịch test cho bạn qua email hoặc hệ thống.
+            </small>
+        </div>
+    </div>
+</section>
+
+<!-- ✅ Hiển thị thông báo nếu có -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show text-center mt-3" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show text-center mt-3" role="alert">
+        <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}

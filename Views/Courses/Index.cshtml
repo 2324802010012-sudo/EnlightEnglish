@@ -1,0 +1,95 @@
+﻿@{
+    ViewData["Title"] = "Danh sách khóa học";
+}
+@if (TempData["LoginSuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mt-3 text-center shadow-sm" role="alert">
+        @TempData["LoginSuccess"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["Logout"] != null)
+{
+    <div class="alert alert-info alert-dismissible fade show mt-3 text-center shadow-sm" role="alert">
+        @TempData["Logout"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="container py-5">
+    <h2 class="text-center fw-bold text-primary text-uppercase mb-4">Các khóa học tại Trung tâm ENLIGHT</h2>
+    <p class="text-center text-muted mb-5">
+        ENLIGHT cung cấp nhiều chương trình học phù hợp với từng mục tiêu: luyện thi IELTS, TOEIC và Cambridge.
+        Mỗi khóa học được thiết kế theo lộ trình khoa học, giúp học viên phát triển kỹ năng toàn diện.
+    </p>
+
+    <div class="row g-4">
+        <!-- IELTS -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <img src="~/WebTTImages/ielts.jpg" class="card-img-top" alt="Khóa học IELTS">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary text-uppercase fw-bold">Khóa học IELTS</h5>
+                    <p class="card-text text-muted">
+                        Dành cho học viên muốn đạt chứng chỉ IELTS quốc tế, phát triển 4 kỹ năng Nghe - Nói - Đọc - Viết.
+                    </p>
+                    <a href="/Courses/IELTS" class="btn btn-primary mt-2">Xem chi tiết</a>
+                    <a href="/TestDauVao/DangKy?khoaHocId=1" class="btn btn-outline-primary mt-2">Đăng ký Test đầu vào</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOEIC -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <img src="~/WebTTImages/toeic.jpg" class="card-img-top" alt="Khóa học TOEIC">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary text-uppercase fw-bold">Khóa học TOEIC</h5>
+                    <p class="card-text text-muted">
+                        Luyện thi TOEIC 2 kỹ năng, phù hợp với sinh viên và người đi làm muốn nâng cao tiếng Anh công sở.
+                    </p>
+                    <a href="/Courses/TOEIC" class="btn btn-primary mt-2">Xem chi tiết</a>
+                    <a href="/TestDauVao/DangKy?khoaHocId=2" class="btn btn-outline-primary mt-2">Đăng ký Test đầu vào</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cambridge -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <img src="~/WebTTImages/cambridge.jpg" class="card-img-top" alt="Khóa học Cambridge">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary text-uppercase fw-bold">Khóa học Cambridge</h5>
+                    <p class="card-text text-muted">
+                        Dành cho học sinh cấp 1, cấp 2 học tiếng Anh theo chuẩn Cambridge, tạo nền tảng giao tiếp tự nhiên.
+                    </p>
+                    <a href="/Courses/Cambridge" class="btn btn-primary mt-2">Xem chi tiết</a>
+                    <a href="/TestDauVao/DangKy?khoaHocId=3" class="btn btn-outline-primary mt-2">Đăng ký Test đầu vào</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card img {
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover img {
+        transform: scale(1.05);
+    }
+
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+</style>

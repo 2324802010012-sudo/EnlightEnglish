@@ -1,0 +1,45 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.BaoCao>
+
+@{
+    ViewData["Title"] = "Quản lý báo cáo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h3 class="mb-4 text-secondary text-center">
+        <i class="fa-solid fa-file-lines me-2"></i> Quản lý báo cáo
+    </h3>
+
+    <table class="table table-bordered table-striped text-center align-middle">
+        <thead class="table-secondary">
+            <tr>
+                <th>#</th>
+                <th>Người lập</th>
+                <th>Chức vụ</th>
+                <th>Tiêu đề</th>
+                <th>Ngày gửi</th>
+                <th>Trạng thái</th>
+                <th>Xem chi tiết</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                int stt = 1;
+                foreach (var b in Model)
+                {
+                    <tr>
+                        <td>@(stt++)</td>
+                        <td>@b.NguoiLapNavigation?.HoTen</td>
+                        <td>@b.NguoiLapNavigation?.MaVaiTroNavigation?.TenVaiTro</td>
+                        <td>@b.LoaiBaoCao</td>
+                        <td>@b.NgayLap.ToString("dd/MM/yyyy")</td>
+                        <td><a href="#" class="btn btn-info btn-sm"><i class="fa-solid fa-eye"></i> Xem</a></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="6" class="text-muted">Chưa có báo cáo nào</td></tr>
+            }
+        </tbody>

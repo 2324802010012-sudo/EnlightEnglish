@@ -1,0 +1,45 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.VaiTro>
+
+@{
+    ViewData["Title"] = "Quản lý phân quyền";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h3 class="mb-4 text-success text-center">
+        <i class="fa-solid fa-user-tag me-2"></i> Quản lý phân quyền
+    </h3>
+
+    <table class="table table-bordered table-striped text-center align-middle">
+        <thead class="table-success">
+            <tr>
+                <th>#</th>
+                <th>Tên vai trò</th>
+                <th>Số lượng người dùng</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                int stt = 1;
+                foreach (var v in Model)
+                {
+                    <tr>
+                        <td>@(stt++)</td>
+                        <td>@v.TenVaiTro</td>
+                        <td>@(v.NguoiDungs?.Count() ?? 0)</td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-primary"><i class="fa-solid fa-pen"></i></a>
+                            <a href="#" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="4" class="text-muted">Chưa có dữ liệu vai trò</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

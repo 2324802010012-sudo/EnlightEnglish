@@ -1,0 +1,58 @@
+﻿[
+  {
+    "Id": 1,
+    "Passage": "Many students find learning a new language challenging. However, those who practice a little every day tend to improve faster than those who study for many hours only once a week.",
+    "QuestionText": "What is the main point of the passage?",
+    "Options": [
+      "Language learning is impossible without talent.",
+      "Daily practice leads to better improvement.",
+      "Studying once a week is more effective.",
+      "Students should avoid difficult languages."
+    ],
+    "Answer": 2
+  },
+  {
+    "Id": 2,
+    "QuestionText": "According to the passage, how often should students practice?",
+    "Options": [
+      "Every day",
+      "Once a month",
+      "Once a week",
+      "Only before exams"
+    ],
+    "Answer": 1
+  },
+  {
+    "Id": 3,
+    "QuestionText": "The word 'challenging' in the passage means:",
+    "Options": [
+      "boring",
+      "difficult",
+      "easy",
+      "interesting"
+    ],
+    "Answer": 2
+  },
+  {
+    "Id": 4,
+    "QuestionText": "What can we infer from the passage?",
+    "Options": [
+      "Consistency is important in learning.",
+      "Languages can be learned in one day.",
+      "Studying too much is harmful.",
+      "Learning depends on memory only."
+    ],
+    "Answer": 1
+  },
+  {
+    "Id": 5,
+    "QuestionText": "What is the writer’s advice?",
+    "Options": [
+      "Study long hours occasionally.",
+      "Practice regularly in small steps.",
+      "Avoid learning new words.",
+      "Focus only on grammar."
+    ],
+    "Answer": 2
+  }
+]

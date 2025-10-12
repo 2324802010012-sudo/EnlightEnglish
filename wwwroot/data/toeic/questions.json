@@ -1,0 +1,92 @@
+﻿[
+  {
+    "Id": 1,
+    "QuestionText": "She usually ___ to work by bus.",
+    "Options": [ "go", "goes", "going", "gone" ],
+    "Answer": 2
+  },
+  {
+    "Id": 2,
+    "QuestionText": "My boss is very ___ about time.",
+    "Options": [ "punctual", "lazy", "late", "careless" ],
+    "Answer": 1
+  },
+  {
+    "Id": 3,
+    "QuestionText": "What is the plural form of 'child'?",
+    "Options": [ "childs", "children", "childes", "childrens" ],
+    "Answer": 2
+  },
+  {
+    "Id": 4,
+    "QuestionText": "Please ___ your seatbelt.",
+    "Options": [ "wear", "put", "fasten", "do" ],
+    "Answer": 3
+  },
+  {
+    "Id": 5,
+    "QuestionText": "The meeting ___ at 9 a.m.",
+    "Options": [ "start", "starts", "started", "starting" ],
+    "Answer": 2
+  },
+  {
+    "Id": 6,
+    "QuestionText": "Find the synonym of 'assist'.",
+    "Options": [ "help", "ignore", "delay", "prevent" ],
+    "Answer": 1
+  },
+  {
+    "Id": 7,
+    "QuestionText": "We must ___ costs to improve profits.",
+    "Options": [ "increase", "reduce", "raise", "add" ],
+    "Answer": 2
+  },
+  {
+    "Id": 8,
+    "QuestionText": "The report was submitted ___ the deadline.",
+    "Options": [ "on", "in", "at", "before" ],
+    "Answer": 4
+  },
+  {
+    "Id": 9,
+    "QuestionText": "Which sentence is correct?",
+    "Options": [ "He works hardly.", "He hard works.", "He works hard.", "Hardly he works." ],
+    "Answer": 3
+  },
+  {
+    "Id": 10,
+    "QuestionText": "Which of these is a noun?",
+    "Options": [ "decision", "decide", "deciding", "decisive" ],
+    "Answer": 1
+  },
+  {
+    "Id": 11,
+    "QuestionText": "She is responsible ___ marketing.",
+    "Options": [ "in", "on", "for", "to" ],
+    "Answer": 3
+  },
+  {
+    "Id": 12,
+    "QuestionText": "If sales ___ up, the company will expand.",
+    "Options": [ "go", "goes", "will go", "went" ],
+    "Answer": 2
+  },
+  {
+    "Id": 13,
+    "QuestionText": "The project was completed ___ schedule.",
+    "Options": [ "under", "behind", "on", "over" ],
+    "Answer": 3
+  },
+  {
+    "Id": 14,
+    "QuestionText": "They have built a new office →",
+    "Options": [ "A new office built.", "A new office has built.", "A new office has been built.", "A new office was built." ],
+    "Answer": 3
+  },
+  {
+    "Id": 15,
+    "QuestionText": "Choose the correct sentence.",
+    "Options": [ "The manager explained me the plan.", "The manager explained the plan to me.", "The manager explained to me the plan.", "The manager the plan explained me." ],
+    "Answer": 2
+  }
+]

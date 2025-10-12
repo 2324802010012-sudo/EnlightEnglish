@@ -1,0 +1,58 @@
+﻿[
+  {
+    "Id": 1,
+    "Passage": "In today’s modern world, technology plays an essential role in communication. However, many people still prefer face-to-face conversations because they allow emotional connections and clearer understanding.",
+    "QuestionText": "What is the main idea of the passage?",
+    "Options": [
+      "Technology has made life easier.",
+      "People no longer need to meet in person.",
+      "Face-to-face communication helps build emotional bonds.",
+      "Online communication is always better."
+    ],
+    "Answer": 3
+  },
+  {
+    "Id": 2,
+    "QuestionText": "According to the passage, why do some people prefer face-to-face conversations?",
+    "Options": [
+      "They are faster.",
+      "They allow better emotional connections.",
+      "They are cheaper.",
+      "They require less effort."
+    ],
+    "Answer": 2
+  },
+  {
+    "Id": 3,
+    "QuestionText": "The word 'essential' in the passage is closest in meaning to:",
+    "Options": [
+      "necessary",
+      "temporary",
+      "expensive",
+      "interesting"
+    ],
+    "Answer": 1
+  },
+  {
+    "Id": 4,
+    "QuestionText": "What does the passage imply about online communication?",
+    "Options": [
+      "It can replace personal meetings completely.",
+      "It sometimes lacks emotional depth.",
+      "It is the only way people communicate now.",
+      "It is always misunderstood."
+    ],
+    "Answer": 2
+  },
+  {
+    "Id": 5,
+    "QuestionText": "Which of the following would best summarize the passage?",
+    "Options": [
+      "Technology has made emotional connections easier.",
+      "Communication methods are changing, but personal meetings remain valuable.",
+      "Online chatting is the most efficient way to communicate.",
+      "People no longer value in-person conversations."
+    ],
+    "Answer": 2
+  }
+]

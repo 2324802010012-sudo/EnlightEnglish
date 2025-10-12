@@ -1,0 +1,62 @@
+﻿@model EnlightEnglishCenter.Models.NguoiDung
+
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center">
+            <h3><i class="fa-solid fa-user me-2"></i> HỒ SƠ CÁ NHÂN</h3>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p><b>👤 Họ tên:</b> @Model.HoTen</p>
+                    <p><b>🧭 Giới tính:</b> @Model.GioiTinh</p>
+                    <p><b>🎂 Ngày sinh:</b> @(Model.NgaySinh?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")</p>
+                </div>
+                <div class="col-md-6">
+                    <p><b>📧 Email:</b> @Model.Email</p>
+                    <p><b>📱 Số điện thoại:</b> @Model.SoDienThoai</p>
+                    <p><b>🏠 Địa chỉ:</b> @Model.DiaChi</p>
+                </div>
+            </div>
+
+            <hr />
+            <h5 class="text-primary mt-4"><i class="fa-solid fa-id-badge me-2"></i>Thông tin tài khoản</h5>
+
+            <p><b>🔑 Tên đăng nhập:</b> @Model.TenDangNhap</p>
+            <p><b>🧩 Vai trò:</b> @(Model.MaVaiTroNavigation?.TenVaiTro ?? "Không xác định")</p>
+            <p><b>⚙️ Trạng thái:</b> @(Model.TrangThai ?? "Hoạt động")</p>
+
+            <p>
+                <b>🔒 Trạng thái tài khoản:</b>
+                @if (Model.KhoaDenNgay != null && Model.KhoaDenNgay > DateTime.Now)
+                {
+                    <span class="badge bg-danger">
+                        Bị khóa đến @Model.KhoaDenNgay?.ToString("HH:mm dd/MM/yyyy")
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-success">Đang hoạt động</span>
+                }
+            </p>
+
+            <div class="text-center mt-4">
+                <a href="/HocVien" class="btn btn-outline-primary me-2">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Quay lại trang học viên
+                </a>
+                <a href="/Account/EditProfile" class="btn btn-success me-2">
+                    <i class="fa-solid fa-pen-to-square me-1"></i> Chỉnh sửa hồ sơ
+                </a>
+                <a href="/Account/ChangePassword" class="btn btn-warning text-white">
+                    <i class="fa-solid fa-key me-1"></i> Đổi mật khẩu
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

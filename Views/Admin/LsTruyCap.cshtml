@@ -1,0 +1,44 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.LichSuTruyCap>
+
+@{
+    ViewData["Title"] = "Giám sát hệ thống";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h3 class="mb-4 text-info text-center">
+        <i class="fa-solid fa-desktop me-2"></i> Giám sát hệ thống (Log truy cập)
+    </h3>
+
+    <table class="table table-bordered table-striped text-center align-middle">
+        <thead class="table-info">
+            <tr>
+                <th>#</th>
+                <th>Người dùng</th>
+                <th>Hành động</th>
+                <th>Thời gian</th>
+                <th>Địa chỉ IP</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                int stt = 1;
+                foreach (var log in Model)
+                {
+                    <tr>
+                        <td>@(stt++)</td>
+                        <td>@log.MaNguoiDungNavigation?.HoTen</td>
+                        <td>@log.HanhDong</td>
+                        <td>@log.ThoiGian.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@log.DiaChiIP</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="5" class="text-muted">Chưa có log truy cập nào</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,107 @@
+﻿@{
+    ViewData["Title"] = "Khóa học IELTS";
+}
+
+<div class="container py-5">
+    <h2 class="text-center fw-bold text-primary text-uppercase mb-4">Khóa học IELTS</h2>
+
+    <p class="lead text-center text-muted mb-5">
+        Lộ trình học IELTS toàn diện giúp bạn đạt mục tiêu 6.5+ hoặc 7.5+ trong thời gian ngắn nhất.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <img src="~/WebTTImages/ielts.jpg" class="img-fluid rounded shadow" alt="IELTS course">
+        </div>
+        <div class="col-md-6">
+            <h4 class="fw-bold text-primary">🎯 Mục tiêu khóa học</h4>
+            <ul>
+                <li>Phát triển toàn diện 4 kỹ năng Nghe – Nói – Đọc – Viết.</li>
+                <li>Làm quen cấu trúc đề thi IELTS Academic & General.</li>
+                <li>Nắm vững chiến lược làm bài đạt điểm cao.</li>
+            </ul>
+
+            <h4 class="fw-bold text-primary mt-4">📘 Lộ trình đào tạo</h4>
+            <table class="table table-bordered mt-2">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Cấp độ</th>
+                        <th>Điểm đầu vào</th>
+                        <th>Thời lượng</th>
+                        <th>Mục tiêu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Pre-IELTS</td>
+                        <td>A2 – B1</td>
+                        <td>3 tháng</td>
+                        <td>Xây nền ngữ pháp, từ vựng, phát âm</td>
+                    </tr>
+                    <tr>
+                        <td>IELTS Foundation</td>
+                        <td>B1</td>
+                        <td>3 tháng</td>
+                        <td>Đạt 5.0 – 5.5</td>
+                    </tr>
+                    <tr>
+                        <td>IELTS Intensive</td>
+                        <td>B2</td>
+                        <td>3 tháng</td>
+                        <td>Đạt 6.5 – 7.5+</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<section class="placement-test py-5">
+    <div class="container">
+        <h3 class="fw-bold text-primary mb-4"><i class="bi bi-clipboard-check me-2"></i>Test đầu vào & Gợi ý khóa học IELTS</h3>
+        <p class="text-muted mb-4">
+            Làm bài <b>Placement Test</b> để xác định trình độ hiện tại và được tư vấn lộ trình IELTS phù hợp giúp đạt mục tiêu nhanh nhất 🎯
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Điểm test đầu vào</th>
+                        <th>Trình độ (CEFR)</th>
+                        <th>Khóa học gợi ý</th>
+                        <th>Mục tiêu sau khóa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0 – 25 điểm</td>
+                        <td>A2</td>
+                        <td><b>Pre-IELTS</b></td>
+                        <td>Xây nền ngữ pháp, phát âm và kỹ năng cơ bản.</td>
+                    </tr>
+                    <tr>
+                        <td>26 – 60 điểm</td>
+                        <td>B1</td>
+                        <td><b>IELTS Foundation</b></td>
+                        <td>Củng cố kỹ năng 4 kỹ năng, mục tiêu 5.0 – 5.5.</td>
+                    </tr>
+                    <tr>
+                        <td>61 – 85 điểm</td>
+                        <td>B2</td>
+                        <td><b>IELTS Intensive</b></td>
+                        <td>Rèn luyện chuyên sâu, đạt 6.5 – 7.5+.</td>
+                    </tr>
+                    <tr>
+                        <td>86 – 100 điểm</td>
+                        <td>C1+</td>
+                        <td><b>IELTS Advanced Coaching</b></td>
+                        <td>Hướng đến band 8.0+ và luyện thi giảng viên.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+@await Html.PartialAsync("~/Views/Shared/Partial_DangKyTest.cshtml",
+new EnlightEnglishCenter.Models.TestDangKyViewModel { KhoaHocDeXuat = "IELTS" })

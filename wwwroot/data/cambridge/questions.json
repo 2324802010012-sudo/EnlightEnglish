@@ -1,0 +1,92 @@
+﻿[
+  {
+    "Id": 1,
+    "QuestionText": "He ___ English every day.",
+    "Options": [ "study", "studies", "studying", "studied" ],
+    "Answer": 2
+  },
+  {
+    "Id": 2,
+    "QuestionText": "What is the opposite of 'cold'?",
+    "Options": [ "Hot", "Warm", "Cool", "Freeze" ],
+    "Answer": 1
+  },
+  {
+    "Id": 3,
+    "QuestionText": "She has ___ friends in London.",
+    "Options": [ "a few", "few", "a little", "many" ],
+    "Answer": 1
+  },
+  {
+    "Id": 4,
+    "QuestionText": "Which sentence is correct?",
+    "Options": [ "He can to swim.", "He can swimming.", "He can swim.", "He cans swim." ],
+    "Answer": 3
+  },
+  {
+    "Id": 5,
+    "QuestionText": "Which is a correct question?",
+    "Options": [ "You are teacher?", "Are you a teacher?", "Is you a teacher?", "Do you is teacher?" ],
+    "Answer": 2
+  },
+  {
+    "Id": 6,
+    "QuestionText": "Find the synonym of 'beautiful'.",
+    "Options": [ "Ugly", "Pretty", "Dirty", "Plain" ],
+    "Answer": 2
+  },
+  {
+    "Id": 7,
+    "QuestionText": "Which sentence is correct?",
+    "Options": [ "I am agree.", "I agrees.", "I agree.", "I agreeing." ],
+    "Answer": 3
+  },
+  {
+    "Id": 8,
+    "QuestionText": "The sun ___ in the east.",
+    "Options": [ "rise", "rises", "rose", "raising" ],
+    "Answer": 2
+  },
+  {
+    "Id": 9,
+    "QuestionText": "What is the plural of 'mouse'?",
+    "Options": [ "mouses", "mices", "mouse", "mice" ],
+    "Answer": 4
+  },
+  {
+    "Id": 10,
+    "QuestionText": "She has lived here ___ 2015.",
+    "Options": [ "for", "since", "from", "at" ],
+    "Answer": 2
+  },
+  {
+    "Id": 11,
+    "QuestionText": "By next year, I ___ my studies.",
+    "Options": [ "complete", "will have completed", "completed", "have completed" ],
+    "Answer": 2
+  },
+  {
+    "Id": 12,
+    "QuestionText": "Which of these is an adjective?",
+    "Options": [ "quick", "quickly", "quicker", "quicklyer" ],
+    "Answer": 1
+  },
+  {
+    "Id": 13,
+    "QuestionText": "She is used to getting up early.",
+    "Options": [ "She used to get up early.", "She used to getting up early.", "She is used to getting up early.", "She use to get up early." ],
+    "Answer": 3
+  },
+  {
+    "Id": 14,
+    "QuestionText": "The opposite of 'borrow' is ___",
+    "Options": [ "give", "take", "lend", "receive" ],
+    "Answer": 3
+  },
+  {
+    "Id": 15,
+    "QuestionText": "The man ___ helped you is my uncle.",
+    "Options": [ "what", "who", "which", "whose" ],
+    "Answer": 2
+  }
+]

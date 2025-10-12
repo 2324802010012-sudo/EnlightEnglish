@@ -1,0 +1,58 @@
+﻿[
+  {
+    "Id": 1,
+    "Passage": "Dear Employees, please remember that the annual company meeting will be held this Friday at 9:00 a.m. in the main conference room. Attendance is mandatory for all staff.",
+    "QuestionText": "When will the company meeting take place?",
+    "Options": [
+      "On Thursday morning",
+      "On Friday morning",
+      "On Saturday afternoon",
+      "Next Monday"
+    ],
+    "Answer": 2
+  },
+  {
+    "Id": 2,
+    "QuestionText": "Where will the meeting be held?",
+    "Options": [
+      "In the cafeteria",
+      "In the main conference room",
+      "At the head office",
+      "In the HR department"
+    ],
+    "Answer": 2
+  },
+  {
+    "Id": 3,
+    "QuestionText": "Who must attend the meeting?",
+    "Options": [
+      "Only managers",
+      "New employees",
+      "All staff",
+      "The HR team"
+    ],
+    "Answer": 3
+  },
+  {
+    "Id": 4,
+    "QuestionText": "What does the word 'mandatory' mean?",
+    "Options": [
+      "Optional",
+      "Required",
+      "Recommended",
+      "Postponed"
+    ],
+    "Answer": 2
+  },
+  {
+    "Id": 5,
+    "QuestionText": "What is the purpose of the notice?",
+    "Options": [
+      "To cancel a meeting",
+      "To announce a meeting",
+      "To recruit new employees",
+      "To promote staff"
+    ],
+    "Answer": 2
+  }
+]

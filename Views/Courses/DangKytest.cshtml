@@ -1,0 +1,149 @@
+﻿@model EnlightEnglishCenter.Models.TestDangKyViewModel
+@{
+    ViewData["Title"] = "Đăng ký Test đầu vào";
+}
+
+<!-- Banner giới thiệu -->
+<div class="test-banner text-white text-center py-5">
+    <h2 class="fw-bold text-uppercase">Đăng ký Test đầu vào @ViewBag.KhoaHoc</h2>
+    <p class="lead mt-2">
+        Bài kiểm tra đầu vào giúp xác định trình độ tiếng Anh của bạn và đề xuất lộ trình học phù hợp nhất tại <b>ENLIGHT</b>.
+    </p>
+</div>
+
+<!-- Phần nội dung -->
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center g-5">
+        <!-- Hình minh họa -->
+        <div class="col-md-5 text-center">
+            <img src="@Url.Content("~/WebTTImages/test-banner.jpg")"
+                 class="img-fluid rounded-4 shadow-lg border border-3 border-primary"
+                 alt="Test đầu vào" />
+
+        </div>
+
+        <!-- Form đăng ký -->
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 p-4 rounded-4">
+                <div class="card-header bg-primary text-white text-center rounded-4 mb-3 py-3">
+                    <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Thông tin đăng ký Test</h4>
+                </div>
+
+                <form asp-action="DangKyTest" method="post">
+                    <div class="mb-3">
+                        <label asp-for="HoTen" class="form-label fw-semibold">Họ tên</label>
+                        <input asp-for="HoTen" class="form-control form-control-lg" placeholder="Nhập họ tên của bạn" />
+                        <span asp-validation-for="HoTen" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold">Email</label>
+                        <input asp-for="Email" type="email" class="form-control form-control-lg" placeholder="you@example.com" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SoDienThoai" class="form-label fw-semibold">Số điện thoại</label>
+                        <input asp-for="SoDienThoai" class="form-control form-control-lg" placeholder="Nhập số điện thoại" />
+                        <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+                    </div>
+
+                    <input type="hidden" asp-for="KhoaHocDeXuat" value="@ViewBag.KhoaHoc" />
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success px-4 py-2 rounded-pill">
+                            <i class="bi bi-send"></i> Gửi đăng ký
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<!-- Modal cảnh báo chưa đăng nhập -->
+@if (ViewBag.RequireLogin != null && (bool)ViewBag.RequireLogin)
+{
+    <div class="modal fade" id="requireLoginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0 rounded-4">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Thông báo</h5>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <p class="fs-5 mb-4">@ViewBag.Message</p>
+                    <div class="d-grid gap-2">
+                        <a href="/Account/Register" class="btn btn-primary btn-lg rounded-pill">
+                            <i class="bi bi-person-plus"></i> Đăng ký ngay
+                        </a>
+                        <a href="/Account/Login" class="btn btn-outline-secondary btn-lg rounded-pill">
+                            <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var modal = new bootstrap.Modal(document.getElementById("requireLoginModal"));
+            modal.show();
+        });
+    </script>
+}
+
+<!-- CSS tùy chỉnh -->
+<style>
+    /* Banner */
+    .test-banner {
+        background: linear-gradient(90deg, #007bff, #00bcd4);
+        background-image: url('/WebTTImages/blue-pattern.png');
+        background-size: cover;
+        background-blend-mode: multiply;
+        color: white;
+    }
+
+        .test-banner h2 {
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+
+    /* Form */
+    .card {
+        transition: all 0.3s ease;
+        border-radius: 20px;
+    }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+        }
+
+    .form-control {
+        border-radius: 12px;
+        padding: 12px 15px;
+    }
+
+    .btn-success {
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-success:hover {
+            transform: scale(1.05);
+        }
+
+    .img-fluid {
+        max-height: 350px;
+        object-fit: cover;
+        border-radius: 15px;
+    }
+</style>

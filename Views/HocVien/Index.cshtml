@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Trang học viên - Enlight English Center";
+}
+
+<div class="container py-5 text-center">
+    <h2 class="fw-bold text-primary">
+        <i class="fa-solid fa-user-graduate me-2"></i> Học viên ENLIGHT
+    </h2>
+    <p class="text-muted">Tra cứu khóa học, làm test đầu vào và xem kết quả học tập.</p>
+
+    @if (ViewBag.TestStatus == null)
+    {
+        <a href="/TestDauVao/DangKy" class="btn btn-primary btn-lg shadow-sm">
+            <i class="fa-solid fa-pen-to-square me-2"></i> Đăng ký Test đầu vào
+        </a>
+    }
+    else if (ViewBag.TestStatus == "Chờ xác nhận")
+    {
+        <button class="btn btn-warning btn-lg shadow-sm" disabled>
+            <i class="fa-solid fa-hourglass-half me-2"></i> Đang chờ xác nhận...
+        </button>
+    }
+    else if (ViewBag.TestStatus == "Được phép test")
+    {
+        <a href="/TestDauVao/LamBai" class="btn btn-success btn-lg shadow-sm">
+            <i class="fa-solid fa-play me-2"></i> Làm bài Test ngay
+        </a>
+    }
+    else if (ViewBag.TestStatus == "Hoàn thành")
+    {
+        <a href="/TestDauVao/KetQua" class="btn btn-secondary btn-lg shadow-sm">
+            <i class="fa-solid fa-chart-line me-2"></i> Xem kết quả Test
+        </a>
+    }
+
+    <div class="row mt-5 justify-content-center">
+        <div class="col-md-4 mb-3">
+            <div class="card border-success shadow-sm p-4 h-100">
+                <i class="fa-solid fa-book-open fa-3x text-success mb-3"></i>
+                <h5 class="fw-bold">Khóa học đã đăng ký</h5>
+                <p class="text-muted small">Xem danh sách khóa học mà bạn đã ghi danh.</p>
+                <a href="#" class="btn btn-outline-success btn-sm mt-2">Xem chi tiết</a>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card border-warning shadow-sm p-4 h-100">
+                <i class="fa-solid fa-file-lines fa-3x text-warning mb-3"></i>
+                <h5 class="fw-bold">Kết quả học tập</h5>
+                <p class="text-muted small">Theo dõi tiến trình và kết quả học tập của bạn.</p>
+                <a href="#" class="btn btn-outline-warning btn-sm mt-2">Xem kết quả</a>
+            </div>
+        </div>
+    </div>
+</div>

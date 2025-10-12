@@ -1,0 +1,45 @@
+﻿@model EnlightEnglishCenter.Models.NguoiDung
+@{
+    ViewData["Title"] = "Thêm người dùng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-4">
+    <h4 class="text-success mb-4"><i class="bi bi-person-plus"></i> Thêm người dùng mới</h4>
+
+    <form asp-action="Create" method="post">
+        <div class="mb-3">
+            <label class="form-label">Họ tên</label>
+            <input asp-for="HoTen" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Tên đăng nhập</label>
+            <input asp-for="TenDangNhap" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Mật khẩu</label>
+            <input asp-for="MatKhau" class="form-control" type="password" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input asp-for="Email" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Vai trò</label>
+            <select asp-for="MaVaiTro" class="form-select">
+                <option value="">-- Chọn vai trò --</option>
+                @foreach (var v in ViewBag.VaiTros)
+                {
+                    <option value="@v.MaVaiTro">@v.TenVaiTro</option>
+                }
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Trạng thái</label>
+            <input asp-for="TrangThai" class="form-control" placeholder="Hoạt động / Khóa" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Lưu</button>
+        <a href="/NguoiDung/Index" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

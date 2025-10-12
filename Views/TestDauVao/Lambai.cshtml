@@ -1,0 +1,120 @@
+﻿@model List<EnlightEnglishCenter.Controllers.TestDauVaoController.Question>
+
+@{
+    ViewData["Title"] = "Làm bài Test đầu vào";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">🧠 Bài Test đầu vào - @ViewBag.Course</h2>
+        <p>Thí sinh: <b>@ViewBag.HoTen</b></p>
+        <div class="alert alert-warning shadow-sm">
+            ⏱️ Thời gian còn lại:
+            <span id="timer" class="fw-bold text-danger">15:00</span>
+        </div>
+    </div>
+
+    <form asp-action="NopBai" method="post" id="testForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="course" value="@ViewBag.Course" />
+        <input type="hidden" name="correctAnswers" value="@string.Join(",", Model.Select(q => q.Answer))" />
+
+        <!-- 🧩 PHẦN 1: NGỮ PHÁP -->
+        <h4 class="text-primary mt-4 mb-3">Phần 1️⃣: Ngữ pháp (Grammar)</h4>
+        @foreach (var (q, i) in Model.Where(x => x.Skill == "Grammar").Select((v, i) => (v, i)))
+        {
+            <div class="card mb-3 shadow-sm border-primary">
+                <div class="card-body">
+                    <h5 class="fw-semibold">Câu @(i + 1): @q.QuestionText</h5>
+                    @for (int j = 0; j < q.Options.Count; j++)
+                    {
+                        string id = $"g{i}_{j}";
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="answers[@i]" id="@id" value="@(j + 1)" required>
+                            <label class="form-check-label" for="@id">@q.Options[j]</label>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- 📖 PHẦN 2: ĐỌC HIỂU -->
+        <h4 class="text-success mt-5 mb-3">Phần 2️⃣: Đọc hiểu (Reading)</h4>
+        @foreach (var (q, i) in Model.Where(x => x.Skill == "Reading").Select((v, i) => (v, i)))
+        {
+            <div class="card mb-3 shadow-sm border-success">
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(q.Passage))
+                    {
+                        <div class="alert alert-light border p-3 mb-3">
+                            <b>Đoạn văn:</b>
+                            <p class="mb-0">@q.Passage</p>
+                        </div>
+                    }
+                    <h5>Câu @(i + 1): @q.QuestionText</h5>
+                    @for (int j = 0; j < q.Options.Count; j++)
+                    {
+                        string id = $"r{i}_{j}";
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="answers[@(i + 10)]" id="@id" value="@(j + 1)" required>
+                            <label class="form-check-label" for="@id">@q.Options[j]</label>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- 🎧 PHẦN 3: NGHE HIỂU -->
+        <h4 class="text-info mt-5 mb-3">Phần 3️⃣: Nghe hiểu (Listening)</h4>
+
+        <!-- ✅ Dùng Url.Content để phát audio đúng -->
+        <audio controls class="mb-3 w-100">
+            <source src="@Url.Content($"~/data/{ViewBag.Course.ToString().ToLower()}/audio.mp3")" type="audio/mpeg" />
+            Trình duyệt không hỗ trợ phát âm thanh.
+        </audio>
+
+        @foreach (var (q, i) in Model.Where(x => x.Skill == "Listening").Select((v, i) => (v, i)))
+        {
+            <div class="card mb-3 shadow-sm border-info">
+                <div class="card-body">
+                    <h5 class="fw-semibold">Câu @(i + 1): @q.QuestionText</h5>
+                    @for (int j = 0; j < q.Options.Count; j++)
+                    {
+                        string id = $"l{i}_{j}";
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="answers[@(i + 20)]" id="@id" value="@(j + 1)" required>
+                            <label class="form-check-label" for="@id">@q.Options[j]</label>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- ✅ Nút Nộp Bài -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success btn-lg shadow px-4">
+                <i class="fa-solid fa-paper-plane me-2"></i> Nộp bài
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Timer đếm ngược -->
+<script>
+    let totalTime = 15 * 60;
+    const timerEl = document.getElementById("timer");
+    const form = document.getElementById("testForm");
+
+    const countdown = setInterval(() => {
+        let m = Math.floor(totalTime / 60);
+        let s = totalTime % 60;
+        timerEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+        if (totalTime <= 0) {
+            clearInterval(countdown);
+            alert("⏰ Hết thời gian! Bài sẽ được nộp tự động.");
+            form.submit();
+        }
+        totalTime--;
+    }, 1000);
+</script>

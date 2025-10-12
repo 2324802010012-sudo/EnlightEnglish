@@ -1,0 +1,110 @@
+﻿@{
+    ViewData["Title"] = "Khóa học Cambridge";
+}
+
+<div class="container py-5">
+    <h2 class="text-center fw-bold text-primary text-uppercase mb-4">Khóa học Cambridge</h2>
+
+    <p class="lead text-center text-muted mb-5">
+        Khóa học Cambridge giúp trẻ em và thiếu niên phát triển tiếng Anh tự nhiên, tự tin trong giao tiếp.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <img src="~/WebTTImages/cambridge.jpg" class="img-fluid rounded shadow" alt="Cambridge course">
+        </div>
+        <div class="col-md-6">
+            <h4 class="fw-bold text-primary">🎯 Mục tiêu khóa học</h4>
+            <ul>
+                <li>Phát triển kỹ năng giao tiếp tự nhiên bằng tiếng Anh.</li>
+                <li>Xây dựng nền tảng từ vựng và ngữ pháp cơ bản.</li>
+                <li>Chuẩn bị cho các kỳ thi Cambridge Starters, Movers, Flyers.</li>
+            </ul>
+
+            <h4 class="fw-bold text-primary mt-4">📘 Lộ trình đào tạo</h4>
+            <table class="table table-bordered mt-2">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Trình độ</th>
+                        <th>Độ tuổi</th>
+                        <th>Thời lượng</th>
+                        <th>Mục tiêu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Starters</td>
+                        <td>6–8 tuổi</td>
+                        <td>3 tháng</td>
+                        <td>Làm quen từ vựng và giao tiếp cơ bản</td>
+                    </tr>
+                    <tr>
+                        <td>Movers</td>
+                        <td>8–10 tuổi</td>
+                        <td>3 tháng</td>
+                        <td>Phát triển kỹ năng nghe – nói</td>
+                    </tr>
+                    <tr>
+                        <td>Flyers</td>
+                        <td>10–12 tuổi</td>
+                        <td>3 tháng</td>
+                        <td>Giao tiếp tự nhiên, chuẩn bị Cambridge Flyers</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<section class="placement-test py-5">
+    <div class="container">
+        <h3 class="fw-bold text-primary mb-4"><i class="bi bi-award me-2"></i>Test đầu vào & Gợi ý khóa học Cambridge</h3>
+        <p class="text-muted mb-4">
+            Phần kiểm tra giúp xác định cấp độ tiếng Anh của trẻ theo khung <b>Cambridge Young Learners</b>,
+            từ đó chọn lớp phù hợp với độ tuổi và khả năng.
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Điểm test đầu vào</th>
+                        <th>Cấp độ</th>
+                        <th>Khóa học tương ứng</th>
+                        <th>Mục tiêu sau khóa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0 – 25</td>
+                        <td>Starters (A1.1)</td>
+                        <td><b>Cambridge Starters</b></td>
+                        <td>Làm quen tiếng Anh cơ bản qua trò chơi và hình ảnh.</td>
+                    </tr>
+                    <tr>
+                        <td>26 – 60</td>
+                        <td>Movers (A1.2)</td>
+                        <td><b>Cambridge Movers</b></td>
+                        <td>Tăng vốn từ và kỹ năng nói, nghe hiểu hội thoại đơn giản.</td>
+                    </tr>
+                    <tr>
+                        <td>61 – 85</td>
+                        <td>Flyers (A2)</td>
+                        <td><b>Cambridge Flyers</b></td>
+                        <td>Phát triển khả năng viết, đọc hiểu và phản xạ tiếng Anh tự nhiên.</td>
+                    </tr>
+                    <tr>
+                        <td>86 – 100</td>
+                        <td>KET / PET (B1)</td>
+                        <td><b>Cambridge Teen</b></td>
+                        <td>Chuẩn bị cho kỳ thi Cambridge A2 Key & B1 Preliminary.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+
+@await Html.PartialAsync("~/Views/Shared/Partial_DangKyTest.cshtml",
+new EnlightEnglishCenter.Models.TestDangKyViewModel { KhoaHocDeXuat = "CAMBRIDGE" })
+

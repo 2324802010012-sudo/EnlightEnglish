@@ -1,0 +1,37 @@
+﻿[
+  {
+    "Id": 1,
+    "Audio": "audio.mp3",
+    "QuestionText": "Who is the conversation between?",
+    "Options": [ "Two teachers", "A student and a teacher", "Two students", "A teacher and a parent" ],
+    "Answer": 2
+  },
+  {
+    "Id": 2,
+    "Audio": "audio.mp3",
+    "QuestionText": "What is the student asking about?",
+    "Options": [ "Exam results", "Study plans", "Travel plans", "Homework" ],
+    "Answer": 2
+  },
+  {
+    "Id": 3,
+    "Audio": "audio.mp3",
+    "QuestionText": "What does the teacher suggest?",
+    "Options": [ "Watch movies", "Take a break", "Join a study group", "Sleep more" ],
+    "Answer": 3
+  },
+  {
+    "Id": 4,
+    "Audio": "audio.mp3",
+    "QuestionText": "How often should the student practice speaking?",
+    "Options": [ "Once a week", "Every day", "Twice a month", "On weekends" ],
+    "Answer": 2
+  },
+  {
+    "Id": 5,
+    "Audio": "audio.mp3",
+    "QuestionText": "What skill is the focus of the advice?",
+    "Options": [ "Listening", "Writing", "Speaking", "Reading" ],
+    "Answer": 3
+  }
+]

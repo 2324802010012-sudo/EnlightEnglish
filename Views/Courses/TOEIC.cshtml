@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "Khóa học TOEIC";
+}
+
+<div class="container py-5">
+    <h2 class="text-center fw-bold text-primary text-uppercase mb-4">Khóa học TOEIC</h2>
+
+    <p class="lead text-center text-muted mb-5">
+        Chương trình luyện thi TOEIC từ cơ bản đến nâng cao giúp bạn đạt mục tiêu 600–900 điểm TOEIC.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <img src="~/WebTTImages/toeic.jpg" class="img-fluid rounded shadow" alt="TOEIC course">
+        </div>
+        <div class="col-md-6">
+            <h4 class="fw-bold text-primary">🎯 Mục tiêu khóa học</h4>
+            <ul>
+                <li>Nâng cao khả năng Nghe và Đọc hiểu tiếng Anh thương mại.</li>
+                <li>Phát triển vốn từ chuyên ngành và ngữ pháp TOEIC.</li>
+                <li>Rèn kỹ năng làm bài thi thực tế.</li>
+            </ul>
+
+            <h4 class="fw-bold text-primary mt-4">📘 Lộ trình đào tạo</h4>
+            <table class="table table-bordered mt-2">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Trình độ</th>
+                        <th>Điểm đầu vào</th>
+                        <th>Thời lượng</th>
+                        <th>Mục tiêu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>TOEIC Starter</td>
+                        <td>0–300</td>
+                        <td>2 tháng</td>
+                        <td>Đạt 400–500 điểm</td>
+                    </tr>
+                    <tr>
+                        <td>TOEIC Intermediate</td>
+                        <td>400–500</td>
+                        <td>3 tháng</td>
+                        <td>Đạt 650–750 điểm</td>
+                    </tr>
+                    <tr>
+                        <td>TOEIC Advanced</td>
+                        <td>700+</td>
+                        <td>3 tháng</td>
+                        <td>Đạt 850–900 điểm</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<section class="placement-test py-5">
+    <div class="container">
+        <h3 class="fw-bold text-primary mb-4"><i class="bi bi-clipboard-data me-2"></i>Test đầu vào & Gợi ý khóa học TOEIC</h3>
+        <p class="text-muted mb-4">
+            Bài <b>TOEIC Placement Test</b> giúp xác định năng lực hiện tại và chọn khóa học phù hợp để đạt mục tiêu điểm nhanh nhất ⚡
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Điểm test đầu vào</th>
+                        <th>Trình độ tương đương</th>
+                        <th>Khóa học gợi ý</th>
+                        <th>Mục tiêu sau khóa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0 – 250</td>
+                        <td>A1 – A2</td>
+                        <td><b>TOEIC Starter</b></td>
+                        <td>Xây nền ngữ pháp, từ vựng và kỹ năng nghe – đọc cơ bản.</td>
+                    </tr>
+                    <tr>
+                        <td>255 – 550</td>
+                        <td>B1</td>
+                        <td><b>TOEIC Intermediate</b></td>
+                        <td>Đạt mục tiêu 550 – 700 điểm TOEIC, giao tiếp công sở tự tin.</td>
+                    </tr>
+                    <tr>
+                        <td>555 – 850</td>
+                        <td>B2</td>
+                        <td><b>TOEIC Advanced</b></td>
+                        <td>Rèn luyện kỹ năng chuyên sâu, mục tiêu 750 – 900 điểm.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+
+@await Html.PartialAsync("~/Views/Shared/Partial_DangKyTest.cshtml",
+new EnlightEnglishCenter.Models.TestDangKyViewModel { KhoaHocDeXuat = "TOEIC" })

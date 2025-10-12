@@ -1,0 +1,470 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Trang chủ";
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show text-center mt-3" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show text-center mt-3" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- BANNER -->
+<section class="banner position-relative reveal d-flex align-items-center justify-content-center text-center text-white">
+    <img src="~/WebTTImages/banner.jpg" alt="Banner Enlight" class="banner-img" />
+    <div class="banner-overlay"></div>
+    <div class="banner-content">
+        <h1 class="display-4 fw-bold text-uppercase">Trung tâm Anh ngữ Enlight</h1>
+        <p class="lead fw-semibold slogan">“Never let your fear decide your fate.”</p>
+    </div>
+</section>
+
+<!--  KHÓA HỌC NỔI BẬT -->
+<section class="courses py-5 bg-light reveal">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5 text-uppercase text-primary">Các khóa học nổi bật</h2>
+        <div class="row g-4">
+            <!-- IELTS -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="~/WebTTImages/ielts.jpg" class="card-img-top" alt="Khóa học IELTS">
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold text-uppercase text-primary">Khóa học IELTS</h5>
+                        <p class="card-text text-muted">Luyện 4 kỹ năng Nghe – Nói – Đọc – Viết theo chuẩn quốc tế. Hệ thống bài giảng bám sát đề thi thật.</p>
+                        <a href="/Courses/IELTS" class="btn btn-primary mt-2">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOEIC -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="~/WebTTImages/toeic.jpg" class="card-img-top" alt="Khóa học TOEIC">
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold text-uppercase text-primary">Khóa học TOEIC</h5>
+                        <p class="card-text text-muted">Phát triển kỹ năng giao tiếp và từ vựng thương mại, hướng đến mục tiêu 600–900 điểm TOEIC.</p>
+                        <a href="/Courses/TOEIC" class="btn btn-primary mt-2">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CAMBRIDGE -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="~/WebTTImages/cambridge.jpg" class="card-img-top" alt="Khóa học Cambridge">
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold text-uppercase text-primary">Khóa học Cambridge</h5>
+                        <p class="card-text text-muted">Dành cho trẻ em và thiếu niên, học tiếng Anh qua hoạt động tương tác, theo chuẩn Cambridge.</p>
+                        <a href="/Courses/Cambridge" class="btn btn-primary mt-2">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--  THÀNH TỰU -->
+<section class="achievements text-white py-5 reveal">
+    <div class="container text-center">
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <i class="bi bi-people-fill fs-1 mb-2"></i>
+                    <h3 class="fw-bold">5000+</h3>
+                    <p>Học viên đã theo học</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <i class="bi bi-journal-check fs-1 mb-2"></i>
+                    <h3 class="fw-bold">200+</h3>
+                    <p>Khóa học chất lượng</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <i class="bi bi-mortarboard-fill fs-1 mb-2"></i>
+                    <h3 class="fw-bold">98%</h3>
+                    <p>Đạt mục tiêu đầu ra</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <i class="bi bi-globe fs-1 mb-2"></i>
+                    <h3 class="fw-bold">10+</h3>
+                    <p>Năm kinh nghiệm giảng dạy</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--  LÝ DO CHỌN ENLIGHT -->
+<section class="why-enlight py-5 reveal">
+    <div class="container text-center">
+        <h2 class="fw-bold text-uppercase text-primary mb-5">Vì sao nên chọn ENLIGHT?</h2>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="feature p-4 rounded-4 shadow-sm h-100">
+                    <i class="bi bi-award fs-1 text-primary mb-3"></i>
+                    <h5 class="fw-bold">Giảng viên chất lượng</h5>
+                    <p class="text-muted small">100% giáo viên đạt chứng chỉ quốc tế và giàu kinh nghiệm giảng dạy.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature p-4 rounded-4 shadow-sm h-100">
+                    <i class="bi bi-book-half fs-1 text-primary mb-3"></i>
+                    <h5 class="fw-bold">Giáo trình hiện đại</h5>
+                    <p class="text-muted small">Bám sát khung Cambridge & ETS, cập nhật theo đề thi mới nhất.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature p-4 rounded-4 shadow-sm h-100">
+                    <i class="bi bi-laptop fs-1 text-primary mb-3"></i>
+                    <h5 class="fw-bold">Học trực tuyến linh hoạt</h5>
+                    <p class="text-muted small">Học mọi lúc, mọi nơi với hệ thống lớp học trực tuyến chất lượng cao.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature p-4 rounded-4 shadow-sm h-100">
+                    <i class="bi bi-graph-up fs-1 text-primary mb-3"></i>
+                    <h5 class="fw-bold">Cam kết đầu ra</h5>
+                    <p class="text-muted small">Học viên được đảm bảo kết quả theo lộ trình đã tư vấn từ đầu.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--  GIÁO VIÊN -->
+<section class="teachers py-5 bg-light reveal">
+    <div class="container">
+        <h2 class="text-center fw-bold text-uppercase text-primary mb-5">Đội ngũ giáo viên giàu kinh nghiệm</h2>
+        <div class="row text-center g-4">
+            <div class="col-md-4">
+                <div class="teacher-card p-4 rounded-4 shadow-sm">
+                    <img src="~/WebTTImages/teacher1.jpg" class="teacher-img mb-3" />
+                    <h5 class="fw-bold text-dark">Cô Vũ Mai Phương</h5>
+                    <p class="text-muted">Chuyên gia luyện thi IELTS & Ngữ pháp</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="teacher-card p-4 rounded-4 shadow-sm">
+                    <img src="~/WebTTImages/teacher2.jpg" class="teacher-img mb-3" />
+                    <h5 class="fw-bold text-dark">Thầy Tiểu Đạt</h5>
+                    <p class="text-muted">Giảng viên TOEIC & Giao tiếp công sở</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="teacher-card p-4 rounded-4 shadow-sm">
+                    <img src="~/WebTTImages/teacher3.jpg" class="teacher-img mb-3" />
+                    <h5 class="fw-bold text-dark">Cô Hoàng Xuân</h5>
+                    <p class="text-muted">Giảng viên tiếng Anh thiếu nhi & Phát âm</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ========== CẢM NHẬN HỌC VIÊN & PHỤ HUYNH ========== -->
+<section class="testimonials py-5 bg-white reveal">
+    <div class="container text-center">
+        <h2 class="fw-bold text-uppercase text-primary mb-5">Cảm nhận học viên & phụ huynh</h2>
+        <div class="row g-4">
+            <!-- Nhận xét 1 -->
+            <div class="col-md-4">
+                <div class="testimonial p-4 shadow-sm rounded-4 h-100">
+                    <img src="~/WebTTImages/student1.jpg" alt="Học viên Minh Anh" class="testimonial-img mb-3">
+                    <p class="text-muted fst-italic">
+                        “Khóa học IELTS tại ENLIGHT giúp mình cải thiện kỹ năng viết rất nhanh, giáo viên hỗ trợ tận tâm!”
+                    </p>
+                    <h6 class="fw-bold mb-0 text-primary">Minh Anh</h6>
+                    <small class="text-muted">Học viên IELTS 7.5</small>
+                </div>
+            </div>
+
+            <!-- Nhận xét 2 -->
+            <div class="col-md-4">
+                <div class="testimonial p-4 shadow-sm rounded-4 h-100">
+                    <img src="~/WebTTImages/student3.jpg" alt="Phụ huynh Ngọc Huyền" class="testimonial-img mb-3">
+                    <p class="text-muted fst-italic">
+                        “Con tôi học tiếng Anh thiếu nhi ở đây, cô giáo rất thân thiện và con tiến bộ rõ rệt sau 3 tháng!”
+                    </p>
+                    <h6 class="fw-bold mb-0 text-primary">Chị Ngọc Huyền</h6>
+                    <small class="text-muted">Phụ huynh học viên lớp Kids Star</small>
+                </div>
+            </div>
+
+            <!-- Nhận xét 3 -->
+            <div class="col-md-4">
+                <div class="testimonial p-4 shadow-sm rounded-4 h-100">
+                    <img src="~/WebTTImages/student2.jpg" alt="Học viên Quốc Bảo" class="testimonial-img mb-3">
+                    <p class="text-muted fst-italic">
+                        “Mình rất thích lớp giao tiếp của thầy Đạt, không khí học vui mà vẫn hiệu quả!”
+                    </p>
+                    <h6 class="fw-bold mb-0 text-primary">Quốc Bảo</h6>
+                    <small class="text-muted">Học viên TOEIC Speaking</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 🌍 ĐỐI TÁC & CHỨNG NHẬN -->
+<section class="partners py-5 bg-white reveal">
+    <div class="container text-center">
+        <h2 class="fw-bold text-uppercase text-primary mb-4">Đối tác & Chứng nhận</h2>
+        <p class="text-muted mb-5">ENLIGHT tự hào là đối tác của các tổ chức quốc tế hàng đầu</p>
+        <div class="row justify-content-center align-items-center g-4">
+            <div class="col-6 col-md-2"><img src="~/WebTTImages/cambridge-logo.png" class="img-fluid" alt="Cambridge" /></div>
+            <div class="col-6 col-md-2"><img src="~/WebTTImages/britishcounci.jpg" class="img-fluid" alt="British Council" /></div>
+            <div class="col-6 col-md-2"><img src="~/WebTTImages/ets.png" class="img-fluid" alt="ETS" /></div>
+            <div class="col-6 col-md-2"><img src="~/WebTTImages/idp.jpg" class="img-fluid" alt="IDP" /></div>
+        </div>
+    </div>
+</section>
+
+<!-- HỖ TRỢ -->
+<section class="support-section py-5 reveal">
+    <div class="container">
+        <div class="row align-items-center justify-content-center g-5">
+            <div class="col-md-5 text-center">
+                <img src="~/WebTTImages/support.jpg" class="img-fluid rounded-4 shadow-lg border border-3 border-light support-img" />
+            </div>
+            <div class="col-md-6">
+                <div class="support-card p-5 rounded-4 shadow-lg bg-white">
+                    <h2 class="fw-bold text-uppercase text-primary mb-3 text-center">
+                        Đăng ký nhận tư vấn <span class="text-gradient">miễn phí</span>
+                    </h2>
+                    <p class="text-muted text-center mb-4">
+                        Đội ngũ tư vấn <b>ENLIGHT</b> sẽ liên hệ trong vòng <b>24 giờ</b> để hỗ trợ chọn khóa học phù hợp nhất.
+                    </p>
+                    <form asp-action="DangKyHoTro" asp-controller="Home" method="post">
+                        <input type="text" name="HoTen" class="form-control form-control-lg mb-3 rounded-3" placeholder="Họ tên của bạn" required />
+                        <input type="email" name="Email" class="form-control form-control-lg mb-3 rounded-3" placeholder="Email" required />
+                        <input type="tel" name="SoDienThoai" class="form-control form-control-lg mb-4 rounded-3" placeholder="Số điện thoại" required />
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-gradient px-5 py-2 rounded-pill fw-bold">
+                                <i class="bi bi-send-fill"></i> Gửi đăng ký
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ✨ CSS -->
+<style>
+    .banner {
+        height: 90vh;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .banner-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(60%);
+    }
+
+    .banner-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.4);
+    }
+
+    .banner-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        color: #fff;
+    }
+
+    .slogan {
+        font-size: 1.5rem;
+        animation: fadeUp 1.2s ease-out;
+        color: #00c6ff;
+        text-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+    @@keyframes fadeUp {
+        0%
+
+    {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    }
+
+    /* ========== KHÓA HỌC========== */
+    .courses .card-img-top {
+        height: 230px;
+        width: 100%;
+        object-fit: cover;
+        border-bottom: 3px solid #007bff;
+    }
+    /* ========== THÀNH TỰU ========== */
+    .achievements {
+        background: linear-gradient(90deg, #007bff, #00bcd4);
+        color: white;
+        padding: 60px 0;
+    }
+
+        .achievements .stat-box {
+            transition: all 0.3s ease;
+            color: #fff;
+        }
+
+            .achievements .stat-box:hover {
+                transform: translateY(-6px);
+            }
+
+        .achievements i {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .achievements h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.15);
+            display: inline-block;
+            padding: 5px 20px;
+            border-radius: 10px;
+        }
+
+        .achievements p {
+            margin-top: 8px;
+            font-size: 1rem;
+            color: #f1f1f1;
+        }
+    /* ========== GIÁO VIÊN ========== */
+    .teacher-card {
+        background: #fff;
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+        .teacher-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 22px rgba(0,0,0,0.15);
+        }
+
+    .teacher-img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 15px;
+    }
+
+    .teachers h2 {
+        margin-bottom: 3rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+    /* ========== CẢM NHẬN HỌC VIÊN & PHỤ HUYNH ========== */
+    .testimonial {
+        background: #fff;
+        transition: all 0.3s ease;
+        border-radius: 20px;
+        padding: 30px;
+        border: 1px solid #eee;
+    }
+
+        .testimonial:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+    .testimonial-img {
+        width: 90px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #007bff;
+    }
+
+    /* ========== PHẦN ĐỐI TÁC & CHỨNG NHẬN ========== */
+    .partners {
+        background: #f9fafc;
+    }
+
+        .partners h2 {
+            color: #007bff;
+            letter-spacing: 1px;
+        }
+
+    .partner-logo {
+        max-height: 80px;
+        width: auto;
+        object-fit: contain;
+        filter: grayscale(100%);
+        opacity: 0.8;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .partner-logo:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.08);
+        }
+  
+
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const elements = document.querySelectorAll('.reveal');
+            function reveal() {
+                elements.forEach(el => {
+                    const windowHeight = window.innerHeight;
+                    const elementTop = el.getBoundingClientRect().top;
+                    if (elementTop < windowHeight - 120) el.classList.add("active");
+                });
+            }
+            window.addEventListener("scroll", reveal);
+            reveal();
+
+            // Popup hỗ trợ
+            const popup = document.getElementById("supportPopup");
+            const openBtn = document.getElementById("openPopup");
+            const closeBtn = document.getElementById("closePopup");
+            openBtn.addEventListener("click", () => popup.style.display = "block");
+            closeBtn.addEventListener("click", () => popup.style.display = "none");
+            window.addEventListener("click", (e) => { if (e.target === popup) popup.style.display = "none"; });
+
+            // Hiện nút hỗ trợ khi cuộn
+            window.addEventListener("scroll", function () {
+                if (window.scrollY > 300) openBtn.classList.add("show");
+                else openBtn.classList.remove("show");
+            });
+        });
+    </script>
+}

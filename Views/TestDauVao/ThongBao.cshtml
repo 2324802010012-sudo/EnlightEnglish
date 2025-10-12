@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Thông báo - Test Đầu Vào";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 text-center">
+    <div class="card shadow-lg border-0 p-5">
+        @if (TempData["Error"] != null)
+        {
+            <h3 class="text-danger mb-3">@TempData["Error"]</h3>
+        }
+        else if (TempData["Success"] != null)
+        {
+            <h3 class="text-success mb-3">@TempData["Success"]</h3>
+        }
+
+        <a href="/HocVien" class="btn btn-primary mt-3">
+            <i class="fa-solid fa-house me-1"></i> Quay lại trang học viên
+        </a>
+    </div>
+</div>

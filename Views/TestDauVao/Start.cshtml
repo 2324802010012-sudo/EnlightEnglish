@@ -1,0 +1,26 @@
+﻿@model List<EnlightEnglishCenter.Controllers.TestDauVaoController.Question>
+
+@{
+    ViewBag.Title = "Làm bài Test";
+}
+<div class="container py-5">
+    <h3 class="text-center text-primary fw-bold mb-4">Bài Test đầu vào - @ViewBag.Course</h3>
+    <form asp-action="Submit" method="post">
+        <input type="hidden" name="course" value="@ViewBag.Course" />
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <div class="mb-4 p-3 bg-light rounded">
+                <p><b>Câu @(i + 1):</b> @Model[i].QuestionText</p>
+                @for (int j = 0; j < Model[i].Options.Count; j++)
+                {
+                    <div>
+                        <input type="radio" name="answers[@i]" value="@j" required />
+                        @Model[i].Options[j]
+                    </div>
+                }
+                <input type="hidden" name="correctAnswers[@i]" value="@Model[i].Answer" />
+            </div>
+        }
+        <button type="submit" class="btn btn-success w-100 py-2">Nộp bài</button>
+    </form>
+</div>

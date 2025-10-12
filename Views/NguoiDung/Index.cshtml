@@ -1,0 +1,67 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.NguoiDung>
+
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-4">
+    <h3 class="mb-4 text-primary text-center">
+        <i class="bi bi-people-fill me-2"></i> Quản lý người dùng
+    </h3>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success text-center">@TempData["Success"]</div>
+    }
+
+    <div class="text-end mb-3">
+        <a href="/NguoiDung/Create" class="btn btn-success">
+            <i class="bi bi-person-plus me-1"></i> Thêm người dùng
+        </a>
+    </div>
+
+    <table class="table table-bordered table-striped text-center align-middle shadow-sm">
+        <thead class="table-primary">
+            <tr>
+                <th>#</th>
+                <th>Họ tên</th>
+                <th>Tên đăng nhập</th>
+                <th>Email</th>
+                <th>Vai trò</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                int i = 1;
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@i</td>
+                        <td>@item.HoTen</td>
+                        <td>@item.TenDangNhap</td>
+                        <td>@item.Email</td>
+                        <td>@item.MaVaiTroNavigation?.TenVaiTro</td>
+                        <td>@item.TrangThai</td>
+                        <td>
+                            <a href="/NguoiDung/Edit/@item.MaNguoiDung" class="btn btn-sm btn-warning me-1">
+                                <i class="bi bi-pencil-square"></i> Sửa
+                            </a>
+                            <a href="/NguoiDung/Delete/@item.MaNguoiDung" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i> Xóa
+                            </a>
+                        </td>
+                    </tr>
+                    i++;
+                }
+            }
+            else
+            {
+                <tr><td colspan="7" class="text-muted">Không có người dùng nào</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

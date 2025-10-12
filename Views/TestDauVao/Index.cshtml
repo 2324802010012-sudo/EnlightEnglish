@@ -1,0 +1,26 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.KhoaHoc>
+
+<div class="container py-5">
+    <h2 class="text-center text-primary fw-bold mb-4">Đăng ký Test đầu vào</h2>
+    <p class="text-center text-muted mb-5">Chọn khóa học bạn muốn kiểm tra năng lực 👇</p>
+
+    <div class="row g-4 justify-content-center">
+        @foreach (var k in Model)
+        {
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body text-center">
+                        <h5 class="fw-bold">@k.TenKhoaHoc</h5>
+                        <p class="text-muted">@k.MoTa</p>
+                        <form asp-action="DangKy" method="post">
+                            <input type="hidden" name="maKhoaHoc" value="@k.MaKhoaHoc" />
+                            <button type="submit" class="btn btn-primary rounded-pill px-4">
+                                Đăng ký Test
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
