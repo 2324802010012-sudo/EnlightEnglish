@@ -1,0 +1,45 @@
+﻿@model EnlightEnglishCenter.Models.HocPhi
+@{
+    ViewData["Title"] = "Sửa học phí";
+}
+
+<div class="container py-4">
+    <h3 class="text-warning mb-3"><i class="fa-solid fa-pen-to-square me-2"></i> Sửa học phí</h3>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="MaHocPhi" />
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Học viên</label>
+            <select asp-for="MaHocVien" class="form-select" asp-items="@(new SelectList(ViewBag.HocVienList, "MaNguoiDung", "HoTen"))"></select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Lớp học</label>
+            <select asp-for="MaLop" class="form-select" asp-items="@(new SelectList(ViewBag.LopList, "MaLop", "TenLop"))"></select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Số tiền phải đóng</label>
+            <input asp-for="SoTienPhaiDong" class="form-control" type="number" step="1000" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Số tiền đã đóng</label>
+            <input asp-for="SoTienDaDong" class="form-control" type="number" step="1000" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Trạng thái</label>
+            <input asp-for="TrangThai" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Ngày đóng cuối</label>
+            <input asp-for="NgayDongCuoi" class="form-control" type="date" />
+        </div>
+
+        <button type="submit" class="btn btn-warning"><i class="fa-solid fa-save me-1"></i> Cập nhật</button>
+        <a asp-action="HocPhi" class="btn btn-secondary ms-2"><i class="fa-solid fa-arrow-left"></i> Quay lại</a>
+    </form>
+</div>

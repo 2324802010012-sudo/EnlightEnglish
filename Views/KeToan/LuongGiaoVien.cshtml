@@ -1,0 +1,56 @@
+﻿@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Danh sách lương giáo viên";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="text-success mb-0">
+            <i class="fa-solid fa-hand-holding-dollar me-2"></i> Danh sách lương giáo viên
+        </h3>
+        <a asp-action="TinhLuong" class="btn btn-success">
+            <i class="fa-solid fa-plus"></i> Tính lương mới
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-success text-center">
+            <tr>
+                <th>Mã lương</th>
+                <th>Giáo viên</th>
+                <th>Tháng</th>
+                <th>Năm</th>
+                <th>Số buổi dạy</th>
+                <th>Lương mỗi buổi</th>
+                <th>Tổng lương</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.MaLuong</td>
+                        <td>@item.GiaoVien</td>
+                        <td class="text-center">@item.Thang</td>
+                        <td class="text-center">@item.Nam</td>
+                        <td class="text-center">@item.SoBuoiDay</td>
+                        <td class="text-end">@String.Format("{0:N0} đ", item.LuongMoiBuoi)</td>
+                        <td class="text-end fw-bold text-success">@String.Format("{0:N0} đ", item.TongLuong)</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted">Chưa có dữ liệu lương</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <a asp-action="Index" class="btn btn-secondary mt-3">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại
+    </a>
+</div>

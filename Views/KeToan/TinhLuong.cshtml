@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "Tính lương giáo viên";
+}
+
+<div class="container py-4">
+    <h3 class="text-success mb-3">
+        <i class="fa-solid fa-hand-holding-dollar me-2"></i> Tính lương giáo viên
+    </h3>
+
+    <form asp-action="TinhLuong" method="post">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Giáo viên</label>
+            <select name="MaGiaoVien" class="form-select" required>
+                <option value="">-- Chọn giáo viên --</option>
+                @foreach (var gv in ViewBag.GiaoVienList)
+                {
+                    <option value="@gv.MaNguoiDung">@gv.HoTen</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Tháng</label>
+            <input type="number" name="Thang" class="form-control" min="1" max="12" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Năm</label>
+            <input type="number" name="Nam" class="form-control" min="2020" max="2100" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Lương mỗi buổi (VNĐ)</label>
+            <input type="number" name="LuongMoiBuoi" class="form-control" step="1000" required />
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            <i class="fa-solid fa-calculator me-1"></i> Tính lương
+        </button>
+        <a asp-action="LuongGiaoVien" class="btn btn-secondary ms-2">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại
+        </a>
+    </form>
+</div>

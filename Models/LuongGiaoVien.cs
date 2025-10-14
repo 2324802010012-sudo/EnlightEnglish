@@ -24,9 +24,11 @@ public partial class LuongGiaoVien
     public decimal? LuongMoiBuoi { get; set; }
 
     [Column(TypeName = "decimal(21, 2)")]
+    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public decimal? TongLuong { get; set; }
 
     [ForeignKey("MaGiaoVien")]
     [InverseProperty("LuongGiaoViens")]
     public virtual NguoiDung? MaGiaoVienNavigation { get; set; }
+
 }

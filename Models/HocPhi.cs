@@ -15,6 +15,7 @@ namespace EnlightEnglishCenter.Models
         public decimal SoTienPhaiDong { get; set; }
         public decimal SoTienDaDong { get; set; }
         public string? TrangThai { get; set; }
+        public DateTime? NgayDongCuoi { get; set; }
 
         [ForeignKey("MaHocVien")]
         [InverseProperty("HocPhis")]

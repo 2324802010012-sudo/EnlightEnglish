@@ -1,19 +1,28 @@
 ﻿<div class="container py-5 text-center">
-    <h2 class="fw-bold text-danger"><i class="fa-solid fa-headset me-2"></i> Nhân viên lễ tân</h2>
+    <h2 class="fw-bold text-danger">
+        <i class="fa-solid fa-headset me-2"></i> Nhân viên lễ tân
+    </h2>
     <p class="text-muted">Tiếp nhận học viên, hỗ trợ đăng ký và liên hệ.</p>
 
     <div class="row mt-4">
+        <!-- 🔗 Card: Đăng ký học viên -->
         <div class="col-md-6">
-            <div class="card border-danger shadow-sm p-3">
-                <i class="fa-solid fa-user-plus fa-3x text-danger mb-2"></i>
-                <h5>Đăng ký học viên</h5>
-            </div>
+            <a href="@Url.Action("DangKyHocVien", "LeTan")" class="text-decoration-none">
+                <div class="card border-danger shadow-sm p-3 hover-shadow">
+                    <i class="fa-solid fa-user-plus fa-3x text-danger mb-2"></i>
+                    <h5 class="text-dark">Đăng ký học viên</h5>
+                </div>
+            </a>
         </div>
+
         <div class="col-md-6">
-            <div class="card border-warning shadow-sm p-3">
-                <i class="fa-solid fa-phone-volume fa-3x text-warning mb-2"></i>
-                <h5>Liên hệ học viên</h5>
-            </div>
+            <a href="@Url.Action("LienHeHocVien", "LeTan")" class="text-decoration-none">
+                <div class="card border-warning shadow-sm p-3 hover-shadow">
+                    <i class="fa-solid fa-phone-volume fa-3x text-warning mb-2"></i>
+                    <h5 class="text-dark">Liên hệ học viên</h5>
+                </div>
+            </a>
         </div>
+
     </div>
 </div>

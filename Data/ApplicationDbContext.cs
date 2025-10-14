@@ -17,7 +17,6 @@ namespace EnlightEnglishCenter.Data
         public DbSet<VaiTro> VaiTros { get; set; }
         public DbSet<KhoaHoc> KhoaHocs { get; set; }
         public DbSet<LopHoc> LopHocs { get; set; }
-        public DbSet<DK_HocVien_LopHoc> DK_HocVien_LopHocs { get; set; }
         public DbSet<TestDauVao> TestDauVaos { get; set; }
         public DbSet<HocPhi> HocPhis { get; set; }
         public DbSet<LuongGiaoVien> LuongGiaoViens { get; set; }
@@ -28,6 +27,10 @@ namespace EnlightEnglishCenter.Data
         public DbSet<DiemDanh> DiemDanhs { get; set; }
         public DbSet<LichSuTruyCap> LichSuTruyCaps { get; set; }
         public DbSet<BaoCao> BaoCaos { get; set; }
+        public DbSet<DkHocVienLopHoc> DkHocVienLopHocs { get; set; }
+
+
+
 
         // ==========================
         // ⚙️ Cấu hình chi tiết quan hệ
@@ -43,9 +46,7 @@ namespace EnlightEnglishCenter.Data
                 .HasForeignKey(u => u.MaVaiTro)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // 🔹 Cấu hình bảng DK_HocVien_LopHoc (khóa chính kép)
-            modelBuilder.Entity<DK_HocVien_LopHoc>()
-                .HasKey(d => new { d.MaHocVien, d.MaLop });
+           
 
             // 🔹 Cấu hình DiemDanh (khóa chính kép)
             modelBuilder.Entity<DiemDanh>()
@@ -77,6 +78,11 @@ namespace EnlightEnglishCenter.Data
                 .WithMany(u => u.BaoCaos)
                 .HasForeignKey(b => b.NguoiLap)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<DkHocVienLopHoc>()
+                .HasKey(d => new { d.MaHocVien, d.MaLop });
         }
     }
 }

@@ -52,9 +52,7 @@ namespace EnlightEnglishCenter.Models
         public virtual ICollection<BaoCao> BaoCaos { get; set; } = new List<BaoCao>();
 
         [InverseProperty("MaHocVienNavigation")]
-        public virtual ICollection<DK_HocVien_LopHoc> DK_HocVien_LopHocs { get; set; } = new List<DK_HocVien_LopHoc>();
-
-        [InverseProperty("MaHocVienNavigation")]
+     
         public virtual ICollection<DiemDanh> DiemDanhs { get; set; } = new List<DiemDanh>();
 
         [InverseProperty("MaHocVienNavigation")]

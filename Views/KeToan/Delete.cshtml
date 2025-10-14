@@ -1,0 +1,52 @@
+﻿@model dynamic
+@{
+    ViewData["Title"] = "Xóa học phí";
+}
+
+<div class="container py-4">
+    <div class="alert alert-danger mb-3">
+        <h5><i class="fa-solid fa-triangle-exclamation me-2"></i> Bạn có chắc chắn muốn xóa học phí này không?</h5>
+    </div>
+
+    <table class="table table-bordered">
+        <tr><th>Mã học phí</th><td>@Model.MaHocPhi</td></tr>
+        <tr><th>Học viên</th><td>@Model.HocVien</td></tr>
+        <tr><th>Lớp học</th><td>@Model.Lop</td></tr>
+        <tr><th>Số tiền phải đóng</th><td>@String.Format("{0:N0} đ", Model.SoTienPhaiDong)</td></tr>
+        <tr><th>Số tiền đã đóng</th><td>@String.Format("{0:N0} đ", Model.SoTienDaDong)</td></tr>
+        <tr><th>Trạng thái</th><td>@Model.TrangThai</td></tr>
+        <tr><th>Ngày đóng cuối</th><td>@((Model.NgayDongCuoi as DateTime?)?.ToString("dd/MM/yyyy"))</td></tr>
+    </table>
+
+    <!-- 🧩 Thêm confirm vào form -->
+    <form id="deleteForm" asp-action="Delete" method="post">
+        <input type="hidden" name="id" value="@Model.MaHocPhi" />
+        <button type="button" id="btnDelete" class="btn btn-danger">
+            <i class="fa-solid fa-trash me-1"></i> Xóa
+        </button>
+        <a asp-action="HocPhi" class="btn btn-secondary ms-2">
+            <i class="fa-solid fa-arrow-left"></i> Hủy
+        </a>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById("btnDelete").addEventListener("click", function (e) {
+            Swal.fire({
+                title: "Bạn có chắc chắn?",
+                text: "Hành động này sẽ xóa vĩnh viễn bản ghi học phí.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Xóa",
+                cancelButtonText: "Hủy"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById("deleteForm").submit();
+                }
+            });
+        });
+    </script>
+
+</div>
