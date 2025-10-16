@@ -1,17 +1,21 @@
-﻿using System.Diagnostics;
+﻿using EnlightEnglishCenter.Data;
 using EnlightEnglishCenter.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace EnlightEnglishCenter.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
+
 
         public IActionResult Index()
         {
@@ -40,11 +44,28 @@ namespace EnlightEnglishCenter.Controllers
         [HttpPost]
         public IActionResult DangKyHoTro(string HoTen, string Email, string SoDienThoai)
         {
-            // TODO: Lưu dữ liệu vào database hoặc gửi mail
-            TempData["Message"] = "Cảm ơn bạn! Chúng tôi sẽ liên hệ sớm nhất.";
+            if (string.IsNullOrWhiteSpace(HoTen) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(SoDienThoai))
+            {
+                TempData["Error"] = "Vui lòng nhập đầy đủ thông tin!";
+                return RedirectToAction("Index");
+            }
+
+            var dk = new DangKyTuVan
+            {
+                HoTen = HoTen.Trim(),
+                Email = Email.Trim(),
+                SoDienThoai = SoDienThoai.Trim(),
+                TrangThai = "Chưa liên hệ"
+            };
+
+            _context.DangKyTuVan.Add(dk);
+            _context.SaveChanges();
+
+            TempData["Success"] = "Gửi đăng ký thành công! Chúng tôi sẽ liên hệ trong 24 giờ.";
             return RedirectToAction("Index");
         }
-
-
     }
+
+
+
 }

@@ -29,6 +29,8 @@ namespace EnlightEnglishCenter.Data
         public DbSet<BaoCao> BaoCaos { get; set; }
         public DbSet<DkHocVienLopHoc> DkHocVienLopHocs { get; set; }
 
+        public DbSet<DangKyTuVan> DangKyTuVan { get; set; }
+
 
 
 

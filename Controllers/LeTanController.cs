@@ -129,22 +129,11 @@ namespace EnlightEnglishCenter.Controllers
         }
         public IActionResult LienHeHocVien()
         {
-            var hocVienList = (from hv in _context.NguoiDungs
-                               join dk in _context.DkHocVienLopHocs
-                                   on hv.MaNguoiDung equals dk.MaHocVien
-                               where hv.MaVaiTro == 4
-                               select new
-                               {
-                                   hv.MaNguoiDung,
-                                   hv.HoTen,
-                                   hv.Email,
-                                   hv.SoDienThoai,
-                                   hv.TrangThai
-                               })
-                               .Distinct()
-                               .ToList();
+            var danhSach = _context.DangKyTuVan
+        .OrderByDescending(x => x.Id)
+        .ToList();
 
-            return View(hocVienList);
+            return View(danhSach);
         }
 
     }
