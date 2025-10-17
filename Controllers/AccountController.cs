@@ -183,6 +183,59 @@ namespace EnlightEnglishCenter.Controllers
             TempData["Success"] = "✅ Hồ sơ đã được cập nhật!";
             return RedirectToAction("Profile");
         }
+        // ================== ĐỔI MẬT KHẨU ==================
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ChangePassword(string oldPassword, string newPassword, string confirmPassword)
+        {
+            var userName = HttpContext.Session.GetString("TenDangNhap");
+
+            if (string.IsNullOrEmpty(userName))
+            {
+                TempData["Error"] = "Bạn cần đăng nhập để đổi mật khẩu.";
+                return RedirectToAction("Login");
+            }
+
+            if (string.IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(newPassword))
+            {
+                ViewBag.Error = "Vui lòng nhập đầy đủ thông tin.";
+                return View();
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                ViewBag.Error = "Mật khẩu mới và xác nhận không khớp.";
+                return View();
+            }
+
+            var user = _context.NguoiDungs.FirstOrDefault(u => u.TenDangNhap == userName);
+            if (user == null)
+            {
+                ViewBag.Error = "Không tìm thấy tài khoản.";
+                return View();
+            }
+
+            // Giả sử bạn chưa mã hóa mật khẩu
+            if (user.MatKhau != oldPassword)
+            {
+                ViewBag.Error = "Mật khẩu cũ không đúng.";
+                return View();
+            }
+
+            // Cập nhật mật khẩu mới
+            user.MatKhau = newPassword;
+            _context.Update(user);
+            _context.SaveChanges();
+
+            ViewBag.Success = "✅ Đổi mật khẩu thành công!";
+            return View();
+        }
 
         // ======================= QUÊN MẬT KHẨU =======================
         [HttpGet]

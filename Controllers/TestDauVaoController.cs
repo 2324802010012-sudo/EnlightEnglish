@@ -76,6 +76,48 @@ namespace EnlightEnglishCenter.Controllers
             TempData["Success"] = "✅ Đăng ký Test đầu vào thành công! Vui lòng chờ Admin duyệt.";
             return RedirectToAction("Index", "HocVien");
         }
+        // ======================================================
+        // Xử lý form Đăng ký Test đầu vào (POST)
+        // ======================================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DangKyTest(TestDangKyViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            int? maHocVien = HttpContext.Session.GetInt32("MaNguoiDung");
+            if (maHocVien == null)
+            {
+                TempData["Error"] = "⚠️ Bạn cần đăng nhập trước khi đăng ký Test đầu vào.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Kiểm tra học viên đã đăng ký test chưa
+            var testCu = _context.TestDauVaos.FirstOrDefault(t => t.MaHocVien == maHocVien);
+            if (testCu != null)
+            {
+                TempData["Error"] = "⚠️ Bạn đã đăng ký Test đầu vào rồi!";
+                return RedirectToAction("Index", "HocVien");
+            }
+
+            // Tạo bản ghi mới
+            var test = new TestDauVao
+            {
+                MaHocVien = maHocVien.Value,
+                KhoaHocDeXuat = model.KhoaHocDeXuat,
+                NgayTest = DateTime.Now,
+                TrangThai = "Chờ xác nhận"
+            };
+
+            _context.TestDauVaos.Add(test);
+            _context.SaveChanges();
+
+            TempData["Success"] = "✅ Đăng ký Test đầu vào thành công! Vui lòng chờ Admin duyệt.";
+            return RedirectToAction("Index", "HocVien");
+        }
 
         // ======================================================
         // 3️⃣ Admin xem danh sách và duyệt Test

@@ -1,21 +1,27 @@
 ﻿@model IEnumerable<EnlightEnglishCenter.Models.KhoaHoc>
 
 <div class="container py-5">
-    <h2 class="text-center text-primary fw-bold mb-4">Đăng ký Test đầu vào</h2>
-    <p class="text-center text-muted mb-5">Chọn khóa học bạn muốn kiểm tra năng lực 👇</p>
+    <h2 class="text-center text-primary fw-bold mb-4">
+        Đăng ký Test đầu vào
+    </h2>
+
+    <p class="text-center text-muted mb-5">
+        Chọn khóa học bạn muốn kiểm tra năng lực 👇
+    </p>
 
     <div class="row g-4 justify-content-center">
         @foreach (var k in Model)
         {
             <div class="col-md-4">
-                <div class="card border-0 shadow-sm rounded-4">
+                <div class="card border-0 sAhadow-sm rounded-4 h-100">
                     <div class="card-body text-center">
-                        <h5 class="fw-bold">@k.TenKhoaHoc</h5>
+                        <h5 class="fw-bold text-dark">@k.TenKhoaHoc</h5>
                         <p class="text-muted">@k.MoTa</p>
-                        <form asp-action="DangKy" method="post">
+
+                        <form asp-action="DangKy" method="get">
                             <input type="hidden" name="maKhoaHoc" value="@k.MaKhoaHoc" />
-                            <button type="submit" class="btn btn-primary rounded-pill px-4">
-                                Đăng ký Test
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 mt-2">
+                                <i class="fa-solid fa-pen-to-square me-1"></i> Đăng ký Test
                             </button>
                         </form>
                     </div>
@@ -23,4 +29,18 @@
             </div>
         }
     </div>
-</div>
+
+    <!-- Hiển thị thông báo -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success text-center mt-4">
+            @TempData["Success"]
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger text-center mt-4">
+            @TempData["Error"]
+        </div>
+    }
+

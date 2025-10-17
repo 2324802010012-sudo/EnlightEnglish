@@ -1,8 +1,39 @@
 ﻿@model EnlightEnglishCenter.Models.NguoiDung
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = "Hồ sơ cá nhân";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // 🔹 Lấy vai trò từ Session
+    var role = HttpContextAccessor.HttpContext?.Session.GetString("VaiTro") ?? "";
+    string url = "#";
+    string btnColor = "btn-outline-primary";
+
+    if (role == "Kế toán")
+    {
+        url = Url.Action("Index", "KeToan");
+        btnColor = "btn-outline-success";
+    }
+    else if (role == "Lễ tân")
+    {
+        url = Url.Action("Index", "LeTan");
+        btnColor = "btn-outline-warning";
+    }
+    else if (role == "Học viên")
+    {
+        url = Url.Action("Index", "HocVien");
+    }
+    else if (role == "Admin")
+    {
+        url = Url.Action("Index", "Admin");
+        btnColor = "btn-outline-danger";
+    }
+    else
+    {
+        url = Url.Action("Index", "Home");
+    }
 }
 
 <div class="container mt-5">
@@ -26,7 +57,9 @@
             </div>
 
             <hr />
-            <h5 class="text-primary mt-4"><i class="fa-solid fa-id-badge me-2"></i>Thông tin tài khoản</h5>
+            <h5 class="text-primary mt-4">
+                <i class="fa-solid fa-id-badge me-2"></i>Thông tin tài khoản
+            </h5>
 
             <p><b>🔑 Tên đăng nhập:</b> @Model.TenDangNhap</p>
             <p><b>🧩 Vai trò:</b> @(Model.MaVaiTroNavigation?.TenVaiTro ?? "Không xác định")</p>
@@ -47,8 +80,8 @@
             </p>
 
             <div class="text-center mt-4">
-                <a href="/HocVien" class="btn btn-outline-primary me-2">
-                    <i class="fa-solid fa-arrow-left me-1"></i> Quay lại trang học viên
+                <a href="@url" class="btn @btnColor me-2">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Quay lại trang @role
                 </a>
                 <a href="/Account/EditProfile" class="btn btn-success me-2">
                     <i class="fa-solid fa-pen-to-square me-1"></i> Chỉnh sửa hồ sơ
