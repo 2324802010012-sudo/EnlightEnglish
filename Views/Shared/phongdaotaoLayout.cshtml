@@ -1,0 +1,228 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Trung tâm Anh ngữ</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/phongdaotao.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+</head>
+<body class="bg-light">
+
+    <!-- HEADER ====================================================================================================================-->
+    <header class="bg-primary text-white py-3 shadow-sm sticky-top" id="mainHeader">
+        <div class="container-fluid px-5 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <img src="~/images/logo.png" alt="Logo" style="height:50px" class="me-3" />
+                <div>
+                    <h4 class="mb-0 fw-bold text-uppercase">PHÒNG ĐÀO TẠO</h4>
+                    <h6 class="mb-0">Trung tâm Anh ngữ Enlight</h6>
+                </div>
+            </div>
+            <form class="d-flex" method="get" action="#">
+                <input type="text" class="form-control form-control-sm me-2" placeholder="Tìm kiếm..." />
+                <button class="btn btn-light btn-sm"><i class="bi bi-search"></i></button>
+            </form>
+        </div>
+
+        <script>
+            // 🧠 Khi cuộn xuống, làm header mờ dần
+            window.addEventListener('scroll', function () {
+                const header = document.getElementById('mainHeader');
+                if (window.scrollY > 50) {
+                    header.classList.add('faded');
+                } else {
+                    header.classList.remove('faded');
+                }
+            });
+
+            // ✅ Tự động thêm khoảng trống đúng bằng chiều cao header (đã giảm bớt)
+            window.addEventListener('load', adjustMainPadding);
+            window.addEventListener('resize', adjustMainPadding);
+
+            function adjustMainPadding() {
+                const header = document.getElementById('mainHeader');
+                const main = document.querySelector('main');
+                if (header && main) {
+                    // 🧩 Giảm bớt 30px so với chiều cao header thật
+                    main.style.paddingTop = (header.offsetHeight - 70000) + 'px';
+                }
+            }
+        </script>
+
+        <nav class="navbar navbar-expand-sm navbar-dark bg-primary border-top border-light mt-3">
+            <div class="container-fluid px-5">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link fw-semibold" href="/">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold" href="#">Giới thiệu</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold" href="/TrainingRoom">Phòng học</a></li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#tin-tuc">Tin tức</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="#footer">Liên hệ</a>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle fw-semibold" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i>Người dùng
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="/Teacher">
+                                    <i class="bi bi-mortarboard-fill text-primary me-2"></i> Giáo viên
+                                </a>
+
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="/Student">
+                                    <i class="bi bi-person-badge-fill text-success me-2"></i> Học viên
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- BODY ====================================================================================================================-->
+    <main class="container-fluid px-5 my-4" style="padding-top: 6px;">
+        <div class="row gx-4">
+            <!--============================ LEFT MENU ======================= -->
+            <aside class="col-lg-2 col-md-3 mb-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white fw-semibold py-2">
+                        <i class="bi bi-list"></i> Danh mục
+                    </div>
+                    <ul class="list-group list-group-flush small">
+                        <li class="list-group-item"><i class="bi bi-calendar me-2"></i>Thời khóa biểu</li>
+                        <li class="list-group-item"><i class="bi bi-clock me-2"></i>Lịch công tác</li>
+                        <li class="list-group-item"><i class="bi bi-folder2 me-2"></i>Tài nguyên học tập</li>
+                        <li class="list-group-item"><i class="bi bi-clipboard-check me-2"></i>Trắc nghiệm</li>
+                        <li class="list-group-item">
+                            <a href="/TrainingRoom/Create" class="text-decoration-none text-dark">
+                                <i class="bi bi-plus-square me-2"></i>Thêm phòng
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+            <script>
+                // 🧠 Khi cuộn xuống >50px, thêm class 'scrolled' để đổi màu header
+                window.addEventListener('scroll', function () {
+                    const header = document.getElementById('mainHeader');
+                    if (window.scrollY > 50) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
+                });
+            </script>
+
+
+            <!-- CENTER CONTENT  ====================================================================================================================-->
+            <section class="col-lg-8 col-md-9 mb-3">
+                @RenderBody()
+            </section>
+
+            <!-- RIGHT COLUMN ==================================================================================================================== -->
+            <aside class="col-lg-2 mb-3">
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-header bg-primary text-white fw-semibold py-2">Tin tiêu điểm</div>
+                    <div class="list-group list-group-flush small">
+                        <a href="#" class="list-group-item list-group-item-action">Các khóa học mới sắp khai giảng</a>
+                        <a href="#" class="list-group-item list-group-item-action">Giáo viên xuất sắc tháng 10</a>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white fw-semibold py-2">Tin mới nhất</div>
+                    <div class="list-group list-group-flush small">
+                        <a href="#" class="list-group-item list-group-item-action">Cập nhật cơ sở vật chất phòng học</a>
+                        <a href="#" class="list-group-item list-group-item-action">Lịch khai giảng tuần tới</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- FOOTER ==================================================================================================================== -->
+    <!-- Footer -->
+    <!-- ========== FOOTER ENLIGHT ========== -->
+    <footer class="footer text-white pt-5 pb-3 mt-5">
+        <div class="container">
+            <div class="row gy-4">
+                <!-- Cột 1: Giới thiệu -->
+                <div class="col-md-4">
+                    <h4 class="fw-bold text-uppercase mb-3">ENLIGHT English Center</h4>
+                    <p class="small">
+                        Trung tâm Anh ngữ ENLIGHT là nền tảng đào tạo tiếng Anh trực tuyến uy tín, giúp hàng nghìn học viên trên toàn quốc
+                        đạt chứng chỉ quốc tế như <b>IELTS, TOEIC và Cambridge</b>. Với đội ngũ giảng viên giàu kinh nghiệm và lộ trình học linh hoạt,
+                        ENLIGHT giúp bạn <b>tự tin chinh phục tiếng Anh – mọi lúc, mọi nơi 🌍</b>.
+                    </p>
+                </div>
+
+                <!-- Cột 2: Liên hệ -->
+                <div class="col-md-4">
+                    <h5 class="fw-bold text-uppercase mb-3">Liên hệ</h5>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-geo-alt-fill text-info me-2"></i> 123 Nguyễn Văn Cừ, TP. Thủ Dầu Một, Bình Dương</li>
+                        <li><i class="bi bi-telephone-fill text-info me-2"></i> 0927 040 630</li>
+                        <li><i class="bi bi-envelope-fill text-info me-2"></i> enlightcenter@gmail.com</li>
+                        <li><i class="bi bi-clock-fill text-info me-2"></i> Thứ 2 – Chủ nhật: 7h30 - 21h00</li>
+                    </ul>
+                </div>
+
+                <!-- Cột 3: Mạng xã hội -->
+                <div class="col-md-4">
+                    <h5 class="fw-bold text-uppercase mb-3">Kết nối với chúng tôi</h5>
+                    <div class="d-flex gap-3 justify-content-md-start justify-content-center mb-3">
+                        <a href="https://www.facebook.com" target="_blank" class="social-icon"><i class="bi bi-facebook"></i></a>
+                        <a href="https://zalo.me" target="_blank" class="social-icon"><i class="bi bi-chat-dots-fill"></i></a>
+                        <a href="https://www.youtube.com" target="_blank" class="social-icon"><i class="bi bi-youtube"></i></a>
+                        <a href="https://www.instagram.com" target="_blank" class="social-icon"><i class="bi bi-instagram"></i></a>
+                    </div>
+
+                    <img src="~/WebTTImages/lobct.png"
+                         alt="Đã thông báo Bộ Công Thương"
+                         width="160" height="auto"
+                         class="rounded shadow-sm border border-light" />
+                </div>
+            </div>
+
+            <hr class="border-light my-4">
+
+            <div class="text-center small">
+                © @DateTime.Now.Year <b>ENLIGHT English Center</b> | Thiết kế bởi <span class="text-info">Nhóm 13</span>.
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+
+    <script>
+        window.addEventListener("scroll", () => {
+            const footer = document.querySelector(".footer");
+            if (!footer) return;
+
+            const rect = footer.getBoundingClientRect();
+            const isVisible = rect.top < window.innerHeight;
+
+            if (isVisible) footer.classList.add("visible");
+        });
+
+    </script>
+
+</body>
+</html>
