@@ -16,16 +16,28 @@
     <!-- HEADER ====================================================================================================================-->
     <header class="bg-primary text-white py-3 shadow-sm sticky-top" id="mainHeader">
         <div class="container-fluid px-5 d-flex align-items-center justify-content-between">
+            <!-- Logo + Tiêu đề -->
             <div class="d-flex align-items-center">
-                <img src="~/images/logo.png" alt="Logo" style="height:50px" class="me-3" />
-                <div>
-                    <h4 class="mb-0 fw-bold text-uppercase">PHÒNG ĐÀO TẠO</h4>
-                    <h6 class="mb-0">Trung tâm Anh ngữ Enlight</h6>
+                <a class="navbar-brand fw-bold d-flex align-items-center text-decoration-none" href="/">
+                    <!-- 📘 Icon người đọc sách -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="me-2" viewBox="0 0 16 16">
+                        <path d="M8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                        <path d="M2 6.5A1.5 1.5 0 0 0 .5 8v7a1 1 0 0 0 1 1h6V6.5H2zm12 0H8V16h6.5a1 1 0 0 0 1-1V8A1.5 1.5 0 0 0 14 6.5z" />
+                    </svg>
+                    <span class="text-white fs-5 fw-bold">ENLIGHT</span>
+                </a>
+
+                <!-- Dòng phụ -->
+                <div class="ms-3 lh-sm">
+                    <h4 class="mb-0 fw-bold text-uppercase text-white" style="font-size: 1.1rem;">PHÒNG ĐÀO TẠO</h4>
+                    <h6 class="mb-0 text-light" style="font-size: 0.85rem;">Trung tâm Anh ngữ Online</h6>
                 </div>
             </div>
+
+            <!-- Ô tìm kiếm -->
             <form class="d-flex" method="get" action="#">
-                <input type="text" class="form-control form-control-sm me-2" placeholder="Tìm kiếm..." />
-                <button class="btn btn-light btn-sm"><i class="bi bi-search"></i></button>
+                <input type="text" class="form-control form-control-sm me-2 rounded-pill" placeholder="Tìm kiếm..." />
+                <button class="btn btn-light btn-sm rounded-circle"><i class="bi bi-search"></i></button>
             </form>
         </div>
 
@@ -58,10 +70,8 @@
                 <ul class="navbar-nav mx-auto">
 
                     <li class="nav-item"><a class="nav-link fw-semibold" href="/PhongDaoTao">Trang chủ</a></li>
-                    <li class="nav-item"><a class="nav-link fw-semibold" href="#">Giới thiệu</a></li>
                     <li class="nav-item"><a class="nav-link fw-semibold" href="/TrainingRoom">Phòng học</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#tin-tuc">Tin tức</a></li>
-                    <li class="nav-item"><a class="nav-link fw-semibold" href="#footer">Liên hệ</a></li>
+
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle fw-semibold" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle me-1"></i>Người dùng
