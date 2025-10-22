@@ -40,7 +40,7 @@
                 }
             });
 
-            // ✅ Tự động thêm khoảng trống đúng bằng chiều cao header (đã giảm bớt)
+            // ✅ Tự động thêm khoảng trống đúng bằng chiều cao header
             window.addEventListener('load', adjustMainPadding);
             window.addEventListener('resize', adjustMainPadding);
 
@@ -48,8 +48,7 @@
                 const header = document.getElementById('mainHeader');
                 const main = document.querySelector('main');
                 if (header && main) {
-                    // 🧩 Giảm bớt 30px so với chiều cao header thật
-                    main.style.paddingTop = (header.offsetHeight - 70000) + 'px';
+                    main.style.paddingTop = (header.offsetHeight + 10) + 'px';
                 }
             }
         </script>
@@ -57,18 +56,12 @@
         <nav class="navbar navbar-expand-sm navbar-dark bg-primary border-top border-light mt-3">
             <div class="container-fluid px-5">
                 <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link fw-semibold" href="/">Trang chủ</a></li>
+
+                    <li class="nav-item"><a class="nav-link fw-semibold" href="/PhongDaoTao">Trang chủ</a></li>
                     <li class="nav-item"><a class="nav-link fw-semibold" href="#">Giới thiệu</a></li>
                     <li class="nav-item"><a class="nav-link fw-semibold" href="/TrainingRoom">Phòng học</a></li>
-
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#tin-tuc">Tin tức</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link fw-semibold" href="#footer">Liên hệ</a>
-                    </li>
-
+                    <li class="nav-item"><a class="nav-link text-white" href="#tin-tuc">Tin tức</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold" href="#footer">Liên hệ</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle fw-semibold" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle me-1"></i>Người dùng
@@ -95,27 +88,9 @@
     </header>
 
     <!-- BODY ====================================================================================================================-->
-    <main class="container-fluid px-5 my-4" style="padding-top: 6px;">
+    <main class="container-fluid px-5 my-4">
         <div class="row gx-4">
-            <!--============================ LEFT MENU ======================= -->
-            <aside class="col-lg-2 col-md-3 mb-3">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-primary text-white fw-semibold py-2">
-                        <i class="bi bi-list"></i> Danh mục
-                    </div>
-                    <ul class="list-group list-group-flush small">
-                        <li class="list-group-item"><i class="bi bi-calendar me-2"></i>Thời khóa biểu</li>
-                        <li class="list-group-item"><i class="bi bi-clock me-2"></i>Lịch công tác</li>
-                        <li class="list-group-item"><i class="bi bi-folder2 me-2"></i>Tài nguyên học tập</li>
-                        <li class="list-group-item"><i class="bi bi-clipboard-check me-2"></i>Trắc nghiệm</li>
-                        <li class="list-group-item">
-                            <a href="/TrainingRoom/Create" class="text-decoration-none text-dark">
-                                <i class="bi bi-plus-square me-2"></i>Thêm phòng
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </aside>
+
             <script>
                 // 🧠 Khi cuộn xuống >50px, thêm class 'scrolled' để đổi màu header
                 window.addEventListener('scroll', function () {
@@ -128,36 +103,19 @@
                 });
             </script>
 
-
-            <!-- CENTER CONTENT  ====================================================================================================================-->
-            <section class="col-lg-8 col-md-9 mb-3">
+            <!-- MAIN CONTENT ===================================================================================================== -->
+            <section class="col-12 mb-3">
                 @RenderBody()
             </section>
 
-            <!-- RIGHT COLUMN ==================================================================================================================== -->
-            <aside class="col-lg-2 mb-3">
-                <div class="card border-0 shadow-sm mb-3">
-                    <div class="card-header bg-primary text-white fw-semibold py-2">Tin tiêu điểm</div>
-                    <div class="list-group list-group-flush small">
-                        <a href="#" class="list-group-item list-group-item-action">Các khóa học mới sắp khai giảng</a>
-                        <a href="#" class="list-group-item list-group-item-action">Giáo viên xuất sắc tháng 10</a>
-                    </div>
-                </div>
-
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-primary text-white fw-semibold py-2">Tin mới nhất</div>
-                    <div class="list-group list-group-flush small">
-                        <a href="#" class="list-group-item list-group-item-action">Cập nhật cơ sở vật chất phòng học</a>
-                        <a href="#" class="list-group-item list-group-item-action">Lịch khai giảng tuần tới</a>
-                    </div>
-                </div>
-            </aside>
+        
         </div>
+
+
     </main>
 
     <!-- FOOTER ==================================================================================================================== -->
-    <!-- Footer -->
-    <!-- ========== FOOTER ENLIGHT ========== -->
+    
     <footer class="footer text-white pt-5 pb-3 mt-5">
         <div class="container">
             <div class="row gy-4">
@@ -194,7 +152,7 @@
 
                     <img src="~/WebTTImages/lobct.png"
                          alt="Đã thông báo Bộ Công Thương"
-                         width="160" height="auto"
+                         width="160"
                          class="rounded shadow-sm border border-light" />
                 </div>
             </div>
@@ -212,6 +170,7 @@
     @RenderSection("Scripts", required: false)
 
     <script>
+        // Hiệu ứng hiện footer khi cuộn xuống
         window.addEventListener("scroll", () => {
             const footer = document.querySelector(".footer");
             if (!footer) return;

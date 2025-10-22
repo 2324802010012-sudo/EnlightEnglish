@@ -1,0 +1,152 @@
+﻿@{
+    ViewData["Title"] = "Chương trình đào tạo";
+    Layout = "~/Views/Shared/PhongDaoTaoLayout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+<link rel="stylesheet" href="~/css/phongdaotao.css" />
+
+<!-- 🌟 Banner giới thiệu -->
+<section class="training-hero text-center text-white py-5 mb-5">
+    <div class="container">
+        <h1 class="fw-bold display-5">Chương Trình Đào Tạo</h1>
+        <p class="lead mt-3">Khám phá lộ trình học phù hợp – từ cơ bản đến chuyên nghiệp!</p>
+
+        <!-- 🔘 Nút dẫn đến trang Lộ trình học -->
+        <a href="@Url.Action("Index", "LoTrinhHoc")" class="btn btn-light btn-lg mt-4 px-4 shadow-sm fw-semibold">
+            <i class="bi bi-diagram-3-fill me-2"></i> Xem Lộ Trình Học
+        </a>
+    </div>
+</section>
+
+
+<div class="container pb-5">
+    <div class="row g-4">
+            
+        <!-- ====== LỘ TRÌNH 1: GIAO TIẾP ====== -->
+        <div class="col-12 mb-5">
+            <div class="route-header border-bottom border-danger mb-4 pb-2">
+                <h3 class="fw-bold text-danger">
+                    <i class="bi bi-chat-dots-fill me-2"></i> Lộ trình Tiếng Anh Giao Tiếp
+                </h3>
+                <p class="text-muted">
+                    Từ phản xạ giao tiếp cơ bản tới khả năng nói chuyện chuyên nghiệp trong môi trường quốc tế.
+                </p>
+            </div>
+
+            <div class="timeline d-flex flex-wrap justify-center gap-4">
+                <div class="timeline-step bg-light">
+                    <h5>Pre-Communication</h5>
+                    <p>Nền tảng từ vựng, phát âm & cấu trúc cơ bản.</p>
+                </div>
+                <div class="timeline-step bg-white shadow-sm">
+                    <h5>Basic Speaking</h5>
+                    <p>Giao tiếp tình huống hằng ngày, phản xạ nhanh.</p>
+                </div>
+                <div class="timeline-step bg-light">
+                    <h5>Intermediate Conversation</h5>
+                    <p>Tự tin thảo luận chủ đề quen thuộc.</p>
+                </div>
+                <div class="timeline-step bg-white shadow-sm">
+                    <h5>Advanced Communication</h5>
+                    <p>Thuyết trình, đàm phán tiếng Anh.</p>
+                </div>
+                <div class="timeline-step pro bg-danger text-white">
+                    <h5>Pro Communication</h5>
+                    <p>Giao tiếp chuyên nghiệp – công việc & học thuật.</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="@Url.Action("Index", "LichKhaiGiang", new { khoa = "GiaoTiep" })"
+                   class="btn btn-outline-danger rounded-pill px-4">
+                    <i class="bi bi-calendar2-week me-2"></i> Xem lịch khai giảng
+                </a>
+            </div>
+
+        </div>
+
+        <!-- ====== LỘ TRÌNH 2: TOEIC ====== -->
+        <div class="col-12 mb-5">
+            <div class="route-header border-bottom border-warning mb-4 pb-2">
+                <h3 class="fw-bold text-warning">
+                    <i class="bi bi-briefcase-fill me-2"></i> Lộ trình TOEIC Career Path
+                </h3>
+                <p class="text-muted">
+                    Thi chứng chỉ TOEIC – mở rộng cơ hội nghề nghiệp quốc tế.
+                </p>
+            </div>
+
+            <div class="timeline d-flex flex-wrap justify-center gap-4">
+                <div class="timeline-step bg-light">
+                    <h5>Pre-TOEIC</h5>
+                    <p>Làm quen dạng đề & kỹ năng nghe-đọc cơ bản.</p>
+                </div>
+                <div class="timeline-step bg-white shadow-sm">
+                    <h5>TOEIC 450+</h5>
+                    <p>Củng cố ngữ pháp & kỹ năng.</p>
+                </div>
+                <div class="timeline-step bg-light">
+                    <h5>TOEIC 650+</h5>
+                    <p>Luyện đề chuyên sâu – chiến lược.</p>
+                </div>
+                <div class="timeline-step pro bg-warning text-dark">
+                    <h5>TOEIC 800+</h5>
+                    <p>Phản xạ nhanh, đạt điểm cao – chuyên nghiệp.</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="@Url.Action("Index", "LichKhaiGiang", new { khoa = "GiaoTiep" })"
+                   class="btn btn-outline-danger rounded-pill px-4">
+                    <i class="bi bi-calendar2-week me-2"></i> Xem lịch khai giảng
+                </a>
+            </div>
+
+        </div>
+
+        <!-- ====== LỘ TRÌNH 3: IELTS ====== -->
+        <div class="col-12 mb-5">
+            <div class="route-header border-bottom border-success mb-4 pb-2">
+                <h3 class="fw-bold text-success">
+                    <i class="bi bi-globe-americas me-2"></i> Lộ trình IELTS Academic Path
+                </h3>
+                <p class="text-muted">
+                    Lộ trình chuẩn quốc tế – chinh phục IELTS từ 4.0 tới 7.5+.
+                </p>
+            </div>
+
+            <div class="timeline d-flex flex-wrap justify-center gap-4">
+                <div class="timeline-step bg-light">
+                    <h5>Pre-IELTS</h5>
+                    <p>Xây nền tảng ngữ pháp, kỹ năng nghe-nói.</p>
+                </div>
+                <div class="timeline-step bg-white shadow-sm">
+                    <h5>IELTS Foundation (4.0+)</h5>
+                    <p>Làm quen 4 kỹ năng & từ vựng học thuật.</p>
+                </div>
+                <div class="timeline-step bg-light">
+                    <h5>IELTS Intermediate (5.5+)</h5>
+                    <p>Chiến lược làm bài từng kỹ năng.</p>
+                </div>
+                <div class="timeline-step bg-white shadow-sm">
+                    <h5>IELTS Advanced (6.5+)</h5>
+                    <p>Luyện đề chuyên sâu & viết luận.</p>
+                </div>
+                <div class="timeline-step pro bg-success text-white">
+                    <h5>IELTS Master (7.5+)</h5>
+                    <p>Hoàn thiện học thuật & du học/định cư.</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="@Url.Action("Index", "LichKhaiGiang", new { khoa = "GiaoTiep" })"
+                   class="btn btn-outline-danger rounded-pill px-4">
+                    <i class="bi bi-calendar2-week me-2"></i> Xem lịch khai giảng
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</div>

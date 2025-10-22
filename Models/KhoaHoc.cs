@@ -33,6 +33,8 @@ public partial class KhoaHoc
 
     public string? ChuanDauRa { get; set; }
 
+    public string? LoTrinhHoc { get; set; }
+
     [StringLength(20)]
     public string? TrangThai { get; set; }
 

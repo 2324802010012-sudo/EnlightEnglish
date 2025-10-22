@@ -1,0 +1,214 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.KhoaHoc>
+
+@{
+    ViewData["Title"] = "Chương trình đào tạo";
+    Layout = "~/Views/Shared/PhongDaoTaoLayout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+<link rel="stylesheet" href="~/css/phongdaotao.css" />
+
+<!-- 🌟 Banner -->
+<section class="training-hero text-center text-white py-5 mb-5">
+    <div class="container">
+        <h1 class="fw-bold display-5">Chương Trình Đào Tạo</h1>
+        <p class="lead mt-3">Khám phá lộ trình học phù hợp – từ cơ bản đến chuyên nghiệp!</p>
+    </div>
+    <a href="@Url.Action("Index", "ChuongTrinhDaoTao")" class="btn btn-light btn-lg mt-4 px-4 shadow-sm fw-semibold">
+        <i class="bi bi-diagram-3-fill me-2"></i> Quay lại
+    </a>
+</section>
+
+<div class="container pb-5">
+    <div class="row g-4">
+
+        <!-- GIAO TIẾP -->
+        <div class="col-12 mb-5">
+            <div class="route-header border-bottom border-danger mb-4 pb-2">
+                <h3 class="fw-bold text-danger"><i class="bi bi-chat-dots-fill me-2"></i> Lộ trình Tiếng Anh Giao Tiếp</h3>
+                <p class="text-muted">Từ phản xạ giao tiếp cơ bản tới khả năng nói chuyện chuyên nghiệp.</p>
+            </div>
+
+            <div class="timeline d-flex flex-wrap justify-content-center gap-4">
+                <div class="timeline-step bg-light"><h5>Pre-Communication</h5><p>Nền tảng từ vựng, phát âm & cấu trúc cơ bản.</p></div>
+                <div class="timeline-step bg-white shadow-sm"><h5>Basic Speaking</h5><p>Giao tiếp tình huống hằng ngày.</p></div>
+                <div class="timeline-step bg-light"><h5>Intermediate</h5><p>Tự tin nói các chủ đề quen thuộc.</p></div>
+                <div class="timeline-step bg-white shadow-sm"><h5>Advanced</h5><p>Đàm phán, thuyết trình chuyên nghiệp.</p></div>
+                <div class="timeline-step pro bg-danger text-white"><h5>Pro Communication</h5><p>Phản xạ & giao tiếp học thuật.</p></div>
+            </div>
+        </div>
+        <!-- 🔥 SƠ ĐỒ LỘ TRÌNH HỌC (GIAO TIẾP) -->
+        <section class="lotrinh-hoc text-center my-5">
+            <h4 class="fw-bold mb-4 text-danger">Sơ đồ lộ trình học từ Pre → Pro</h4>
+
+            <div class="timeline-horizontal">
+                <div class="timeline-line"></div>
+
+                <div class="timeline-node pre">
+                    <div class="circle">Pre</div>
+                    <p class="title">Pre-Communication</p>
+                    <p class="time">⏱ 6 tháng</p>
+                </div>
+
+                <div class="timeline-node basic">
+                    <div class="circle">Basic</div>
+                    <p class="title">Basic Speaking</p>
+                    <p class="time">⏱ 8 tháng</p>
+                </div>
+
+                <div class="timeline-node inter">
+                    <div class="circle">Inter</div>
+                    <p class="title">Intermediate Conversation</p>
+                    <p class="time">⏱ 10 tháng</p>
+                </div>
+
+                <div class="timeline-node adv">
+                    <div class="circle">Adv</div>
+                    <p class="title">Advanced Communication</p>
+                    <p class="time">⏱ 12 tháng</p>
+                </div>
+
+                <div class="timeline-node pro">
+                    <div class="circle">Pro</div>
+                    <p class="title">Pro Communication</p>
+                    <p class="time">⏱ 15 tháng</p>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="@Url.Action("Index", "LichKhaiGiang", new { khoa = "GiaoTiep" })"
+                   class="btn btn-outline-danger rounded-pill px-4">
+                    <i class="bi bi-calendar2-week me-2"></i> Xem lịch khai giảng
+                </a>
+            </div>
+        </section>
+
+       
+
+
+        <!-- TOEIC -->
+        <div class="col-12 mb-5">
+            <div class="route-header border-bottom border-warning mb-4 pb-2">
+                <h3 class="fw-bold text-warning"><i class="bi bi-briefcase-fill me-2"></i> Lộ trình TOEIC</h3>
+                <p class="text-muted">Tăng tốc nghề nghiệp cùng chứng chỉ TOEIC quốc tế.</p>
+            </div>
+
+            <div class="timeline d-flex flex-wrap justify-content-center gap-4">
+                <div class="timeline-step bg-light"><h5>Pre-TOEIC</h5><p>Làm quen dạng đề cơ bản.</p></div>
+                <div class="timeline-step bg-white shadow-sm"><h5>TOEIC 450+</h5><p>Củng cố ngữ pháp & nghe đọc.</p></div>
+                <div class="timeline-step bg-light"><h5>TOEIC 650+</h5><p>Luyện đề chuyên sâu & tốc độ.</p></div>
+                <div class="timeline-step pro bg-warning text-dark"><h5>TOEIC 800+</h5><p>Chiến lược đạt điểm cao.</p></div>
+            </div>
+        </div>
+        <!-- 🟢 Lộ trình Luyện thi TOEIC -->
+        <section class="lotrinh-section my-5">
+            <h3 class="fw-bold text-success text-center mb-3">
+                <i class="bi bi-clipboard2-check-fill me-2"></i> Lộ trình Luyện thi TOEIC
+            </h3>
+            <p class="text-center text-muted mb-4">
+                Chuẩn bị từ nền tảng đến chinh phục điểm TOEIC 850+ với chiến lược và kỹ năng làm bài tối ưu.
+            </p>
+
+            <div class="timeline-horizontal lotrinh-toeic">
+                <div class="timeline-line"></div>
+
+                <div class="timeline-node pre">
+                    <div class="circle">Starter</div>
+                    <p class="title">TOEIC Foundation</p>
+                    <p class="time">⏱ 4 tháng</p>
+                </div>
+                <div class="timeline-node basic">
+                    <div class="circle">350+</div>
+                    <p class="title">TOEIC Basic</p>
+                    <p class="time">⏱ 5 tháng</p>
+                </div>
+                <div class="timeline-node inter">
+                    <div class="circle">550+</div>
+                    <p class="title">TOEIC Intermediate</p>
+                    <p class="time">⏱ 6 tháng</p>
+                </div>
+                <div class="timeline-node adv">
+                    <div class="circle">750+</div>
+                    <p class="title">TOEIC Advanced</p>
+                    <p class="time">⏱ 7 tháng</p>
+                </div>
+                <div class="timeline-node pro">
+                    <div class="circle">850+</div>
+                    <p class="title">TOEIC Master</p>
+                    <p class="time">⏱ 8 tháng</p>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="@Url.Action("Index", "LichKhaiGiang", new { khoa = "GiaoTiep" })"
+                   class="btn btn-outline-danger rounded-pill px-4">
+                    <i class="bi bi-calendar2-week me-2"></i> Xem lịch khai giảng
+                </a>
+            </div>
+        </section>
+
+
+
+        <!-- IELTS -->
+        <div class="col-12">
+            <div class="route-header border-bottom border-success mb-4 pb-2">
+                <h3 class="fw-bold text-success"><i class="bi bi-globe-americas me-2"></i> Lộ trình IELTS</h3>
+                <p class="text-muted">Từ nền tảng đến 7.5+ – hành trình chinh phục IELTS!</p>
+            </div>
+
+            <div class="timeline d-flex flex-wrap justify-content-center gap-4">
+                <div class="timeline-step bg-light"><h5>Pre-IELTS</h5><p>Nền tảng ngữ pháp, nghe nói cơ bản.</p></div>
+                <div class="timeline-step bg-white shadow-sm"><h5>IELTS Foundation (4.0+)</h5><p>Làm quen 4 kỹ năng.</p></div>
+                <div class="timeline-step bg-light"><h5>IELTS Intermediate (5.5+)</h5><p>Chiến lược làm bài.</p></div>
+                <div class="timeline-step bg-white shadow-sm"><h5>IELTS Advanced (6.5+)</h5><p>Luyện đề chuyên sâu.</p></div>
+                <div class="timeline-step pro bg-success text-white"><h5>IELTS Master (7.5+)</h5><p>Hoàn thiện học thuật & du học.</p></div>
+            </div>
+        </div>
+
+        <!-- 🔵 Lộ trình Luyện thi IELTS -->
+        <section class="lotrinh-section my-5">
+            <h3 class="fw-bold text-primary text-center mb-3">
+                <i class="bi bi-globe2 me-2"></i> Lộ trình Luyện thi IELTS
+            </h3>
+            <p class="text-center text-muted mb-4">
+                Xây dựng nền tảng, củng cố kỹ năng và chinh phục IELTS 7.5+ cùng giáo trình chuẩn quốc tế.
+            </p>
+
+            <div class="timeline-horizontal lotrinh-ielts">
+                <div class="timeline-line"></div>
+
+                <div class="timeline-node pre">
+                    <div class="circle">Foundation</div>
+                    <p class="title">IELTS Pre</p>
+                    <p class="time">⏱ 4 tháng</p>
+                </div>
+                <div class="timeline-node basic">
+                    <div class="circle">4.5+</div>
+                    <p class="title">IELTS Basic</p>
+                    <p class="time">⏱ 6 tháng</p>
+                </div>
+                <div class="timeline-node inter">
+                    <div class="circle">5.5+</div>
+                    <p class="title">IELTS Intermediate</p>
+                    <p class="time">⏱ 8 tháng</p>
+                </div>
+                <div class="timeline-node adv">
+                    <div class="circle">6.5+</div>
+                    <p class="title">IELTS Advanced</p>
+                    <p class="time">⏱ 10 tháng</p>
+                </div>
+                <div class="timeline-node pro">
+                    <div class="circle">7.5+</div>
+                    <p class="title">IELTS Master</p>
+                    <p class="time">⏱ 12 tháng</p>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="@Url.Action("Index", "LichKhaiGiang", new { khoa = "GiaoTiep" })"
+                   class="btn btn-outline-danger rounded-pill px-4">
+                    <i class="bi bi-calendar2-week me-2"></i> Xem lịch khai giảng
+                </a>
+            </div>
+        </section>
+
+
+    </div>
+</div>

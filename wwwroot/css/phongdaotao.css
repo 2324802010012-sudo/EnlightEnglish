@@ -349,3 +349,293 @@ footer {
     box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     transition: all 0.3s ease;
 }
+
+/*Chuong trinh dao tao*/
+.training-hero {
+    background: linear-gradient(120deg, #0052d4, #4364f7);
+    border-radius: 0 0 40px 40px;
+}
+
+.timeline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.timeline-step {
+    flex: 1 1 180px;
+    min-width: 180px;
+    max-width: 200px;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+    .timeline-step:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .timeline-step.pro {
+        color: #fff;
+        font-weight: bold;
+    }
+
+/* Lộ trình học*/
+.training-hero {
+    background: linear-gradient(120deg, #0052d4, #4364f7);
+    border-radius: 0 0 40px 40px;
+}
+
+.timeline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.timeline-step {
+    flex: 1 1 180px;
+    min-width: 180px;
+    max-width: 200px;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.timeline-step:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-step.pro {
+    color: #fff;
+    font-weight: bold;
+}
+
+/* ===== 🎯 SƠ ĐỒ LỘ TRÌNH NGANG ===== */
+.timeline-horizontal {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 50px auto;
+    width: 90%;
+    max-width: 1200px;
+    padding-top: 50px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+
+/* Đường kẻ nối giữa các mốc */
+.timeline-line {
+    position: absolute;
+    top: 85px;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(to right, #00b4db, #0083b0, #ff5f6d, #ffc371);
+    border-radius: 3px;
+    z-index: 1;
+}
+
+/* Mỗi mốc trên timeline */
+.timeline-node {
+    position: relative;
+    text-align: center;
+    z-index: 2;
+    min-width: 180px;
+}
+
+    .timeline-node .circle {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 15px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #fff;
+        font-size: 18px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+
+    /* Màu gradient từng cấp */
+    .timeline-node.pre .circle {
+        background: linear-gradient(135deg, #6dd5ed, #2193b0);
+    }
+
+    .timeline-node.basic .circle {
+        background: linear-gradient(135deg, #56ccf2, #2f80ed);
+    }
+
+    .timeline-node.inter .circle {
+        background: linear-gradient(135deg, #f2994a, #f2c94c);
+    }
+
+    .timeline-node.adv .circle {
+        background: linear-gradient(135deg, #ff512f, #dd2476);
+    }
+
+    .timeline-node.pro .circle {
+        background: linear-gradient(135deg, #00b09b, #96c93d);
+    }
+
+    /* Hover hiệu ứng */
+    .timeline-node:hover .circle {
+        transform: scale(1.15);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+
+    /* Tên & thời gian */
+    .timeline-node .title {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+    }
+
+    .timeline-node .time {
+        color: #777;
+        font-size: 0.9rem;
+    }
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .timeline-horizontal {
+        flex-direction: column;
+        align-items: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .timeline-line {
+        top: auto;
+        left: 50%;
+        width: 6px;
+        height: 90%;
+        transform: translateX(-50%);
+        background: linear-gradient(to bottom, #00b4db, #ff5f6d);
+    }
+
+    .timeline-node {
+        margin-bottom: 40px;
+    }
+}
+/* ================================
+   🌟 SƠ ĐỒ LỘ TRÌNH HỌC NGANG
+   ================================ */
+.timeline-horizontal {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 60px 0;
+    margin-top: 40px;
+}
+
+    .timeline-horizontal::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .timeline-horizontal::-webkit-scrollbar-thumb {
+        background-color: rgba(0,0,0,0.2);
+        border-radius: 4px;
+    }
+
+.timeline-line {
+    position: absolute;
+    top: 90px;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: #ccc;
+    z-index: 1;
+}
+
+.timeline-node {
+    position: relative;
+    text-align: center;
+    flex: 1 1 200px;
+    z-index: 2;
+    margin: 0 20px;
+}
+
+    .timeline-node .circle {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 10px;
+        border-radius: 50%;
+        background: #ddd;
+        color: #fff;
+        font-weight: bold;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .timeline-node:hover .circle {
+        transform: scale(1.15);
+    }
+
+    .timeline-node .title {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .timeline-node .time {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+/* 🎨 Màu sắc cho từng lộ trình */
+.lotrinh-hoc .timeline-line {
+    background: linear-gradient(to right, #ff6b6b, #feca57);
+}
+
+.lotrinh-hoc .circle {
+    background: linear-gradient(135deg, #ff6b6b, #feca57);
+}
+
+.lotrinh-toeic .timeline-line {
+    background: linear-gradient(to right, #10ac84, #1dd1a1);
+}
+
+.lotrinh-toeic .circle {
+    background: linear-gradient(135deg, #1dd1a1, #10ac84);
+}
+
+.lotrinh-ielts .timeline-line {
+    background: linear-gradient(to right, #5f27cd, #54a0ff);
+}
+
+.lotrinh-ielts .circle {
+    background: linear-gradient(135deg, #341f97, #5f27cd);
+}
+
+/* Nổi bật PRO */
+.timeline-node.pro .circle {
+    background: #dc3545 !important;
+    box-shadow: 0 0 25px rgba(220,53,69,0.6);
+}
+
+.btn-danger {
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+    .btn-danger:hover {
+        background-color: #c82333;
+        transform: translateY(-2px);
+    }
