@@ -17,6 +17,8 @@ namespace EnlightEnglishCenter.Data
         public DbSet<VaiTro> VaiTros { get; set; }
         public DbSet<KhoaHoc> KhoaHocs { get; set; }
         public DbSet<LopHoc> LopHocs { get; set; }
+        public DbSet<HocVien> HocViens { get; set; }
+        public DbSet<LienHeKhachHang> LienHeKhachHang { get; set; }
         public DbSet<TestDauVao> TestDauVaos { get; set; }
         public DbSet<HocPhi> HocPhis { get; set; }
         public DbSet<LuongGiaoVien> LuongGiaoViens { get; set; }
@@ -48,7 +50,12 @@ namespace EnlightEnglishCenter.Data
                 .HasForeignKey(u => u.MaVaiTro)
                 .OnDelete(DeleteBehavior.Restrict);
 
-           
+            modelBuilder.Entity<HocVien>()
+                .HasKey(h => h.MaHocVien);
+
+            modelBuilder.Entity<DkHocVienLopHoc>()
+                .HasKey(d => new { d.MaHocVien, d.MaLop });
+
 
             // 🔹 Cấu hình DiemDanh (khóa chính kép)
             modelBuilder.Entity<DiemDanh>()
@@ -83,8 +90,7 @@ namespace EnlightEnglishCenter.Data
 
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<DkHocVienLopHoc>()
-                .HasKey(d => new { d.MaHocVien, d.MaLop });
+
         }
     }
 }

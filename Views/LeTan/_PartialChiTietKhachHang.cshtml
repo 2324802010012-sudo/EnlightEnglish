@@ -1,0 +1,12 @@
+﻿@model EnlightEnglishCenter.Models.LienHeKhachHang
+
+<div>
+    <h5 class="mb-1">@Model.HoTen</h5>
+    <p class="mb-1"><i class="fa-solid fa-phone me-1"></i> @Model.DienThoai</p>
+    <p class="mb-1"><i class="fa-solid fa-envelope me-1"></i> @Model.Email</p>
+    <p class="mb-1"><strong>Trạng thái:</strong> @Model.TrangThai</p>
+    <p class="mb-1"><strong>Khóa học:</strong> @Model.KhoaHoc</p>
+    <p class="mb-1"><strong>Ngày liên hệ:</strong> @Model.NgayLienHe.ToString("dd/MM/yyyy")</p>
+    <hr />
+    <p>@Model.GhiChu</p>
+</div>

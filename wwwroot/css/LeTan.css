@@ -1,0 +1,183 @@
+﻿/* =========================
+   🎨 SIDEBAR LỄ TÂN (màu xanh tím gradient)
+   ========================= */
+.sidebar-letan {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 240px;
+    background: linear-gradient(180deg, #4a00e0, #0072ff);
+    /* #4a00e0 tím đậm, #0072ff xanh dương */
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding: 20px 0;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+    /* Logo + tiêu đề trên cùng */
+    .sidebar-letan .brand {
+        font-weight: bold;
+        font-size: 1.25rem;
+        text-align: center;
+        width: 100%;
+        color: #fff;
+        letter-spacing: 1px;
+        margin-bottom: 25px;
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+    }
+
+    /* Menu item */
+    .sidebar-letan a {
+        display: block;
+        color: #e9ecef;
+        text-decoration: none;
+        padding: 12px 25px;
+        width: 100%;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .sidebar-letan a:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding-left: 30px;
+        }
+
+    /* Icon trong menu */
+    .sidebar-letan i {
+        margin-right: 10px;
+        font-size: 1.1rem;
+    }
+
+    /* Khi chọn menu đang active */
+    .sidebar-letan a.active {
+        background: rgba(255, 255, 255, 0.25);
+        color: #fff;
+        border-left: 4px solid #ffd700; /* viền vàng nhẹ để nổi bật */
+    }
+
+/* Nội dung chính dịch sang phải */
+.main-content-letan {
+    margin-left: 240px;
+    padding: 30px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.hover-shadow {
+    transition: all 0.3s ease;
+}
+
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+/*nút sửa xóa*/
+.table td .btn {
+    min-width: 70px;
+    font-weight: 500;
+}
+
+    .table td .btn i {
+        margin-right: 4px;
+    }
+
+/*lien hệ khách hàng*/
+.nav-tabs .nav-link {
+    border: none;
+    font-weight: 600;
+    color: #555;
+    transition: all 0.3s ease;
+}
+
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        border-bottom: 3px solid #0d6efd;
+        background: #f8f9fa;
+    }
+
+.table-hover tbody tr:hover {
+    background-color: #f1f8ff;
+}
+
+.kanban-board {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+}
+
+.kanban-column {
+    flex: 1;
+    min-width: 260px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 0.75rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+    .kanban-column:hover {
+        transform: translateY(-3px);
+    }
+
+    .kanban-column h6 {
+        font-weight: 600;
+        background: linear-gradient(90deg,#198754,#20c997);
+        color: white;
+        border-radius: 8px;
+        padding: 6px 10px;
+        margin-bottom: 10px;
+    }
+
+.kanban-dropzone {
+    min-height: 200px;
+    padding: 5px;
+    border-radius: 8px;
+    background: #fff;
+    transition: background 0.2s;
+}
+
+    .kanban-dropzone.dragover {
+        background: #e9f9ef;
+        border: 2px dashed #20c997;
+    }
+
+.kanban-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    cursor: grab;
+    transition: transform 0.2s;
+}
+
+    .kanban-card:hover {
+        transform: scale(1.02);
+    }
+
+    .kanban-card .card-title {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .kanban-card .card-meta {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+.empty-column {
+    text-align: center;
+    color: #aaa;
+    padding: 1rem 0;
+}
+
+.actions .btn {
+    padding: 3px 6px;
+}

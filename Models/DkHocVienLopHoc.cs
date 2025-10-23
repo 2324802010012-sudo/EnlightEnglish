@@ -7,7 +7,10 @@ namespace EnlightEnglishCenter.Models
     [Table("DK_HocVien_LopHoc")]
     public class DkHocVienLopHoc
     {
+        [Key, Column(Order = 0)]
         public int MaHocVien { get; set; }
+
+        [Key, Column(Order = 1)]
         public int MaLop { get; set; }
 
         public DateTime? NgayDangKy { get; set; }

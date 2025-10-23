@@ -46,41 +46,18 @@
             background-color: #eef3ff;
         }
 
-        /* 🌈 Hiệu ứng chữ Nhóm 13 */
+        /* 🌈 Hiệu ứng chữ Nhóm 13 - phần thông thường */
         .gradient-text {
             font-weight: bold;
             background: linear-gradient(90deg, #00eaff, #007bff, #00eaff);
             background-size: 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-text-fill-color: transparent; /* cho webkit */
+            -webkit-background-clip: text; /* một số trình phân tích có cảnh báo nhưng trình duyệt hỗ trợ */
             animation: gradientMove 5s infinite linear, glowPulse 3s infinite ease-in-out;
         }
 
-        @@keyframes gradientMove {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        @@keyframes glowPulse {
-            0%, 100% {
-                text-shadow: 0 0 6px rgba(0, 200, 255, 0.5), 0 0 12px rgba(0, 123, 255, 0.4);
-            }
-
-            50% {
-                text-shadow: 0 0 12px rgba(0, 200, 255, 0.9), 0 0 20px rgba(0, 123, 255, 0.7);
-            }
-        }
-
         /* Footer */
+
         .footer {
             background: linear-gradient(135deg, #004aad, #0097d8);
             color: #f8f9fa;
@@ -138,6 +115,27 @@
                 opacity: 0.3;
             }
     </style>
+
+    @* Xuất keyframes bằng Html.Raw để Razor không hiểu nhầm @keyframes là directive *@
+    @Html.Raw(@"    
+    <style>
+    @keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+    }
+
+    @keyframes glowPulse {
+    0%, 100% {
+    text-shadow: 0 0 6px rgba(0, 200, 255, 0.5), 0 0 12px rgba(0, 123, 255, 0.4);
+    }
+    50% {
+    text-shadow: 0 0 12px rgba(0, 200, 255, 0.9), 0 0 20px rgba(0, 123, 255, 0.7);
+    }
+    }
+    </style>
+    
+")
 </head>
 
 <body>

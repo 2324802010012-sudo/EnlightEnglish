@@ -14,7 +14,6 @@ namespace EnlightEnglishCenter.Models
         [Required(ErrorMessage = "Số điện thoại không được để trống")]
         [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
         public string SoDienThoai { get; set; }
-
         public string KhoaHocDeXuat { get; set; }
     }
 }

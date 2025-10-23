@@ -107,7 +107,7 @@ namespace EnlightEnglishCenter.Controllers
             return RedirectToAction("Index", "Home");
         
 
-            return View(model);
+
         }
     }
 }
