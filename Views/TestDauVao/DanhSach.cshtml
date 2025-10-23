@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Danh sách Test đầu vào";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-
 }
 
 <div class="container mt-5">
@@ -11,7 +10,9 @@
         <h2 class="fw-bold text-primary">
             <i class="fa-solid fa-list-check me-2"></i>Danh sách học viên đăng ký Test đầu vào
         </h2>
-        <p class="text-muted">Admin có thể duyệt hoặc xem trạng thái của từng học viên.</p>
+        <p class="text-muted">
+            Admin hoặc Phòng đào tạo có thể duyệt, xem trạng thái và cho phép học viên làm bài test.
+        </p>
     </div>
 
     <div class="table-responsive shadow-sm">
@@ -26,6 +27,7 @@
                     <th>Thao tác</th>
                 </tr>
             </thead>
+
             <tbody>
                 @if (Model != null && Model.Any())
                 {
@@ -34,29 +36,39 @@
                         <tr>
                             <td>@(item.HocVien?.HoTen ?? "—")</td>
                             <td>@(item.HocVien?.Email ?? "—")</td>
-                            <td>@(item.NgayTest.HasValue? item.NgayTest.Value.ToString("dd/MM/yyyy") : "—")</td>
-                            <td>@(item.KhoaHocDeXuat ?? "—")</td>
                             <td>
-                                @switch (item.TrangThai)
+                                @(item.NgayTest.HasValue
+                                                        ? item.NgayTest.Value.ToString("dd/MM/yyyy")
+                                                        : "—")
+                    </td>
+
+                            <!-- ✅ Hiển thị tên khóa học -->
+                            <td>@(item.KhoaHocDeXuatNavigation?.TenKhoaHoc ?? "—")</td>
+
+                            <!-- ✅ Màu trạng thái -->
+                            <td>
+                        @switch (item.TrangThai)
                                 {
                                     case "Chờ xác nhận":
-                                        <span class="badge bg-warning text-dark">@item.TrangThai</span>
+                                        <span class="badge bg-warning text-dark">Chờ duyệt</span>
                                         ;
                                         break;
                                     case "Được phép test":
-                                        <span class="badge bg-primary">@item.TrangThai</span>
+                                        <span class="badge bg-primary">Được phép test</span>
                                         ;
                                         break;
                                     case "Hoàn thành":
-                                        <span class="badge bg-success">@item.TrangThai</span>
+                                        <span class="badge bg-success">Hoàn thành</span>
                                         ;
                                         break;
                                     default:
-                                        <span class="badge bg-secondary">@item.TrangThai</span>
+                                        <span class="badge bg-secondary">—</span>
                                         ;
                                         break;
                                 }
                             </td>
+
+                            <!-- ✅ Cột thao tác -->
                             <td>
                                 @if (item.TrangThai == "Chờ xác nhận")
                                 {
@@ -69,11 +81,17 @@
                                 }
                                 else if (item.TrangThai == "Được phép test")
                                 {
-                                    <span class="text-info fw-semibold">Đã duyệt</span>
+                                    <a asp-controller="TestDauVao" asp-action="LamBai"
+                                       class="btn btn-primary btn-sm">
+                                        <i class="fa-solid fa-pen-to-square me-1"></i> Làm bài test ngay
+                                    </a>
                                 }
                                 else if (item.TrangThai == "Hoàn thành")
                                 {
-                                    <span class="text-success fw-semibold">✅ Hoàn thành</span>
+                                    <a asp-controller="TestDauVao" asp-action="KetQua"
+                                       class="btn btn-success btn-sm">
+                                        <i class="fa-solid fa-chart-line me-1"></i> Xem kết quả
+                                    </a>
                                 }
                                 else
                                 {
@@ -87,7 +105,8 @@
                 {
                     <tr>
                         <td colspan="6" class="text-center text-muted py-4">
-                            <i class="fa-regular fa-face-frown me-2"></i>Chưa có học viên nào đăng ký test đầu vào.
+                            <i class="fa-regular fa-face-frown me-2"></i>
+                            Chưa có học viên nào đăng ký test đầu vào.
                         </td>
                     </tr>
                 }

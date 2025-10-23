@@ -1,53 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace EnlightEnglishCenter.Models;
-
-[Table("LopHoc")]
-public partial class LopHoc
+namespace EnlightEnglishCenter.Models
 {
-    [Key]
-    public int MaLop { get; set; }
+    [Table("LopHoc")]
+    public class LopHoc
+    {
+        [Key]
+        public int MaLop { get; set; }
 
-    [StringLength(100)]
-    public string? TenLop { get; set; }
+        [StringLength(100)]
+        public string? TenLop { get; set; }
 
-    public int? MaKhoaHoc { get; set; }
+        [StringLength(50)]
+        public string? TrinhDo { get; set; }
 
-    public int? MaGiaoVien { get; set; }
+     
+        [DataType(DataType.Date)]
+        public DateTime? NgayBatDau { get; set; }
 
-    public int? SiSoToiDa { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? NgayKetThuc { get; set; }
 
-    public int? SiSoHienTai { get; set; }
+        [StringLength(100)]
+        public string? TrangThai { get; set; } = "Đang học";
+        // 🔹 Khóa ngoại đến bảng GiaoVien
+        public int? MaGiaoVien { get; set; }
 
-    [StringLength(20)]
-    public string? TrangThai { get; set; }
+        [ForeignKey("MaGiaoVien")]
+        [InverseProperty("LopHocs")]
+        public virtual GiaoVien? MaGiaoVienNavigation { get; set; }
 
-    [InverseProperty("MaLopNavigation")]
+        // 🔹 Khóa ngoại đến bảng KhoaHoc
+        public int? MaKhoaHoc { get; set; }
 
-   
-    public virtual ICollection<DiemSo> DiemSos { get; set; } = new List<DiemSo>();
+        [ForeignKey("MaKhoaHoc")]
+        public virtual KhoaHoc? MaKhoaHocNavigation { get; set; }
 
-    [InverseProperty("MaLopNavigation")]
-    public virtual ICollection<HocPhi> HocPhis { get; set; } = new List<HocPhi>();
-
-    [InverseProperty("MaLopNavigation")]
-    public virtual ICollection<LichHoc> LichHocs { get; set; } = new List<LichHoc>();
-
-    [InverseProperty("MaLopNavigation")]
-    public virtual ICollection<LichThi> LichThis { get; set; } = new List<LichThi>();
-
-    [ForeignKey("MaGiaoVien")]
-    [InverseProperty("LopHocs")]
-    public virtual NguoiDung? MaGiaoVienNavigation { get; set; }
-
-    [ForeignKey("MaKhoaHoc")]
-    [InverseProperty("LopHocs")]
-    public virtual KhoaHoc? MaKhoaHocNavigation { get; set; }
-
-    [InverseProperty("MaLopNavigation")]
-    public virtual ICollection<TaiLieu> TaiLieus { get; set; } = new List<TaiLieu>();
+        // 🔹 Các quan hệ khác
+        public virtual ICollection<LichHoc>? LichHocs { get; set; }
+        public virtual ICollection<PhanCongGiangDay>? PhanCongGiangDays { get; set; }
+        public virtual ICollection<TaiLieu>? TaiLieus { get; set; }
+        public virtual ICollection<DiemSo>? DiemSos { get; set; }
+        public virtual ICollection<DkHocVienLopHoc>? DkHocVienLopHocs { get; set; }
+        public virtual ICollection<HocPhi>? HocPhis { get; set; }
+        public virtual ICollection<LichThi>? LichThis { get; set; }
+    }
 }

@@ -1,25 +1,42 @@
-﻿<div class="container py-5 text-center">
-    <h2 class="fw-bold text-success"><i class="fa-solid fa-chalkboard-user me-2"></i> Giảng viên ENLIGHT</h2>
-    <p class="text-muted">Quản lý lớp học, điểm danh và tài liệu giảng dạy.</p>
+﻿@{
+    ViewData["Title"] = "Giảng viên ENLIGHT";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-    <div class="row mt-4">
-        <div class="col-md-4">
-            <div class="card border-success shadow-sm p-3">
-                <i class="fa-solid fa-users-rectangle fa-3x text-success mb-2"></i>
-                <h5>Lớp đang dạy</h5>
-            </div>
+<div class="container text-center mt-5">
+    <h2 class="fw-bold text-success mb-3">
+        <i class="fa-solid fa-chalkboard-user me-2"></i> Giảng viên ENLIGHT
+    </h2>
+    <p class="text-muted mb-4">Quản lý lớp học, điểm danh và tài liệu giảng dạy.</p>
+
+    <div class="row justify-content-center">
+        <div class="col-md-3">
+            <a href="/GiaoVien/LopDangDay" class="card shadow-sm border-0 text-decoration-none text-dark p-4 hover-card">
+                <i class="fa-solid fa-people-group fa-3x text-success mb-3"></i>
+                <h5 class="fw-bold">Lớp đang dạy</h5>
+            </a>
         </div>
-        <div class="col-md-4">
-            <div class="card border-primary shadow-sm p-3">
-                <i class="fa-solid fa-file-lines fa-3x text-primary mb-2"></i>
-                <h5>Nhập điểm</h5>
-            </div>
+
+        <div class="col-md-3">
+            <a href="/GiaoVien/NhapDiem" class="card shadow-sm border-0 text-decoration-none text-dark p-4 hover-card">
+                <i class="fa-solid fa-file-pen fa-3x text-primary mb-3"></i>
+                <h5 class="fw-bold">Nhập điểm</h5>
+            </a>
         </div>
-        <div class="col-md-4">
-            <div class="card border-warning shadow-sm p-3">
-                <i class="fa-solid fa-folder-open fa-3x text-warning mb-2"></i>
-                <h5>Tài liệu giảng dạy</h5>
-            </div>
+
+        <div class="col-md-3">
+            <a href="/GiaoVien/TaiLieuGiangDay" class="card shadow-sm border-0 text-decoration-none text-dark p-4 hover-card">
+                <i class="fa-solid fa-folder-open fa-3x text-warning mb-3"></i>
+                <h5 class="fw-bold">Tài liệu giảng dạy</h5>
+            </a>
         </div>
     </div>
 </div>
+
+<style>
+    .hover-card:hover {
+        transform: scale(1.05);
+        transition: 0.3s;
+        background-color: #f9f9f9;
+    }
+</style>

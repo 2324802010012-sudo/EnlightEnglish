@@ -1,5 +1,5 @@
 ﻿using EnlightEnglishCenter.Data;
-using EnlightEnglishCenter.Models; // Đảm bảo bạn có namespace chứa model HocPhi
+using EnlightEnglishCenter.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -23,7 +23,6 @@ namespace EnlightEnglishCenter.Controllers
         }
 
         // ---------------------- HỌC PHÍ ----------------------
-        // Danh sách học phí
         public IActionResult HocPhi()
         {
             var hocPhi = (from hp in _context.HocPhis
@@ -43,7 +42,7 @@ namespace EnlightEnglishCenter.Controllers
             return View(hocPhi);
         }
 
-        // Chi tiết học phí
+        // ---------------------- CHI TIẾT HỌC PHÍ ----------------------
         public IActionResult Details(int id)
         {
             var hocPhi = (from hp in _context.HocPhis
@@ -67,99 +66,6 @@ namespace EnlightEnglishCenter.Controllers
             return View(hocPhi);
         }
 
-        // GET: Tạo mới
-        public IActionResult Create()
-        {
-            ViewBag.HocVienList = _context.NguoiDungs.ToList();
-            ViewBag.LopList = _context.LopHocs.ToList();
-            return View();
-        }
-
-        // POST: Tạo mới
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(HocPhi hocPhi)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.HocPhis.Add(hocPhi);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(HocPhi));
-            }
-
-            ViewBag.HocVienList = _context.NguoiDungs.ToList();
-            ViewBag.LopList = _context.LopHocs.ToList();
-            return View(hocPhi);
-        }
-
-        // GET: Sửa học phí
-        public IActionResult Edit(int id)
-        {
-            var hocPhi = _context.HocPhis.Find(id);
-            if (hocPhi == null)
-                return NotFound();
-
-            ViewBag.HocVienList = _context.NguoiDungs.ToList();
-            ViewBag.LopList = _context.LopHocs.ToList();
-            return View(hocPhi);
-        }
-
-        // POST: Sửa học phí
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(HocPhi hocPhi)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.HocPhis.Update(hocPhi);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(HocPhi));
-            }
-
-            ViewBag.HocVienList = _context.NguoiDungs.ToList();
-            ViewBag.LopList = _context.LopHocs.ToList();
-            return View(hocPhi);
-        }
-
-        // GET: Xóa học phí
-        public IActionResult Delete(int id)
-        {
-            var hocPhi = (from hp in _context.HocPhis
-                          join hv in _context.NguoiDungs on hp.MaHocVien equals hv.MaNguoiDung
-                          join lop in _context.LopHocs on hp.MaLop equals lop.MaLop
-                          where hp.MaHocPhi == id
-                          select new
-                          {
-                              hp.MaHocPhi,
-                              HocVien = hv.HoTen,
-                              Lop = lop.TenLop,
-                              hp.SoTienPhaiDong,
-                              hp.SoTienDaDong,
-                              hp.TrangThai,
-                              hp.NgayDongCuoi
-                          }).FirstOrDefault();
-
-            if (hocPhi == null)
-                return NotFound();
-
-            return View(hocPhi);
-        }
-
-
-        // POST: Xác nhận xóa
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
-        {
-            var hocPhi = _context.HocPhis.Find(id);
-            if (hocPhi != null)
-            {
-                _context.HocPhis.Remove(hocPhi);
-                _context.SaveChanges();
-            }
-            return RedirectToAction(nameof(HocPhi));
-        }
-
         // ---------------------- LƯƠNG GIÁO VIÊN ----------------------
         public IActionResult LuongGiaoVien()
         {
@@ -178,10 +84,10 @@ namespace EnlightEnglishCenter.Controllers
 
             return View(luong);
         }
-        // ---------------------- TÍNH LƯƠNG GIÁO VIÊN ----------------------
+
+        // ---------------------- TRANG NHẬP DỮ LIỆU TÍNH LƯƠNG ----------------------
         public IActionResult TinhLuong()
         {
-            // Lấy danh sách giáo viên
             var giaoVienList = (from gv in _context.NguoiDungs
                                 join vtro in _context.VaiTros on gv.MaVaiTro equals vtro.MaVaiTro
                                 where vtro.TenVaiTro == "Giáo viên"
@@ -196,6 +102,7 @@ namespace EnlightEnglishCenter.Controllers
             return View();
         }
 
+        // ---------------------- XỬ LÝ TÍNH LƯƠNG ----------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult TinhLuong(int MaGiaoVien, int Thang, int Nam, decimal LuongMoiBuoi)
@@ -205,13 +112,13 @@ namespace EnlightEnglishCenter.Controllers
                              join lop in _context.LopHocs on lich.MaLop equals lop.MaLop
                              where lop.MaGiaoVien == MaGiaoVien
                              select lich)
-                 .AsEnumerable()
-                 .Where(lich =>
-                     lich.NgayHoc.HasValue &&
-                     lich.NgayHoc.Value.ToDateTime(TimeOnly.MinValue).Month == Thang &&
-                     lich.NgayHoc.Value.ToDateTime(TimeOnly.MinValue).Year == Nam)
-                 .Count();
+                             .AsEnumerable()
+                             .Where(lich =>
+                                lich.NgayHoc.Value.Month == Thang &&
+                                lich.NgayHoc.Value.Year == Nam
 
+                             )
+                             .Count();
 
             // ✅ Tạo bản ghi lương mới
             var luong = new LuongGiaoVien
@@ -231,4 +138,3 @@ namespace EnlightEnglishCenter.Controllers
         }
     }
 }
-    

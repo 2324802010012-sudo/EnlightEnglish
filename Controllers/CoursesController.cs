@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EnlightEnglishCenter.Data;
+using Microsoft.AspNetCore.Http; // ✅ Thêm dòng này để dùng HttpContext.Session
 
 namespace EnlightEnglishCenter.Controllers
 {
     public class CoursesController : Controller
     {
-        private readonly ApplicationDbContext _context; // ✅ thêm dòng này
+        private readonly ApplicationDbContext _context;
 
-        // ✅ Constructor để inject DbContext
         public CoursesController(ApplicationDbContext context)
         {
             _context = context;
@@ -68,29 +68,35 @@ namespace EnlightEnglishCenter.Controllers
 
             return View();
         }
+
+        // ---------------------- ĐĂNG KÝ TEST ----------------------
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DangKyTest(TestDangKyViewModel model)
         {
             int? maHocVien = HttpContext.Session.GetInt32("MaNguoiDung");
 
-            // Nếu chưa đăng nhập
+            // ✅ Nếu chưa đăng nhập
             if (maHocVien == null)
             {
                 TempData["Error"] = "Vui lòng đăng nhập trước khi đăng ký Test đầu vào.";
                 return RedirectToAction("Login", "Account");
             }
 
-            // Kiểm tra học viên đã đăng ký test cho khóa này chưa
-            var daDangKy = _context.TestDauVaos
-                .Any(t => t.MaHocVien == maHocVien && t.KhoaHocDeXuat == model.KhoaHocDeXuat && t.TrangThai == "Chờ xác nhận");
+            // ✅ Kiểm tra học viên đã đăng ký test cho khóa này chưa
+            bool daDangKy = _context.TestDauVaos.Any(t =>
+                t.MaHocVien == maHocVien.Value &&
+                t.KhoaHocDeXuat == model.KhoaHocDeXuat &&
+                t.TrangThai == "Chờ xác nhận"
+            );
 
             if (daDangKy)
             {
-                TempData["Error"] = $"Bạn đã đăng ký Test đầu vào cho khóa '{model.KhoaHocDeXuat}' rồi. Vui lòng chờ xác nhận.";
+                TempData["Error"] = $"⚠️ Bạn đã đăng ký Test đầu vào cho khóa '{model.KhoaHocDeXuat}' rồi. Vui lòng chờ xác nhận.";
                 return RedirectToAction("Index", "TestDauVao");
             }
 
-            // Tạo bản ghi mới
+            // ✅ Tạo bản ghi mới
             var test = new TestDauVao
             {
                 MaHocVien = maHocVien.Value,
@@ -105,9 +111,6 @@ namespace EnlightEnglishCenter.Controllers
             TempData["Success"] = $"🎉 Đăng ký Test đầu vào cho khóa '{model.KhoaHocDeXuat}' thành công! Vui lòng chờ phòng đào tạo xác nhận.";
 
             return RedirectToAction("Index", "Home");
-        
-
-            return View(model);
         }
     }
 }

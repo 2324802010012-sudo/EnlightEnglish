@@ -70,13 +70,21 @@ namespace EnlightEnglishCenter.Controllers
             user.KhoaDenNgay = null;
             _context.SaveChanges();
 
-            // ✅ Lưu session
+            // ✅ Lưu session chung
             HttpContext.Session.SetInt32("MaNguoiDung", user.MaNguoiDung);
             HttpContext.Session.SetString("TenDangNhap", user.TenDangNhap);
             var role = _context.VaiTros.FirstOrDefault(v => v.MaVaiTro == user.MaVaiTro)?.TenVaiTro ?? "Học viên";
             HttpContext.Session.SetString("VaiTro", role);
 
             TempData["LoginSuccess"] = $"🎉 Xin chào {user.HoTen}! ({role})";
+
+            // ✅ Nếu là giáo viên thì lưu thêm Session MaGiaoVien
+            if (role == "Giáo viên")
+            {
+                var giaoVien = _context.GiaoViens.FirstOrDefault(g => g.MaNguoiDung == user.MaNguoiDung);
+                if (giaoVien != null)
+                    HttpContext.Session.SetInt32("MaGiaoVien", giaoVien.MaGiaoVien);
+            }
 
             // ✅ Điều hướng theo vai trò
             return role switch
@@ -90,8 +98,8 @@ namespace EnlightEnglishCenter.Controllers
             };
         }
 
-        // ======================= ĐĂNG KÝ =======================
-        [HttpGet]
+            // ======================= ĐĂNG KÝ =======================
+            [HttpGet]
         public IActionResult Register() => View();
 
         [HttpPost]

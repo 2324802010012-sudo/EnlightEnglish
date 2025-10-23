@@ -1,32 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace EnlightEnglishCenter.Models;
-
-[Table("LichHoc")]
-public partial class LichHoc
+namespace EnlightEnglishCenter.Models
 {
-    [Key]
-    public int MaLich { get; set; }
+    [Table("LichHoc")]
+    public class LichHoc
+    {
+        [Key]
+        public int MaLichHoc { get; set; }
 
-    public int? MaLop { get; set; }
+        public int? MaLop { get; set; }
+        public int? MaGiaoVien { get; set; }
 
-    public DateOnly? NgayHoc { get; set; }
+        public DateOnly? NgayHoc { get; set; }
 
-    public TimeOnly? GioBatDau { get; set; }
+        [StringLength(10)]
+        public string? GioBatDau { get; set; }
 
-    public TimeOnly? GioKetThuc { get; set; }
+        [StringLength(10)]
+        public string? GioKetThuc { get; set; }
 
-    [StringLength(255)]
-    public string? NoiDung { get; set; }
+        [StringLength(50)]
+        public string? PhongHoc { get; set; }
 
-    [InverseProperty("MaLichNavigation")]
-    public virtual ICollection<DiemDanh> DiemDanhs { get; set; } = new List<DiemDanh>();
+        // Navigation
+        [ForeignKey("MaLop")]
+        public virtual LopHoc? LopHoc { get; set; }
 
-    [ForeignKey("MaLop")]
-    [InverseProperty("LichHocs")]
-    public virtual LopHoc? MaLopNavigation { get; set; }
+        [ForeignKey("MaGiaoVien")]
+        public virtual GiaoVien? GiaoVien { get; set; }
+        public virtual ICollection<DiemDanh>? DiemDanhs { get; set; }
+
+    }
 }

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace EnlightEnglishCenter.Models;
 
 [Table("LichThi")]
+[Index("MaLop", Name = "IX_LichThi_MaLop")]
 public partial class LichThi
 {
     [Key]

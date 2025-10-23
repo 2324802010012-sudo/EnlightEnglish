@@ -1,34 +1,45 @@
-﻿@{
-    ViewData["Title"] = "Kết quả bài test Ngữ pháp";
+﻿@model EnlightEnglishCenter.Models.TestDauVao
+
+@{
+    ViewData["Title"] = "Kết quả Test đầu vào";
 }
 
-<div class="container mt-5">
-    <div class="card shadow-lg border-0">
-        <div class="card-header bg-primary text-white text-center">
-            <h3>KẾT QUẢ TEST NGỮ PHÁP</h3>
-        </div>
-        <div class="card-body p-4 text-center">
-            <h4 class="mb-3">🎯 Bạn đã hoàn thành phần trắc nghiệm 15 câu!</h4>
+<div class="container py-5 text-center">
+    <h2 class="fw-bold text-primary mb-4">
+        <i class="fa-solid fa-square-poll-vertical me-2"></i> Kết quả Test đầu vào
+    </h2>
 
+    <div class="card shadow-sm p-4 border-0 mx-auto" style="max-width: 600px;">
+        <p><b>Học viên:</b> @Model.HocVien?.HoTen ?? "Không xác định"</p>
+        <p><b>Khóa học đăng ký:</b> @Model.KhoaHocDeXuatNavigation?.TenKhoaHoc ?? "Không có"</p>
+        <p>
+            <b>Điểm bài test:</b>
+            <span class="fw-bold text-success">@Model.DiemSo?.ToString("0.0") ?? "Chưa có"</span>
+        </p>
+
+        @if (!string.IsNullOrEmpty(Model.LopDeXuat))
+        {
             <p>
-                <b>Điểm Ngữ pháp:</b>
-                <span class="fs-3 text-success fw-bold">@ViewBag.Score.ToString("0.0")</span> / 10
+                <b>Lớp được đề xuất:</b>
+                <span class="fw-bold text-primary">@Model.LopDeXuat</span>
             </p>
+        }
+        else
+        {
+            <p><b>Lớp được đề xuất:</b> <span class="text-muted">Đang cập nhật...</span></p>
+        }
 
-            <p>
-                <b>Khóa học đề xuất:</b>
-                <span class="badge bg-info text-dark">@ViewBag.DeXuat</span>
-            </p>
-
-            <hr />
-            <p>
-                Cảm ơn bạn đã hoàn thành phần kiểm tra đầu vào.<br />
-                Trung tâm sẽ sắp lịch kiểm tra Nghe – Nói – Viết trong thời gian sớm nhất.
-            </p>
-
-            <a href="/HocVien/Index" class="btn btn-outline-primary mt-3">
-                <i class="fa-solid fa-arrow-left me-1"></i> Quay lại trang học viên
+        <div class="mt-4">
+            <a href="/HocVien/Index" class="btn btn-outline-primary">
+                <i class="fa-solid fa-house me-2"></i> Quay về trang học viên
             </a>
+
+            @if (!string.IsNullOrEmpty(Model.LopDeXuat))
+            {
+                <a href="/ThanhToan/Index?lop=@Model.LopDeXuat" class="btn btn-success ms-2">
+                    <i class="fa-solid fa-credit-card me-2"></i> Thanh toán học phí lớp @Model.LopDeXuat
+                </a>
+            }
         </div>
     </div>
 </div>

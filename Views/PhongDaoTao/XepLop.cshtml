@@ -1,0 +1,36 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.TestDauVao>
+@{
+    ViewData["Title"] = "Xếp lớp học viên";
+}
+
+<div class="container mt-4">
+    <h3 class="fw-bold text-primary mb-4"><i class="bi bi-people me-2"></i>Xếp lớp học viên</h3>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-info text-center">
+            <tr>
+                <th>Mã học viên</th>
+                <th>Họ tên</th>
+                <th>Điểm tổng</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var hv in Model)
+            {
+                <tr>
+                    <td>@hv.MaHocVien</td>
+                    <td>@hv.HocVien?.HoTen</td>
+                    <td>@hv.TongDiem</td>
+                    <td>@hv.TrangThai</td>
+                    <td>
+                        <a asp-action="ThemXepLop" asp-route-maHocVien="@hv.MaHocVien" class="btn btn-success btn-sm">
+                            <i class="bi bi-plus-circle"></i> Xếp lớp
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,47 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.PhanCongGiangDay>
+@{
+    ViewData["Title"] = "Lớp đang dạy";
+}
+
+<div class="container py-4">
+    <h2 class="fw-bold text-success mb-4">
+        <i class="fa-solid fa-chalkboard-teacher me-2"></i>Lớp đang giảng dạy
+    </h2>
+
+    <form class="mb-4 d-flex" method="get">
+        <input type="text" name="search" value="@ViewBag.Search"
+               class="form-control me-2" placeholder="🔍 Nhập tên hoặc mã lớp..." />
+        <button class="btn btn-primary" type="submit">
+            <i class="fa-solid fa-search me-1"></i>Tìm kiếm
+        </button>
+    </form>
+
+    <table class="table table-bordered align-middle text-center shadow-sm">
+        <thead class="table-success">
+            <tr>
+                <th>Mã lớp</th>
+                <th>Tên lớp</th>
+                <th>Khóa học</th>
+                <th>Ngày bắt đầu</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pc in Model)
+            {
+                <tr>
+                    <td>@pc.LopHoc.MaLop</td>
+                    <td>@pc.LopHoc.TenLop</td>
+                    <td>@pc.LopHoc.MaKhoaHocNavigation?.TenKhoaHoc</td>
+                    <td>@pc.LopHoc.NgayBatDau?.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <a href="@Url.Action("ChiTietLop", "GiaoVien", new { id = pc.LopHoc.MaLop })"
+                           class="btn btn-outline-success btn-sm">
+                            <i class="fa-solid fa-eye me-1"></i> Xem chi tiết
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

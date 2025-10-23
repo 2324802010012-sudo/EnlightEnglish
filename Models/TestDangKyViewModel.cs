@@ -15,6 +15,6 @@ namespace EnlightEnglishCenter.Models
         [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
         public string SoDienThoai { get; set; }
 
-        public string KhoaHocDeXuat { get; set; }
+        public int KhoaHocDeXuat { get; set; }
     }
 }

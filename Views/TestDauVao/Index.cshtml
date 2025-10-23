@@ -1,22 +1,23 @@
 ﻿@model IEnumerable<EnlightEnglishCenter.Models.KhoaHoc>
 
 <div class="container py-5">
-    <h2 class="text-center text-primary fw-bold mb-4">
-        Đăng ký Test đầu vào
+    <!-- 🧩 Tiêu đề -->
+    <h2 class="text-center text-primary fw-bold mb-3">
+        <i class="fa-solid fa-clipboard-list me-2"></i>Đăng ký Test đầu vào
     </h2>
-
     <p class="text-center text-muted mb-5">
-        Chọn khóa học bạn muốn kiểm tra năng lực 👇
+        Chọn khóa học bạn muốn kiểm tra năng lực để được xếp lớp phù hợp 👇
     </p>
 
+    <!-- 🧩 Danh sách khóa học -->
     <div class="row g-4 justify-content-center">
         @foreach (var k in Model)
         {
             <div class="col-md-4">
-                <div class="card border-0 sAhadow-sm rounded-4 h-100">
-                    <div class="card-body text-center">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body text-center p-4">
                         <h5 class="fw-bold text-dark">@k.TenKhoaHoc</h5>
-                        <p class="text-muted">@k.MoTa</p>
+                        <p class="text-muted small">@k.MoTa</p>
 
                         <form asp-action="DangKy" method="get">
                             <input type="hidden" name="maKhoaHoc" value="@k.MaKhoaHoc" />
@@ -30,17 +31,19 @@
         }
     </div>
 
-    <!-- Hiển thị thông báo -->
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success text-center mt-4">
-            @TempData["Success"]
-        </div>
-    }
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger text-center mt-4">
-            @TempData["Error"]
-        </div>
-    }
-
+    <!-- 🧩 Thông báo -->
+    <div class="mt-5">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success text-center rounded-pill shadow-sm">
+                <i class="fa-solid fa-circle-check me-2"></i>@TempData["Success"]
+            </div>
+        }
+        else if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger text-center rounded-pill shadow-sm">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>@TempData["Error"]
+            </div>
+        }
+    </div>
+</div>

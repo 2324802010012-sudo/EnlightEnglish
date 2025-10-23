@@ -1,0 +1,74 @@
+﻿@model EnlightEnglishCenter.Models.KhoaHoc
+
+@{
+    ViewData["Title"] = "Thêm khóa học mới";
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">
+            <i class="fa-solid fa-plus-circle me-2"></i> Thêm khóa học mới
+        </h2>
+    </div>
+
+    <form asp-action="ThemKhoaHoc" method="post" class="shadow-sm p-4 rounded bg-light">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Tên khóa học</label>
+            <input asp-for="TenKhoaHoc" class="form-control" required />
+        </div>
+
+        <!-- 🔹 Chọn cấp độ bằng checkbox -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Cấp độ</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="CapDo" value="Cơ bản" required>
+                <label class="form-check-label">Cơ bản</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="CapDo" value="Trung bình">
+                <label class="form-check-label">Trung bình</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="CapDo" value="Nâng cao">
+                <label class="form-check-label">Nâng cao</label>
+            </div>
+        </div>
+
+        <!-- 🔹 Chọn lộ trình học -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Lộ trình học</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="LoTrinhHoc" value="8 tuần / 24 buổi" required>
+                <label class="form-check-label">8 tuần / 24 buổi</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="LoTrinhHoc" value="12 tuần / 36 buổi">
+                <label class="form-check-label">12 tuần / 36 buổi</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="LoTrinhHoc" value="16 tuần / 48 buổi">
+                <label class="form-check-label">16 tuần / 48 buổi</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Ngày bắt đầu</label>
+                <input asp-for="NgayBatDau" type="date" class="form-control" required />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Ngày kết thúc</label>
+                <input asp-for="NgayKetThuc" type="date" class="form-control" required />
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <a href="/PhongDaoTao/KhoaHoc" class="btn btn-secondary me-2">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại
+            </a>
+            <button type="submit" class="btn btn-success">
+                <i class="fa-solid fa-save me-2"></i> Lưu khóa học
+            </button>
+        </div>
+    </form>
+</div>

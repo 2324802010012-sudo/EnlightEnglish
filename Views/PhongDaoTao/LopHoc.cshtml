@@ -1,0 +1,46 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.LopHoc>
+
+@{
+    ViewData["Title"] = "Danh sách lớp học";
+}
+
+<div class="container py-4">
+    <h2 class="fw-bold text-primary mb-4">
+        <i class="fa-solid fa-layer-group me-2"></i> Danh sách lớp học
+    </h2>
+
+    <div class="text-end mb-3">
+        <a asp-action="ThemLopHoc" class="btn btn-success">
+            <i class="fa-solid fa-plus me-1"></i> Thêm mới
+        </a>
+    </div>
+
+    <table class="table table-bordered text-center align-middle shadow-sm">
+        <thead class="table-primary">
+            <tr>
+                <th>Tên lớp</th>
+                <th>Khóa học</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var lop in Model)
+            {
+                <tr>
+                    <td>@lop.TenLop</td>
+                    <td>@lop.MaKhoaHocNavigation?.TenKhoaHoc</td>
+                    <td>@(lop.NgayBatDau?.ToString("dd/MM/yyyy") ?? "—")</td>
+                    <td>@(lop.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "—")</td>
+                    <td>@lop.TrangThai</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success mt-3 text-center">@TempData["Success"]</div>
+    }
+</div>

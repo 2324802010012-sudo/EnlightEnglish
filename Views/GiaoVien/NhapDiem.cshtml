@@ -1,0 +1,64 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.DiemSo>
+
+@{
+    ViewData["Title"] = "Nhập điểm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h3 class="fw-bold text-primary mb-3"><i class="fa-solid fa-file-pen me-2"></i>Nhập điểm</h3>
+
+    <form method="get" asp-action="NhapDiem">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <select name="maLop" class="form-select" onchange="this.form.submit()">
+                    <option value="">-- Chọn lớp --</option>
+                    @foreach (var lop in ViewBag.DSLopHoc)
+                    {
+                        <option value="@lop.MaLop">@lop.TenLop</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.Any())
+    {
+        <form method="post" asp-action="LuuDiem">
+            <input type="hidden" name="maLop" value="@ViewBag.MaLop" />
+            <table class="table table-bordered text-center align-middle">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Học viên</th>
+                        <th>Điểm giữa kỳ</th>
+                        <th>Điểm cuối kỳ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count(); i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model.ElementAt(i).HoTen
+                                <input type="hidden" name="diemList[@i].MaHocVien" value="@Model.ElementAt(i).MaHocVien" />
+                            </td>
+                            <td><input type="number" name="diemList[@i].DiemGiuaKy" step="0.1" class="form-control" /></td>
+                            <td><input type="number" name="diemList[@i].DiemCuoiKy" step="0.1" class="form-control" /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="fa-solid fa-floppy-disk me-2"></i>Lưu điểm
+                </button>
+            </div>
+        </form>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success text-center mt-3">@TempData["Success"]</div>
+    }
+</div>

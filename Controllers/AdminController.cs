@@ -38,7 +38,7 @@ namespace EnlightEnglishCenter.Controllers
             }
 
             var danhSach = _context.TestDauVaos
-                .Include(t => t.HocVien)
+               // .Include(t => t.HocVien)
                 .ToList();
 
             return View(danhSach);

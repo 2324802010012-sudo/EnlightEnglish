@@ -22,9 +22,24 @@
     }
     else if (ViewBag.TestStatus == "Được phép test")
     {
-        <a href="/TestDauVao/LamBai" class="btn btn-success btn-lg shadow-sm">
-            <i class="fa-solid fa-play me-2"></i> Làm bài Test ngay
-        </a>
+        <div class="card border-success shadow-sm p-4 my-4">
+            <h4 class="fw-bold text-success mb-3">
+                <i class="fa-solid fa-circle-check me-2"></i> Bạn đã được duyệt làm bài Test IELTS
+            </h4>
+            <p>Khóa học: <b>@TempData["LopHoc"] ?? "IELTS 6.5+" </b></p>
+            <p>
+                Học phí dự kiến:
+                <b class="text-danger">
+                    @String.Format("{0:N0} VNĐ", TempData["HocPhi"] ?? 3500000)
+                </b>
+            </p>
+            <a href="/TestDauVao/LamBai" class="btn btn-success btn-lg shadow-sm mt-3">
+                <i class="fa-solid fa-play me-2"></i> Làm bài Test IELTS
+            </a>
+            <a href="/ThanhToan/IELTS" class="btn btn-outline-primary btn-lg shadow-sm mt-3">
+                <i class="fa-solid fa-credit-card me-2"></i> Thanh toán học phí
+            </a>
+        </div>
     }
     else if (ViewBag.TestStatus == "Hoàn thành")
     {
@@ -32,24 +47,19 @@
             <i class="fa-solid fa-chart-line me-2"></i> Xem kết quả Test
         </a>
     }
+    else if (ViewBag.TestStatus == "Hoàn thành")
+    {
+        <div class="card border-info shadow-sm p-4 my-4">
+            <h4 class="fw-bold text-info mb-3">
+                <i class="fa-solid fa-check-circle me-2"></i> Bạn đã hoàn thành bài Test
+            </h4>
+            <p>Điểm bài test: <b>@Model.DiemSo</b></p>
+            <p>Lớp đề xuất: <b class="text-primary">@Model.LopDeXuat</b></p>
 
-    <div class="row mt-5 justify-content-center">
-        <div class="col-md-4 mb-3">
-            <div class="card border-success shadow-sm p-4 h-100">
-                <i class="fa-solid fa-book-open fa-3x text-success mb-3"></i>
-                <h5 class="fw-bold">Khóa học đã đăng ký</h5>
-                <p class="text-muted small">Xem danh sách khóa học mà bạn đã ghi danh.</p>
-                <a href="#" class="btn btn-outline-success btn-sm mt-2">Xem chi tiết</a>
-            </div>
+            <a href="/ThanhToan/Index?lop=@Model.LopDeXuat" class="btn btn-success mt-3">
+                <i class="fa-solid fa-credit-card me-2"></i> Thanh toán lớp @Model.LopDeXuat
+            </a>
         </div>
+    }
 
-        <div class="col-md-4 mb-3">
-            <div class="card border-warning shadow-sm p-4 h-100">
-                <i class="fa-solid fa-file-lines fa-3x text-warning mb-3"></i>
-                <h5 class="fw-bold">Kết quả học tập</h5>
-                <p class="text-muted small">Theo dõi tiến trình và kết quả học tập của bạn.</p>
-                <a href="#" class="btn btn-outline-warning btn-sm mt-2">Xem kết quả</a>
-            </div>
-        </div>
-    </div>
 </div>

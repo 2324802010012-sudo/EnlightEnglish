@@ -1,0 +1,40 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.DkHocVienLopHoc>
+@{
+    ViewData["Title"] = "Danh sách học viên";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <h3 class="fw-bold text-success mb-3">
+        <i class="fa-solid fa-users me-2"></i>Danh sách học viên
+    </h3>
+
+    <table class="table table-bordered align-middle text-center shadow-sm">
+        <thead class="table-warning">
+            <tr>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>Ngày đăng ký</th>
+                <th>Trạng thái</th>
+                <th>Nhập điểm</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var hv in Model)
+            {
+                <tr>
+                    <td>@hv.MaHocVienNavigation.HoTen</td>
+                    <td>@hv.MaHocVienNavigation.Email</td>
+                    <td>@hv.NgayDangKy?.ToString("dd/MM/yyyy")</td>
+                    <td>@hv.TrangThai</td>
+                    <td>
+                        <a href="@Url.Action("NhapDiem", "GiaoVien", new { maLop = hv.MaLop })"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-pen-to-square me-1"></i>Nhập điểm
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

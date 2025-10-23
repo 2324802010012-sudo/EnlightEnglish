@@ -1,0 +1,84 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.KhoaHoc>
+@{
+    ViewData["Title"] = "Quản lý lịch khai giảng";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary mb-0">
+            <i class="fa-solid fa-calendar-days me-2"></i> Quản lý lịch khai giảng
+        </h2>
+        <a href="@Url.Action("ThemKhaiGiang", "PhongDaoTao")" class="btn btn-success">
+            <i class="fa-solid fa-plus me-1"></i> Thêm mới
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered text-center align-middle shadow-sm">
+            <thead class="table-primary">
+                <tr>
+                    <th>Tên khóa học</th>
+                    <th>Trình độ</th>
+                    <th>Ngày khai giảng</th>
+                    <th>Thời gian học</th>
+                    <th>Giảng viên</th>
+                    <th>Hình thức</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var k in Model)
+                {
+                    <tr>
+                        <td>@k.TenKhoaHoc</td>
+                        <td>@(k.TrinhDo ?? k.CapDo ?? "—")</td>
+                        <td>@(k.NgayKhaiGiang?.ToString("dd/MM/yyyy") ?? "—")</td>
+                        <td>@(k.ThoiGianHoc ?? k.ThoiLuong ?? "—")</td>
+                        <td>@(string.IsNullOrEmpty(k.GiangVien) ? "—" : k.GiangVien)</td>
+                        <td>
+                            <span class="badge bg-@(k.HinhThuc == "Online" ? "success" : "warning text-dark")">
+                                @k.HinhThuc
+                            </span>
+                        </td>
+                        <td>@(k.TrangThai ?? "Chưa xác định")</td>
+                        <td>
+                            <a asp-action="SuaKhaiGiang" asp-route-id="@k.MaKhoaHoc"
+                               class="btn btn-warning btn-sm me-1">
+                                <i class="fa-solid fa-pen-to-square"></i> Sửa
+                            </a>
+                            <form asp-action="XoaKhaiGiang" asp-route-id="@k.MaKhoaHoc"
+                                  method="post" class="d-inline">
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Bạn có chắc muốn xóa lịch này không?');">
+                                    <i class="fa-solid fa-trash"></i> Xóa
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success mt-3 text-center shadow-sm">
+            @TempData["Success"]
+        </div>
+    }
+</div>
+
+<style>
+    table th, table td {
+        vertical-align: middle;
+    }
+
+    .btn-warning {
+        color: #fff;
+    }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+</style>

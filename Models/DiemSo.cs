@@ -1,10 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace EnlightEnglishCenter.Models
 {
     [Table("DiemSo")]
-    public class DiemSo
+    [Index("MaHocVien", Name = "IX_DiemSo_MaHocVien")]
+    [Index("MaLop", Name = "IX_DiemSo_MaLop")]
+    public partial class DiemSo
     {
         [Key]
         public int MaDiem { get; set; }
@@ -13,20 +18,24 @@ namespace EnlightEnglishCenter.Models
 
         public int MaLop { get; set; }
 
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal? DiemGiuaKy { get; set; }
+
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal? DiemCuoiKy { get; set; }
 
         public string? NhanXet { get; set; }
 
-        [NotMapped]
-        public decimal DiemTrungBinh => (DiemGiuaKy ?? 0 + DiemCuoiKy ?? 0) / 2;
-
         [ForeignKey("MaHocVien")]
         [InverseProperty("DiemSos")]
-        public virtual NguoiDung? MaHocVienNavigation { get; set; }
+        public virtual NguoiDung MaHocVienNavigation { get; set; } = null!;
 
         [ForeignKey("MaLop")]
         [InverseProperty("DiemSos")]
-        public virtual LopHoc? MaLopNavigation { get; set; }
+        public virtual LopHoc MaLopNavigation { get; set; } = null!;
+
+        // ✅ Thuộc tính tạm để hiển thị tên học viên trong View
+        [NotMapped]
+        public string? HoTen { get; set; }
     }
 }

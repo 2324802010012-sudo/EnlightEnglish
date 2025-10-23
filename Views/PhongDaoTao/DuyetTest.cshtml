@@ -1,0 +1,49 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.TestDauVao>
+@{
+    ViewData["Title"] = "Duyệt test đầu vào";
+}
+
+<div class="container mt-5">
+    <h2 class="fw-bold text-primary mb-4">
+        <i class="fa-solid fa-list-check me-2"></i> Danh sách test đầu vào
+    </h2>
+
+    <table class="table table-bordered table-striped align-middle text-center">
+        <thead class="table-primary">
+            <tr>
+                <th>Học viên</th>
+                <th>Khóa học</th>
+                <th>Trạng thái</th>
+                <th>Ngày đăng ký</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.HocVien.HoTen</td>
+                    <td>@item.KhoaHoc?.TenKhoaHoc</td>
+                    <td>@item.TrangThai</td>
+                    <td>@item.NgayDangKy.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <form asp-action="CapNhatTrangThai" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@item.MaTest" />
+                            <input type="hidden" name="trangThai" value="Được phép test" />
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fa-solid fa-check me-1"></i> Duyệt
+                            </button>
+                        </form>
+                        <form asp-action="CapNhatTrangThai" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@item.MaTest" />
+                            <input type="hidden" name="trangThai" value="Từ chối" />
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fa-solid fa-xmark me-1"></i> Từ chối
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

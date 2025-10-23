@@ -1,25 +1,30 @@
 ﻿@{
     Layout = null;
 }
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Trung tâm Anh ngữ</title>
+    <title>@ViewData["Title"] - Trung tâm Anh ngữ ENLIGHT</title>
+
+    <!-- Bootstrap + Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/phongdaotao.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/css/phongdaotao.css" />
 </head>
+
 <body class="bg-light">
 
-    <!-- HEADER ====================================================================================================================-->
-    <header class="bg-primary text-white py-3 shadow-sm sticky-top" id="mainHeader">
+    <!-- ====================== HEADER ====================== -->
+    <header id="mainHeader" class="bg-primary text-white py-3 shadow-sm sticky-top">
         <div class="container-fluid px-5 d-flex align-items-center justify-content-between">
             <!-- Logo + Tiêu đề -->
             <div class="d-flex align-items-center">
-                <a class="navbar-brand fw-bold d-flex align-items-center text-decoration-none" href="/">
-                    <!-- 📘 Icon người đọc sách -->
+                <a href="/" class="navbar-brand fw-bold d-flex align-items-center text-decoration-none">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="me-2" viewBox="0 0 16 16">
                         <path d="M8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
                         <path d="M2 6.5A1.5 1.5 0 0 0 .5 8v7a1 1 0 0 0 1 1h6V6.5H2zm12 0H8V16h6.5a1 1 0 0 0 1-1V8A1.5 1.5 0 0 0 14 6.5z" />
@@ -27,7 +32,6 @@
                     <span class="text-white fs-5 fw-bold">ENLIGHT</span>
                 </a>
 
-                <!-- Dòng phụ -->
                 <div class="ms-3 lh-sm">
                     <h4 class="mb-0 fw-bold text-uppercase text-white" style="font-size: 1.1rem;">PHÒNG ĐÀO TẠO</h4>
                     <h6 class="mb-0 text-light" style="font-size: 0.85rem;">Trung tâm Anh ngữ Online</h6>
@@ -37,96 +41,77 @@
             <!-- Ô tìm kiếm -->
             <form class="d-flex" method="get" action="#">
                 <input type="text" class="form-control form-control-sm me-2 rounded-pill" placeholder="Tìm kiếm..." />
-                <button class="btn btn-light btn-sm rounded-circle"><i class="bi bi-search"></i></button>
+                <button class="btn btn-light btn-sm rounded-circle" type="submit"><i class="bi bi-search"></i></button>
             </form>
         </div>
-
-        <script>
-            // 🧠 Khi cuộn xuống, làm header mờ dần
-            window.addEventListener('scroll', function () {
-                const header = document.getElementById('mainHeader');
-                if (window.scrollY > 50) {
-                    header.classList.add('faded');
-                } else {
-                    header.classList.remove('faded');
-                }
-            });
-
-            // ✅ Tự động thêm khoảng trống đúng bằng chiều cao header
-            window.addEventListener('load', adjustMainPadding);
-            window.addEventListener('resize', adjustMainPadding);
-
-            function adjustMainPadding() {
-                const header = document.getElementById('mainHeader');
-                const main = document.querySelector('main');
-                if (header && main) {
-                    main.style.paddingTop = (header.offsetHeight + 10) + 'px';
-                }
-            }
-        </script>
-
-        <nav class="navbar navbar-expand-sm navbar-dark bg-primary border-top border-light mt-3">
+        <div class="dropdown ms-3">
+            <button class="btn btn-light btn-sm rounded-pill dropdown-toggle fw-semibold" data-bs-toggle="dropdown">
+                <i class="bi bi-person-circle me-1 text-primary"></i>
+                @HttpContextAccessor.HttpContext?.Session.GetString("TenDangNhap") ?? "Phòng đào tạo"
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li>
+                    <a class="dropdown-item" href="/PhongDaoTao">
+                        <i class="bi bi-house-door me-2 text-primary"></i> Trang chủ
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                    <form asp-controller="PhongDaoTao" asp-action="DangXuat" method="post" class="mb-0">
+                        <button type="submit" class="dropdown-item text-danger">
+                            <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+        <!-- Menu điều hướng -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary border-top border-light mt-2">
             <div class="container-fluid px-5">
-                <ul class="navbar-nav mx-auto">
-
-                    <li class="nav-item"><a class="nav-link fw-semibold" href="/PhongDaoTao">Trang chủ</a></li>
-                    <li class="nav-item"><a class="nav-link fw-semibold" href="/TrainingRoom">Phòng học</a></li>
-
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle fw-semibold" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle me-1"></i>Người dùng
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="daoTaoMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-mortarboard-fill me-1"></i> Phòng đào tạo
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+                        <ul class="dropdown-menu shadow-sm">
+                            <li><a class="dropdown-item" href="/PhongDaoTao/DuyetTest"><i class="bi bi-list-check me-2 text-primary"></i>Duyệt test đầu vào</a></li>
+                            <li><a class="dropdown-item" href="/PhongDaoTao/XepLop"><i class="bi bi-people me-2 text-success"></i>Xếp lớp học viên</a></li>
+                            <li><a class="dropdown-item" href="/PhongDaoTao/LichHoc"><i class="bi bi-calendar-week me-2 text-warning"></i>Quản lý lịch học</a></li>
+                            <li><a class="dropdown-item" href="/PhongDaoTao/BaoCao"><i class="bi bi-bar-chart-line me-2 text-info"></i>Báo cáo kết quả</a></li>
+                            <li><a class="dropdown-item" href="/PhongDaoTao/GiaoVien"><i class="bi bi-person-lines-fill me-2 text-secondary"></i>Quản lý giảng viên</a></li>
+                            <li><<a class="dropdown-item" href="/PhongDaoTao/PhanCong"><i class="bi bi-diagram-3 me-2 text-danger"></i>Phân công giảng viên</a></li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center" href="/Teacher">
-                                    <i class="bi bi-mortarboard-fill text-primary me-2"></i> Giáo viên
+                                <a class="dropdown-item" asp-controller="PhongDaoTao" asp-action="LichKhaiGiang">
+                                    <i class="fa-solid fa-calendar-days me-2 text-primary"></i> Quản lý lịch khai giảng
                                 </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="PhongDaoTao" asp-action="KhoaHoc">
+                                    <i class="fa-solid fa-book-open me-2 text-success"></i> Quản lý khóa học
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="PhongDaoTao" asp-action="LopHoc">
+                                    <i class="fa-solid fa-layer-group me-2 text-info"></i> Quản lý lớp học
+                                </a>
+                            </li>
 
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" href="/Student">
-                                    <i class="bi bi-person-badge-fill text-success me-2"></i> Học viên
-                                </a>
-                            </li>
                         </ul>
                     </li>
-
-
                 </ul>
             </div>
         </nav>
     </header>
 
-    <!-- BODY ====================================================================================================================-->
+    <!-- ====================== MAIN ====================== -->
     <main class="container-fluid px-5 my-4">
-        <div class="row gx-4">
-
-            <script>
-                // 🧠 Khi cuộn xuống >50px, thêm class 'scrolled' để đổi màu header
-                window.addEventListener('scroll', function () {
-                    const header = document.getElementById('mainHeader');
-                    if (window.scrollY > 50) {
-                        header.classList.add('scrolled');
-                    } else {
-                        header.classList.remove('scrolled');
-                    }
-                });
-            </script>
-
-            <!-- MAIN CONTENT ===================================================================================================== -->
-            <section class="col-12 mb-3">
-                @RenderBody()
-            </section>
-
-        
-        </div>
-
-
+        <section class="col-12 mb-3">
+            @RenderBody()
+        </section>
     </main>
 
-    <!-- FOOTER ==================================================================================================================== -->
-    
-    <footer class="footer text-white pt-5 pb-3 mt-5">
+    <!-- ====================== FOOTER ====================== -->
+    <footer class="footer text-white pt-5 pb-3 mt-5 bg-dark">
         <div class="container">
             <div class="row gy-4">
                 <!-- Cột 1: Giới thiệu -->
@@ -134,7 +119,7 @@
                     <h4 class="fw-bold text-uppercase mb-3">ENLIGHT English Center</h4>
                     <p class="small">
                         Trung tâm Anh ngữ ENLIGHT là nền tảng đào tạo tiếng Anh trực tuyến uy tín, giúp hàng nghìn học viên trên toàn quốc
-                        đạt chứng chỉ quốc tế như <b>IELTS, TOEIC và Cambridge</b>. Với đội ngũ giảng viên giàu kinh nghiệm và lộ trình học linh hoạt,
+                        đạt chứng chỉ quốc tế như <b>IELTS, TOEIC, Cambridge</b>. Với đội ngũ giảng viên giàu kinh nghiệm và lộ trình học linh hoạt,
                         ENLIGHT giúp bạn <b>tự tin chinh phục tiếng Anh – mọi lúc, mọi nơi 🌍</b>.
                     </p>
                 </div>
@@ -153,7 +138,7 @@
                 <!-- Cột 3: Mạng xã hội -->
                 <div class="col-md-4">
                     <h5 class="fw-bold text-uppercase mb-3">Kết nối với chúng tôi</h5>
-                    <div class="d-flex gap-3 justify-content-md-start justify-content-center mb-3">
+                    <div class="d-flex gap-3 mb-3">
                         <a href="https://www.facebook.com" target="_blank" class="social-icon"><i class="bi bi-facebook"></i></a>
                         <a href="https://zalo.me" target="_blank" class="social-icon"><i class="bi bi-chat-dots-fill"></i></a>
                         <a href="https://www.youtube.com" target="_blank" class="social-icon"><i class="bi bi-youtube"></i></a>
@@ -167,31 +152,44 @@
                 </div>
             </div>
 
-            <hr class="border-light my-4">
-
+            <hr class="border-light my-4" />
             <div class="text-center small">
                 © @DateTime.Now.Year <b>ENLIGHT English Center</b> | Thiết kế bởi <span class="text-info">Nhóm 13</span>.
             </div>
         </div>
     </footer>
 
-
+    <!-- ====================== SCRIPT ====================== -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    @RenderSection("Scripts", required: false)
 
     <script>
-        // Hiệu ứng hiện footer khi cuộn xuống
+        // Làm header mờ khi cuộn
+        window.addEventListener('scroll', function () {
+            const header = document.getElementById('mainHeader');
+            if (window.scrollY > 50) header.classList.add('faded');
+            else header.classList.remove('faded');
+        });
+
+        // Căn lề cho main theo chiều cao header
+        window.addEventListener('load', adjustMainPadding);
+        window.addEventListener('resize', adjustMainPadding);
+        function adjustMainPadding() {
+            const header = document.getElementById('mainHeader');
+            const main = document.querySelector('main');
+            if (header && main) {
+                main.style.paddingTop = (header.offsetHeight + 10) + 'px';
+            }
+        }
+
+        // Hiệu ứng footer hiện dần khi cuộn
         window.addEventListener("scroll", () => {
             const footer = document.querySelector(".footer");
             if (!footer) return;
-
             const rect = footer.getBoundingClientRect();
-            const isVisible = rect.top < window.innerHeight;
-
-            if (isVisible) footer.classList.add("visible");
+            if (rect.top < window.innerHeight) footer.classList.add("visible");
         });
-
     </script>
 
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

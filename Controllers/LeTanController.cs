@@ -35,11 +35,13 @@ namespace EnlightEnglishCenter.Controllers
                                   hv.HoTen,
                                   Lop = lop.TenLop,
                                   dk.NgayDangKy,
-                                  dk.TrangThai
+                                  dk.TrangThai,
+                                  dk.TrangThaiHoc
                               }).ToList();
 
             return View(dangKyList);
         }
+
 
         // ---------------------- TẠO ĐĂNG KÝ MỚI ----------------------
         [HttpGet]

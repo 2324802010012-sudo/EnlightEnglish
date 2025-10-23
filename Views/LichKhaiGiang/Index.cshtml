@@ -1,164 +1,59 @@
-﻿@{
-    ViewData["Title"] = "Lịch khai giảng";
-    Layout = "~/Views/Shared/PhongDaoTaoLayout.cshtml";
+﻿@model IEnumerable<EnlightEnglishCenter.Models.LopHoc>
+@{
+    ViewData["Title"] = "Lịch khai giảng tháng này";
 }
 
-<!-- 🌟 Banner Lịch khai giảng -->
-<section class="banner-lichkh mt-4">
-    <div class="banner-overlay">
-        <div class="container text-center text-white">
-            <h1 class="fw-bold display-5">LỊCH KHAI GIẢNG CÁC KHÓA HỌC</h1>
-            <p class="lead">Cập nhật lịch khai giảng mới nhất tại Trung tâm Anh ngữ ENLIGHT</p>
-            <a href="@Url.Action("Index", "ChuongTrinhDaoTao")" class="btn btn-light btn-lg mt-3 shadow-sm">
-                <i class="bi bi-book-half me-2"></i> Xem chương trình đào tạo
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- 📅 Lịch khai giảng -->
 <div class="container py-5">
-    <h3 class="text-center text-primary fw-bold mb-3">
-        <i class="bi bi-calendar-week me-2"></i> Lịch khai giảng tháng này
-    </h3>
+    <h2 class="fw-bold text-primary text-center mb-4">
+        <i class="fa-solid fa-calendar-days me-2"></i>Lịch khai giảng tháng này
+    </h2>
 
-    <p class="text-center text-muted mb-4" style="max-width: 800px; margin: 0 auto;">
-        <b>ENLIGHT</b> liên tục khai giảng các khóa học mới phù hợp với từng trình độ.
-        Chọn thời gian học lý tưởng để bắt đầu hành trình chinh phục tiếng Anh cùng chúng tôi 🌟
-    </p>
-
-    <div class="table-responsive mt-4">
-        <table class="table table-bordered table-striped align-middle text-center shadow-sm">
-            <thead class="table-primary">
+    <table class="table table-bordered text-center align-middle shadow-sm">
+        <thead class="table-primary">
+            <tr>
+                <th>Tên khóa học</th>
+                <th>Trình độ</th>
+                <th>Ngày khai giảng</th>
+                <th>Thời gian học</th>
+                <th>Giảng viên</th>
+                <th>Hình thức</th>
+                <th>Trạng thái</th>
+                <th>Đăng ký</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var lop in Model)
+            {
                 <tr>
-                    <th>Tên khóa học</th>
-                    <th>Trình độ</th>
-                    <th>Ngày khai giảng</th>
-                    <th>Thời gian học</th>
-                    <th>Giảng viên</th>
-                    <th>Hình thức</th>
-                    <th>Đăng ký</th>
+                    <td>@lop.MaKhoaHocNavigation?.TenKhoaHoc</td>
+                    <td>@lop.MaKhoaHocNavigation?.CapDo</td>
+                    <td>@lop.NgayBatDau?.ToString("dd/MM/yyyy")</td>
+                    <td>@lop.MaKhoaHocNavigation?.ThoiLuong</td>
+                    <td>@(lop.MaGiaoVienNavigation?.NguoiDung?.HoTen ?? "Chưa phân công")</td>
+                    <td>
+                        <span class="badge bg-success">Online</span>
+                    </td>
+                    <td>
+                        @if (lop.TrangThai == "Đang mở")
+                        {
+                            <span class="badge bg-success">Đang mở</span>
+                        }
+                        else if (lop.TrangThai == "Đang học")
+                        {
+                            <span class="badge bg-warning text-dark">Đang học</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Chưa xác định</span>
+                        }
+                    </td>
+                    <td>
+                        <a href="/TestDauVao/DangKy" class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-pen-to-square me-1"></i>Đăng ký Test
+                        </a>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>🎯 Giao tiếp cơ bản</td>
-                    <td>Beginner</td>
-                    <td>25/10/2025</td>
-                    <td>Thứ 2 - 4 - 6 (18h00 - 19h30)</td>
-                    <td>Thầy Minh</td>
-                    <td><span class="badge bg-info text-dark">Online</span></td>
-                    <td><a href="/TestDauVao/DangKy" class="btn btn-outline-primary btn-sm">Đăng ký Test</a></td>
-                </tr>
-
-                <tr>
-                    <td>🔥 Luyện thi IELTS 6.5+</td>
-                    <td>Intermediate - Advanced</td>
-                    <td>02/11/2025</td>
-                    <td>Thứ 3 - 5 - 7 (19h30 - 21h00)</td>
-                    <td>Cô Linh</td>
-                    <td><span class="badge bg-success">Offline</span></td>
-                    <td><a href="/TestDauVao/DangKy" class="btn btn-outline-primary btn-sm">Đăng ký Test</a></td>
-                </tr>
-
-                <tr>
-                    <td>⚡ TOEIC cấp tốc</td>
-                    <td>Pre-Intermediate</td>
-                    <td>10/11/2025</td>
-                    <td>Thứ 2 - 4 - 6 (17h00 - 18h30)</td>
-                    <td>Thầy Phúc</td>
-                    <td><span class="badge bg-info text-dark">Online</span></td>
-                    <td><a href="/TestDauVao/DangKy" class="btn btn-outline-primary btn-sm">Đăng ký Test</a></td>
-                </tr>
-
-                <tr>
-                    <td>🌈 Tiếng Anh Thiếu nhi</td>
-                    <td>Starter - Mover</td>
-                    <td>12/11/2025</td>
-                    <td>Thứ 7 & Chủ nhật (08h00 - 10h00)</td>
-                    <td>Cô Hương</td>
-                    <td><span class="badge bg-warning text-dark">Offline</span></td>
-                    <td><a href="/TestDauVao/DangKy" class="btn btn-outline-primary btn-sm">Đăng ký Test</a></td>
-                </tr>
-
-                <tr>
-                    <td>🏢 Tiếng Anh Doanh nghiệp</td>
-                    <td>All Levels</td>
-                    <td>20/11/2025</td>
-                    <td>Theo lịch công ty</td>
-                    <td>Team Enlight</td>
-                    <td><span class="badge bg-secondary">Tại doanh nghiệp</span></td>
-                    <td><a href="/TestDauVao/DangKy" class="btn btn-outline-primary btn-sm">Đăng ký Test</a></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- 🔔 Liên hệ tư vấn -->
-    <div class="text-center mt-5">
-        <h5 class="fw-bold text-dark mb-3">
-            🎓 Liên hệ ngay ENLIGHT để được tư vấn miễn phí lộ trình học phù hợp!
-        </h5>
-        <a href="/Home/Index#lienhe" class="btn btn-primary btn-lg px-4 shadow-sm">
-            <i class="bi bi-telephone-forward-fill me-2"></i> Liên hệ tư vấn
-        </a>
-    </div>
+            }
+        </tbody>
+    </table>
 </div>
-
-<!-- 🎨 CSS -->
-<style>
-    .banner-lichkh {
-        background-image: url('/WebTTImages/bannerlichhoc.jpg');
-        background-size: cover;
-        background-position: center;
-        height: 380px;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 0 0 40px 40px;
-    }
-
-    .banner-overlay {
-        background: rgba(0, 64, 128, 0.65);
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .banner-lichkh h1 {
-        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
-    }
-
-    .table th {
-        background-color: #0d6efd !important;
-        color: white;
-        font-size: 15px;
-    }
-
-    .table td {
-        vertical-align: middle;
-    }
-
-    .table tbody tr:hover {
-        background-color: #f5faff;
-        transition: background-color 0.2s ease-in-out;
-    }
-
-    .btn-outline-primary:hover {
-        background-color: #0d6efd;
-        color: #fff;
-    }
-
-    .btn-primary:hover {
-        background-color: #004aad;
-        transform: translateY(-2px);
-    }
-
-    .badge {
-        font-size: 0.9rem;
-        padding: 6px 10px;
-    }
-</style>
