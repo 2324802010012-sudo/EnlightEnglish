@@ -35,14 +35,14 @@ else
             @foreach (var hv in Model)
             {
                 <tr>
-                    <td>@hv.MaHocVien</td>
                     <td>@hv.HoTen</td>
                     <td>@hv.Email</td>
-                    <td>@hv.DienThoai</td>
-                    <td>@hv.TrinhDo</td>
-                    <td>@hv.KhoaHoc</td>
-                    <td>@hv.NgayDangKy.ToShortDateString()</td>
-                    <td>@hv.GhiChu</td>
+                    <td>@hv.SoDienThoai</td>
+                    <td>@hv.NgayDangKy?.ToShortDateString()</td>
+                    <td>@hv.TrangThai</td>
+                    <td>
+                     @hv.NgayDangKy?.ToShortDateString()
+                    </td>
                     <td class="text-center">
                         <!-- Sửa -->
                     <td class="text-center align-middle" style="white-space: nowrap; width: 150px;">

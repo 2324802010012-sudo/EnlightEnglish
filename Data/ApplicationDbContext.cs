@@ -37,7 +37,7 @@ namespace EnlightEnglishCenter.Data
         public DbSet<PhanCongGiangDay> PhanCongGiangDays { get; set; }
         public DbSet<PhongDaoTao> PhongDaoTaos { get; set; }
         public DbSet<NhanVienLeTan> NhanVienLeTans { get; set; }
-        public DbSet<HocVien> HocViens { get; set; }
+  
         public DbSet<PhongHoc> PhongHocs { get; set; }
 
 
