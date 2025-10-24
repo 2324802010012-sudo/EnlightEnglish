@@ -6,33 +6,31 @@
     ViewData["Title"] = "Hồ sơ cá nhân";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    // 🔹 Lấy vai trò từ Session
-    var role = HttpContextAccessor.HttpContext?.Session.GetString("VaiTro") ?? "";
+    // 🔹 Lấy vai trò từ Session (đảm bảo không null)
+    var role = HttpContextAccessor.HttpContext?.Session?.GetString("VaiTro") ?? string.Empty;
     string url = "#";
     string btnColor = "btn-outline-primary";
 
-    if (role == "Kế toán")
+    switch (role)
     {
-        url = Url.Action("Index", "KeToan");
-        btnColor = "btn-outline-success";
-    }
-    else if (role == "Lễ tân")
-    {
-        url = Url.Action("Index", "LeTan");
-        btnColor = "btn-outline-warning";
-    }
-    else if (role == "Học viên")
-    {
-        url = Url.Action("Index", "HocVien");
-    }
-    else if (role == "Admin")
-    {
-        url = Url.Action("Index", "Admin");
-        btnColor = "btn-outline-danger";
-    }
-    else
-    {
-        url = Url.Action("Index", "Home");
+        case "Kế toán":
+            url = Url.Action("Index", "KeToan") ?? "#";
+            btnColor = "btn-outline-success";
+            break;
+        case "Lễ tân":
+            url = Url.Action("Index", "LeTan") ?? "#";
+            btnColor = "btn-outline-warning";
+            break;
+        case "Học viên":
+            url = Url.Action("Index", "HocVien") ?? "#";
+            break;
+        case "Admin":
+            url = Url.Action("Index", "Admin") ?? "#";
+            btnColor = "btn-outline-danger";
+            break;
+        default:
+            url = Url.Action("Index", "Home") ?? "#";
+            break;
     }
 }
 
@@ -45,14 +43,14 @@
         <div class="card-body p-4">
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <p><b>👤 Họ tên:</b> @Model.HoTen</p>
-                    <p><b>🧭 Giới tính:</b> @Model.GioiTinh</p>
+                    <p><b>👤 Họ tên:</b> @(Model.HoTen ?? "Chưa cập nhật")</p>
+                    <p><b>🧭 Giới tính:</b> @(Model.GioiTinh ?? "Chưa cập nhật")</p>
                     <p><b>🎂 Ngày sinh:</b> @(Model.NgaySinh?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")</p>
                 </div>
                 <div class="col-md-6">
-                    <p><b>📧 Email:</b> @Model.Email</p>
-                    <p><b>📱 Số điện thoại:</b> @Model.SoDienThoai</p>
-                    <p><b>🏠 Địa chỉ:</b> @Model.DiaChi</p>
+                    <p><b>📧 Email:</b> @(Model.Email ?? "Chưa cập nhật")</p>
+                    <p><b>📱 Số điện thoại:</b> @(Model.SoDienThoai ?? "Chưa cập nhật")</p>
+                    <p><b>🏠 Địa chỉ:</b> @(Model.DiaChi ?? "Chưa cập nhật")</p>
                 </div>
             </div>
 
@@ -61,7 +59,7 @@
                 <i class="fa-solid fa-id-badge me-2"></i>Thông tin tài khoản
             </h5>
 
-            <p><b>🔑 Tên đăng nhập:</b> @Model.TenDangNhap</p>
+            <p><b>🔑 Tên đăng nhập:</b> @(Model.TenDangNhap ?? "Không có")</p>
             <p><b>🧩 Vai trò:</b> @(Model.MaVaiTroNavigation?.TenVaiTro ?? "Không xác định")</p>
             <p><b>⚙️ Trạng thái:</b> @(Model.TrangThai ?? "Hoạt động")</p>
 
@@ -81,7 +79,7 @@
 
             <div class="text-center mt-4">
                 <a href="@url" class="btn @btnColor me-2">
-                    <i class="fa-solid fa-arrow-left me-1"></i> Quay lại trang @role
+                    <i class="fa-solid fa-arrow-left me-1"></i> Quay lại trang @(role != string.Empty ? role : "chính")
                 </a>
                 <a href="/Account/EditProfile" class="btn btn-success me-2">
                     <i class="fa-solid fa-pen-to-square me-1"></i> Chỉnh sửa hồ sơ

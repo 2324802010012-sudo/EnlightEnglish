@@ -11,7 +11,10 @@ namespace EnlightEnglishCenter.Models
     public class DkHocVienLopHoc
     {
         // 🔹 Khóa chính kép
+        [Key, Column(Order = 0)]
         public int MaHocVien { get; set; }
+
+        [Key, Column(Order = 1)]
         public int MaLop { get; set; }
 
         // 🔹 Thông tin đăng ký

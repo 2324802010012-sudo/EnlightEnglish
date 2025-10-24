@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EnlightEnglishCenter.Models
@@ -7,6 +8,7 @@ namespace EnlightEnglishCenter.Models
     public class HocVien
     {
         [Key]
+        [Display(Name = "Mã học viên")]
         public int MaHocVien { get; set; }
 
         [StringLength(100)]

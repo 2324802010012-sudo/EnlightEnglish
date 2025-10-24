@@ -1,57 +1,407 @@
-﻿@model IEnumerable<EnlightEnglishCenter.Models.DangKyTuVan>
+﻿@model EnlightEnglishCenter.ViewModels.LienHeHocVienViewModel
 @{
-    ViewData["Title"] = "Liên hệ học viên";
+    ViewData["Title"] = "Liên hệ học viên & khách hàng";
+    Layout = "~/Views/Shared/LeTanlayout.cshtml";
 }
+<link rel="stylesheet" href="~/css/LeTan.css" />
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f0fff4 0%, #e6f7ff 100%);
+        overflow-x: hidden;
+    }
+
+    .kanban-board {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+    }
+
+    /* 🎨 Cột Kanban */
+    .kanban-column {
+        flex: 1;
+        min-width: 280px;
+        max-width: 350px;
+        border-radius: 12px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(5px);
+        display: flex;
+        flex-direction: column;
+        height: 88vh; /* 👈 tăng chiều cao cột từ 75vh -> 88vh */
+        overflow: hidden;
+    }
+
+        .kanban-column h6 {
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(90deg, #198754, #20c997);
+            border-radius: 8px;
+            padding: 8px 10px;
+            text-align: center;
+            margin: 10px;
+        }
+
+        /* 🌈 Nền riêng từng cột */
+        .kanban-column[data-status="Tiềm năng"] {
+            background: linear-gradient(145deg, #e8f5e9, #ffffff);
+        }
+
+        .kanban-column[data-status="Đã confirm"] {
+            background: linear-gradient(145deg, #e3f2fd, #ffffff);
+        }
+
+        .kanban-column[data-status="Học viên đang học"] {
+            background: linear-gradient(145deg, #f1f8e9, #ffffff);
+        }
+
+        .kanban-column[data-status="Đã nghỉ"] {
+            background: linear-gradient(145deg, #fff3e0, #ffffff);
+        }
+
+    /* 📦 Vùng chứa card có cuộn riêng */
+    .kanban-dropzone {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 10px 10px 10px;
+        border-radius: 8px;
+        scroll-behavior: smooth;
+    }
+
+        .kanban-dropzone::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .kanban-dropzone::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+    /* 💳 Card */
+    .kanban-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+        word-wrap: break-word;
+    }
+
+        .kanban-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 📛 Giới hạn độ dài tên + xuống dòng */
+        .kanban-card .card-title {
+            font-weight: 600;
+            color: #212529;
+            font-size: 1rem;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            max-width: 180px; /* 👈 Giới hạn để icon không bị đẩy */
+        }
+
+        .kanban-card .card-meta {
+            font-size: 0.9rem;
+            color: #6c757d;
+            word-break: break-word;
+        }
+
+        .kanban-card .actions {
+            display: flex;
+            flex-shrink: 0;
+            gap: 3px;
+            margin-left: 4px;
+        }
+
+            .kanban-card .actions .btn {
+                padding: 3px 6px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+    .empty-column {
+        text-align: center;
+        color: #aaa;
+        padding: 1rem 0;
+    }
+
+    /* ✨ Hiệu ứng hover cột */
+    .kanban-column:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.25s ease;
+    }
+
+    .kanban-column h6::after {
+        content: "";
+        display: block;
+        height: 2px;
+        background: rgba(0,0,0,0.08);
+        margin-top: 6px;
+        border-radius: 1px;
+    }
+
+</style>
+
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="text-warning mb-0">
-            <i class="fa-solid fa-phone-volume me-2"></i> Liên hệ học viên
+        <h3 class="fw-bold text-success">
+            <i class="fa-solid fa-headset me-2"></i> Quản lý Liên hệ (Kanban)
         </h3>
-        <a asp-action="Index" class="btn btn-secondary">
-            <i class="fa-solid fa-arrow-left"></i> Quay lại
-        </a>
+        <div>
+            <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#contactCustomerModal">
+                <i class="fa-solid fa-user-plus me-1"></i> Thêm liên hệ
+            </button>
+            <a class="btn btn-outline-secondary" href="@Url.Action("Index","LeTan")">
+                <i class="fa-solid fa-arrow-left me-1"></i> Quay lại
+            </a>
+        </div>
     </div>
 
-    <table class="table table-bordered table-hover align-middle">
-        <thead class="table-warning text-center">
-            <tr>
-                <th>Họ tên</th>
-                <th>Email</th>
-                <th>Số điện thoại</th>
-                <th>Trạng thái</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var hv in Model)
-                {
-                    <tr>
-                        <td>@hv.HoTen</td>
-                        <td>@hv.Email</td>
-                        <td>@hv.SoDienThoai</td>
-                        <td class="text-center">@hv.TrangThai</td>
-                        <td class="text-center">
-                            <a href="mailto:@hv.Email" class="btn btn-sm btn-primary me-1">
-                                <i class="fa-solid fa-envelope"></i> Email
-                            </a>
-                            <a href="tel:@hv.SoDienThoai" class="btn btn-sm btn-success">
-                                <i class="fa-solid fa-phone"></i> Gọi
-                            </a>
-                        </td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="5" class="text-center text-muted">
-                        Chưa có học viên nào để liên hệ.
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    @{
+        var columns = new[]
+        {
+    new { Key = "Tiềm năng", Title = "Khách hàng tiềm năng" },
+    new { Key = "Đã confirm", Title = "Khách hàng confirm" },
+    new { Key = "Học viên đang học", Title = "Học viên đang học" },
+    new { Key = "Đã nghỉ", Title = "Học viên đã nghỉ" }
+    };
+    }
+
+    <div class="kanban-board">
+        @foreach (var col in columns)
+        {
+            <div class="kanban-column" data-status="@col.Key">
+                <h6>@col.Title</h6>
+                <div class="kanban-dropzone" data-status="@col.Key">
+                    @{
+                        var khs = Model.KhachHangs.Where(k => k.TrangThai == col.Key);
+                        var hvs = Model.HocViens.Where(h =>
+                        (h.GetType().GetProperty("TrangThai")?.GetValue(h)?.ToString() ?? "Học viên đang học") == col.Key);
+
+                        if (!khs.Any() && !hvs.Any())
+                        {
+                            <div class="empty-column">— Không có —</div>
+                            ;
+                        }
+                        else
+                        {
+                            foreach (var kh in khs)
+                            {
+                                <div class="kanban-card"
+                                     draggable="true"
+                                     data-id="@kh.MaLienHe"
+                                     data-loai="KhachHang"
+                                     data-trangthai="@kh.TrangThai">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="me-2 text-start flex-grow-1">
+                                            <div class="card-title">@kh.HoTen</div>
+                                            <div class="card-meta">
+                                                <i class="fa-solid fa-phone text-success me-1"></i>@kh.DienThoai
+                                                @if (!string.IsNullOrEmpty(kh.Email))
+                                                {
+                                                    <span class="ms-2"><i class="fa-solid fa-envelope text-primary me-1"></i>@kh.Email</span>
+                                                }
+                                            </div>
+                                            <div><small class="text-muted">@kh.KhoaHoc</small></div>
+                                        </div>
+                                        <div class="actions text-nowrap">
+                                            <a href="tel:@kh.DienThoai" class="btn btn-outline-success btn-sm" title="Gọi"><i class="fa-solid fa-phone"></i></a>
+                                            <button class="btn btn-outline-primary btn-sm" title="Xem"
+                                                    data-id="@kh.MaLienHe" data-loai="KhachHang"
+                                                    data-bs-toggle="modal" data-bs-target="#viewContactModal"
+                                                    onclick="loadDetail(this)">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning btn-sm" title="Sửa"
+                                                    onclick="openEdit(@kh.MaLienHe, 'KhachHang')">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            foreach (var hv in hvs)
+                            {
+                                var tt = hv.GetType().GetProperty("TrangThai")?.GetValue(hv)?.ToString() ?? "Học viên đang học";
+                                <div class="kanban-card"
+                                     draggable="true"
+                                     data-id="@hv.GetType().GetProperty("MaHocVien")?.GetValue(hv)"
+                                     data-loai="HocVien"
+                                     data-trangthai="@tt">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="me-2 text-start flex-grow-1">
+                                            <div class="card-title">@hv.GetType().GetProperty("HoTen")?.GetValue(hv)</div>
+                                            <div class="card-meta">
+                                                <i class="fa-solid fa-phone text-success me-1"></i>@hv.GetType().GetProperty("DienThoai")?.GetValue(hv)
+                                            </div>
+                                            <div><small class="text-muted">@hv.GetType().GetProperty("KhoaHoc")?.GetValue(hv)</small></div>
+                                        </div>
+                                        <div class="actions text-nowrap">
+                                            <a href="tel:@hv.GetType().GetProperty("DienThoai")?.GetValue(hv)" class="btn btn-outline-success btn-sm" title="Gọi"><i class="fa-solid fa-phone"></i></a>
+                                            <button class="btn btn-outline-primary btn-sm" title="Xem"
+                                                    data-id="@hv.GetType().GetProperty("MaHocVien")?.GetValue(hv)"
+                                                    data-loai="HocVien"
+                                                    data-bs-toggle="modal" data-bs-target="#viewContactModal"
+                                                    onclick="loadDetail(this)">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning btn-sm" title="Sửa"
+                                                    onclick="openEdit(@hv.GetType().GetProperty("MaHocVien")?.GetValue(hv), 'HocVien')">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
 </div>
+
+<!-- Modal thêm liên hệ -->
+<div class="modal fade" id="contactCustomerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fa-solid fa-user-plus me-2"></i> Thêm liên hệ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="contactCustomerForm" method="post" asp-action="ThemLienHe" asp-controller="LeTan" class="row g-3">
+                    @Html.AntiForgeryToken()
+                    <div class="col-md-6"><label class="form-label">Họ và tên</label><input type="text" name="HoTen" class="form-control" required /></div>
+                    <div class="col-md-6"><label class="form-label">Điện thoại</label><input type="tel" name="DienThoai" class="form-control" required /></div>
+                    <div class="col-md-6"><label class="form-label">Email</label><input type="email" name="Email" class="form-control" /></div>
+                    <div class="col-md-6">
+                        <label class="form-label">Trạng thái</label>
+                        <select name="TrangThai" class="form-select">
+                            <option value="Tiềm năng">Tiềm năng</option>
+                            <option value="Đã confirm">Đã confirm</option>
+                            <option value="Học viên đang học">Học viên đang học</option>
+                            <option value="Đã nghỉ">Đã nghỉ</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6"><label class="form-label">Khóa học</label><input type="text" name="KhoaHoc" class="form-control" /></div>
+                    <div class="col-12"><label class="form-label">Ghi chú</label><textarea name="GhiChu" class="form-control"></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="submit" form="contactCustomerForm" class="btn btn-success">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xem chi tiết -->
+<div class="modal fade" id="viewContactModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fa-solid fa-circle-info me-2"></i> Chi tiết</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="detailBody">
+                <div class="text-center text-muted">Đang tải...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Gắn các sự kiện drag/drop bằng JS thay vì inline HTML
+            document.querySelectorAll(".kanban-card").forEach(card => {
+                card.addEventListener("dragstart", dragStart);
+            });
+
+            document.querySelectorAll(".kanban-dropzone").forEach(zone => {
+                zone.addEventListener("dragover", handleDragOver);
+                zone.addEventListener("dragleave", handleDragLeave);
+                zone.addEventListener("drop", dropHandler);
+            });
+        });
+
+        let dragItem = null;
+
+        function dragStart(e) {
+            dragItem = e.currentTarget;
+            e.dataTransfer.setData("text/plain", JSON.stringify({
+                id: dragItem.dataset.id,
+                loai: dragItem.dataset.loai
+            }));
+            e.dataTransfer.effectAllowed = "move";
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add("dragover");
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove("dragover");
+        }
+
+        function dropHandler(e) {
+            e.preventDefault();
+            const zone = e.currentTarget;
+            zone.classList.remove("dragover");
+            const data = JSON.parse(e.dataTransfer.getData("text/plain"));
+            const card = document.querySelector(`.kanban-card[data-id="${data.id}"][data-loai="${data.loai}"]`);
+            if (zone && card) {
+                zone.appendChild(card);
+                updateStatusOnServer(data.id, data.loai, zone.dataset.status);
+            }
+        }
+
+        async function updateStatusOnServer(id, loai, trangThai) {
+            try {
+                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? "";
+                const resp = await fetch('@Url.Action("UpdateTrangThai", "LeTan")', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "RequestVerificationToken": token
+                    },
+                    body: new URLSearchParams({ id, loai, trangThai })
+                });
+                if (!resp.ok) alert("Không thể cập nhật trạng thái!");
+            } catch (err) {
+                console.error("Lỗi cập nhật:", err);
+            }
+        }
+
+        function loadDetail(btn) {
+            const id = btn.getAttribute("data-id");
+            const loai = btn.getAttribute("data-loai");
+            const url = `@Url.Action("ChiTietLienHe", "LeTan")?id=${id}&loai=${loai}`;
+            const body = document.getElementById("detailBody");
+            body.innerHTML = '<div class="text-center text-muted">Đang tải...</div>';
+
+            fetch(url)
+                .then(r => r.ok ? r.text() : Promise.reject("Lỗi"))
+                .then(html => body.innerHTML = html)
+                .catch(() => body.innerHTML = '<div class="text-danger text-center">Không thể tải thông tin.</div>');
+        }
+
+        function openEdit(id, loai) {
+            alert(`Mở form sửa ID=${id}, loại=${loai}`);
+        }
+    </script>
+}
+
