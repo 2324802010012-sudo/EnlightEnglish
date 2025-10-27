@@ -1,44 +1,43 @@
 ﻿@model EnlightEnglishCenter.Models.GiaoVien
-
 @{
     ViewData["Title"] = "Thêm giảng viên";
 }
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-action="GiaoVien">Giảng viên</a></li>
+    <li class="breadcrumb-item active">Thêm</li>
+}
 
-<div class="container mt-5">
-    <h2 class="fw-bold text-primary mb-4">
-        <i class="fa-solid fa-user-plus me-2"></i> Thêm giảng viên mới
-    </h2>
+<form asp-action="ThemGiaoVien" method="post" class="card p-3">
+    @Html.AntiForgeryToken()
+    <div class="mb-3">
+        <label class="form-label">Người dùng</label>
+        <select asp-for="MaNguoiDung" class="form-select" asp-items="ViewBag.DSNguoiDung">
+            <option value="">-- Chọn người dùng --</option>
+        </select>
+        <span asp-validation-for="MaNguoiDung" class="text-danger"></span>
+    </div>
 
-    <form asp-action="ThemGiaoVien" method="post" class="shadow-sm p-4 bg-light rounded">
-        <div class="mb-3">
-            <label class="form-label fw-bold">Người dùng</label>
-            <select asp-for="MaNguoiDung" asp-items="ViewBag.DSNguoiDung" class="form-select" required>
-                <option value="">-- Chọn người dùng --</option>
-            </select>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Chuyên môn</label>
+            <input asp-for="ChuyenMon" class="form-control" />
         </div>
-
-        <div class="mb-3">
-            <label class="form-label fw-bold">Trình độ</label>
-            <input asp-for="TrinhDo" class="form-control" placeholder="VD: Thạc sĩ Ngôn ngữ Anh" />
+        <div class="col-md-6">
+            <label class="form-label">Trình độ</label>
+            <input asp-for="TrinhDo" class="form-control" />
         </div>
-
-        <div class="mb-3">
-            <label class="form-label fw-bold">Kinh nghiệm</label>
-            <input asp-for="KinhNghiem" class="form-control" placeholder="VD: 5 năm giảng dạy IELTS" />
+        <div class="col-12">
+            <label class="form-label">Kinh nghiệm</label>
+            <input asp-for="KinhNghiem" class="form-control" />
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-bold">Chuyên môn</label>
-            <input asp-for="ChuyenMon" class="form-control" placeholder="VD: IELTS Speaking & Writing" />
-        </div>
+    <div class="mt-3">
+        <button class="btn btn-primary">Lưu</button>
+        <a asp-action="GiaoVien" class="btn btn-outline-secondary">Hủy</a>
+    </div>
+</form>
 
-        <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary px-4">
-                <i class="fa-solid fa-floppy-disk me-2"></i> Lưu giảng viên
-            </button>
-            <a asp-action="GiaoVien" class="btn btn-outline-secondary ms-2">
-                <i class="fa-solid fa-rotate-left me-2"></i> Quay lại
-            </a>
-        </div>
-    </form>
-</div>
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+ }

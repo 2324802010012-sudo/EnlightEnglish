@@ -1,86 +1,55 @@
 ﻿@model IEnumerable<EnlightEnglishCenter.Models.KhoaHoc>
-
 @{
-    ViewData["Title"] = "Quản lý khóa học";
+    ViewData["Title"] = "Khóa học";
+}
+@section Breadcrumb {
+    <li class="breadcrumb-item active" aria-current="page">Khóa học</li>
 }
 
-<div class="container mt-5">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-primary">
-            <i class="fa-solid fa-book-open-reader me-2"></i> Danh sách Khóa học
-        </h2>
-        <p class="text-muted">Phòng đào tạo có thể thêm, sửa, xóa hoặc tạo nhanh các khóa học mẫu.</p>
-    </div>
-
-    <div class="d-flex justify-content-between mb-3">
-        <a href="/PhongDaoTao/ThemKhoaHoc" class="btn btn-primary">
-            <i class="fa-solid fa-plus-circle me-2"></i> Thêm khóa học mới
-        </a>
-
-        <a href="/PhongDaoTao/TaoKhoaHocMau" class="btn btn-success">
-            <i class="fa-solid fa-bolt me-2"></i> Tạo nhanh 9 khóa học mẫu
-        </a>
-    </div>
-
-    <div class="table-responsive shadow-sm">
-        <table class="table table-bordered table-hover align-middle text-center">
-            <thead class="table-primary">
-                <tr>
-                    <th>Tên khóa học</th>
-                    <th>Cấp độ</th>
-                    <th>Lộ trình học</th>
-                    <th>Ngày bắt đầu</th>
-                    <th>Ngày kết thúc</th>
-                    <th>Trạng thái</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var item in Model)
-                    {
-                        <tr>
-                            <td class="fw-bold">@item.TenKhoaHoc</td>
-                            <td>@item.CapDo</td>
-                            <td>@item.LoTrinhHoc</td>
-                            <td>@item.NgayBatDau?.ToString("dd/MM/yyyy")</td>
-                            <td>@item.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
-                            <td>
-                                <span class="badge @(item.TrangThai == "Đang mở" ? "bg-success" : "bg-secondary")">
-                                    @item.TrangThai
-                                </span>
-                            </td>
-                            <td>
-                                <div class="btn-group">
-                                    <a href="/PhongDaoTao/SuaKhoaHoc/@item.MaKhoaHoc" class="btn btn-warning btn-sm">
-                                        <i class="fa-solid fa-pen-to-square"></i> Sửa
-                                    </a>
-                                    <form asp-action="XoaKhoaHoc" asp-controller="PhongDaoTao" method="post" class="d-inline"
-                                          onsubmit="return confirm('Bạn có chắc muốn xóa khóa học này?');">
-                                        <input type="hidden" name="id" value="@item.MaKhoaHoc" />
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fa-solid fa-trash"></i> Xóa
-                                        </button>
-                                    </form>
-                                    <form asp-action="DoiTrangThai" asp-controller="PhongDaoTao" method="post" class="d-inline">
-                                        <input type="hidden" name="id" value="@item.MaKhoaHoc" />
-                                        <button type="submit" class="btn btn-info btn-sm">
-                                            <i class="fa-solid fa-arrows-rotate"></i> @(item.TrangThai == "Đang mở" ? "Đóng" : "Mở")
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="7" class="text-muted">Chưa có khóa học nào!</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="m-0">Danh sách khóa học</h3>
+    <div>
+        <a asp-action="TaoKhoaHocMau" class="btn btn-outline-secondary">+ Tạo khóa học mẫu</a>
+        <a asp-action="ThemKhoaHoc" class="btn btn-success">+ Thêm khóa học</a>
     </div>
 </div>
+
+<table class="table table-hover align-middle">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Tên khóa</th>
+            <th>Cấp độ</th>
+            <th>Học phí</th>
+            <th>Bắt đầu</th>
+            <th>Kết thúc</th>
+            <th>Trạng thái</th>
+            <th style="width:220px;">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var k in Model)
+        {
+            <tr>
+                <td>@k.MaKhoaHoc</td>
+                <td>@k.TenKhoaHoc</td>
+                <td>@k.CapDo</td>
+                <td>@String.Format("{0:#,0}", k.HocPhi)</td>
+                <td>@k.NgayBatDau?.ToString("dd/MM/yyyy")</td>
+                <td>@k.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
+                <td><span class="badge bg-@(k.TrangThai=="Đang mở"?"success":"secondary")">@k.TrangThai</span></td>
+                <td>
+                    <a asp-action="SuaKhoaHoc" asp-route-id="@k.MaKhoaHoc" class="btn btn-sm btn-primary">Sửa</a>
+                    <form asp-action="DoiTrangThai" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@k.MaKhoaHoc" />
+                        <button class="btn btn-sm btn-warning">Đóng/Mở</button>
+                    </form>
+                    <form asp-action="XoaKhoaHoc" method="post" class="d-inline" onsubmit="return confirm('Xóa khóa học này?')">
+                        <input type="hidden" name="id" value="@k.MaKhoaHoc" />
+                        <button class="btn btn-sm btn-outline-danger">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

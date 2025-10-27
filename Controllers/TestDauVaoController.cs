@@ -177,15 +177,14 @@ namespace EnlightEnglishCenter.Controllers
             int correct = 0;
             int count = Math.Min(answers.Count, correctAnswers.Count);
             for (int i = 0; i < count; i++)
-            {
-                if (answers[i] == correctAnswers[i])
-                    correct++;
-            }
+                if (answers[i] == correctAnswers[i]) correct++;
 
-            double score = count > 0 ? (correct / (double)count) * 10 : 0;
-            string deXuat = score < 4 ? "Cấp độ Cơ bản" :
-                            score < 7 ? "Cấp độ Trung bình" :
-                            "Cấp độ Nâng cao";
+            // Quy về thang 10
+            double score10 = count > 0 ? (correct / (double)count) * 10 : 0;
+
+            string deXuat = score10 < 4 ? "Cấp độ Cơ bản"
+                          : score10 < 7 ? "Cấp độ Trung bình"
+                          : "Cấp độ Nâng cao";
 
             int? maHocVien = HttpContext.Session.GetInt32("MaNguoiDung");
             if (maHocVien == null)
@@ -198,21 +197,24 @@ namespace EnlightEnglishCenter.Controllers
 
             if (test != null)
             {
-                test.DiemNguPhap = (decimal)score;
+                // Ghi điểm: có thể dồn vào DiemNguPhap hoặc chia ra các kỹ năng nếu bạn tách bài
+                test.DiemNguPhap = (decimal)score10;
+                test.TongDiem = (decimal)score10;     // ✅ lưu tổng điểm đúng cột có thật
                 test.TrangThai = "Hoàn thành";
                 test.NgayTest = DateTime.Now;
-                test.LoTrinhHoc = deXuat;
+                test.LoTrinhHoc = deXuat;             // ✅ gợi ý lộ trình
+
                 _context.SaveChanges();
 
                 GuiEmailKetQua(
                     test.HocVien?.Email ?? "",
                     test.HocVien?.HoTen ?? "Học viên",
-                    score,
+                    score10,
                     deXuat
                 );
             }
 
-            ViewBag.Score = score;
+            ViewBag.Score = score10;
             ViewBag.DeXuat = deXuat;
             ViewBag.Course = course;
 
@@ -220,45 +222,38 @@ namespace EnlightEnglishCenter.Controllers
         }
 
 
+
         // ======================================================
         // 5️⃣-bis. Cập nhật điểm test (Admin cập nhật hoặc chấm tay)
         // ======================================================
         [HttpPost]
-        [Route("TestDauVao/CapNhatDiem")]   // ✅ đổi route để tránh trùng với NopBai trên
+        [Route("TestDauVao/CapNhatDiem")]
         public async Task<IActionResult> CapNhatDiem(int id, double diem)
         {
             var test = await _context.TestDauVaos
-                .Include(t => t.KhoaHocDeXuatNavigation) // ✅ sửa lại navigation đúng
+                .Include(t => t.KhoaHocDeXuatNavigation)
                 .FirstOrDefaultAsync(t => t.MaTest == id);
 
-            if (test == null)
-                return NotFound();
+            if (test == null) return NotFound();
 
-            test.DiemSo = diem;
+            test.TongDiem = (decimal)diem;  // ✅ cột có thật
             test.TrangThai = "Hoàn thành";
 
-            // ✅ Xác định lớp phù hợp dựa trên điểm
-            if (test.KhoaHocDeXuatNavigation != null && test.KhoaHocDeXuatNavigation.TenKhoaHoc.Contains("IELTS"))
-            {
-                if (diem >= 8)
-                    test.LopDeXuat = "IELTS Nâng cao";
-                else if (diem >= 6)
-                    test.LopDeXuat = "IELTS Trung bình";
-                else
-                    test.LopDeXuat = "IELTS Cơ bản";
-            }
-            else if (test.KhoaHocDeXuatNavigation != null && test.KhoaHocDeXuatNavigation.TenKhoaHoc.Contains("TOEIC"))
-            {
-                if (diem >= 800)
-                    test.LopDeXuat = "TOEIC Nâng cao";
-                else if (diem >= 600)
-                    test.LopDeXuat = "TOEIC Trung bình";
-                else
-                    test.LopDeXuat = "TOEIC Cơ bản";
-            }
+            // ✅ Gợi ý lộ trình theo khóa đề xuất & điểm
+            string loTrinh = "Cấp độ Cơ bản";
+            var ten = test.KhoaHocDeXuatNavigation?.TenKhoaHoc?.ToUpperInvariant() ?? "";
+
+            if (ten.Contains("IELTS"))
+                loTrinh = diem >= 8 ? "IELTS Nâng cao" : diem >= 6 ? "IELTS Trung bình" : "IELTS Cơ bản";
+            else if (ten.Contains("TOEIC"))
+                loTrinh = diem >= 8 ? "TOEIC Nâng cao" : diem >= 6 ? "TOEIC Trung bình" : "TOEIC Cơ bản";
+            else if (ten.Contains("CAMBRIDGE"))
+                loTrinh = diem >= 8 ? "Cambridge Nâng cao" : diem >= 6 ? "Cambridge Trung bình" : "Cambridge Cơ bản";
+
+            test.LoTrinhHoc = loTrinh;       // ✅ cột có thật
 
             await _context.SaveChangesAsync();
-            TempData["Success"] = $"✅ Đã cập nhật điểm và gợi ý lớp: {test.LopDeXuat}";
+            TempData["Success"] = $"✅ Đã cập nhật điểm và lộ trình: {loTrinh}";
             return RedirectToAction("KetQua", new { id = test.MaTest });
         }
 

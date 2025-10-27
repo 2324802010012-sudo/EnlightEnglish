@@ -1,46 +1,38 @@
 ﻿@model EnlightEnglishCenter.Models.PhanCongGiangDay
 @{
-    ViewData["Title"] = "Thêm phân công giảng viên";
+    ViewData["Title"] = "Thêm phân công";
+}
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-action="PhanCong">Phân công giảng dạy</a></li>
+    <li class="breadcrumb-item active">Thêm</li>
 }
 
-<div class="container mt-4">
-    <h3 class="fw-bold text-danger mb-3">
-        <i class="fa-solid fa-user-plus me-2"></i> Thêm phân công giảng viên
-    </h3>
+<form asp-action="ThemPhanCong" method="post" class="card p-3">
+    @Html.AntiForgeryToken()
+    <div class="mb-3">
+        <label class="form-label">Giảng viên</label>
+        <select asp-for="MaGiaoVien" class="form-select" asp-items="ViewBag.DSGiaoVien">
+            <option value="">-- Chọn giảng viên --</option>
+        </select>
+        <span asp-validation-for="MaGiaoVien" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Lớp học</label>
+        <select asp-for="MaLop" class="form-select" asp-items="ViewBag.DSLopHoc">
+            <option value="">-- Chọn lớp học --</option>
+        </select>
+        <span asp-validation-for="MaLop" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Ghi chú</label>
+        <input asp-for="GhiChu" class="form-control" />
+    </div>
+    <div>
+        <button class="btn btn-primary">Lưu</button>
+        <a asp-action="PhanCong" class="btn btn-outline-secondary">Hủy</a>
+    </div>
+</form>
 
-    <form asp-action="ThemPhanCong" method="post" class="shadow-sm p-4 bg-light rounded">
-        <div class="mb-3">
-            <label class="form-label fw-bold">Giảng viên</label>
-            <select asp-for="MaGiaoVien" class="form-select" asp-items="ViewBag.DSGiaoVien">
-                <option value="">-- Chọn giảng viên --</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label fw-bold">Lớp học</label>
-            <select asp-for="MaLop" class="form-select" asp-items="ViewBag.DSLopHoc">
-                <option value="">-- Chọn lớp học --</option>
-            </select>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Ngày phân công</label>
-                <input asp-for="NgayPhanCong" type="date" class="form-control" />
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Ghi chú</label>
-                <input asp-for="GhiChu" class="form-control" placeholder="VD: Phụ trách toàn khóa" />
-            </div>
-        </div>
-
-        <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary px-4">
-                <i class="fa-solid fa-floppy-disk me-2"></i> Lưu
-            </button>
-            <a asp-action="PhanCong" class="btn btn-secondary ms-2">
-                <i class="fa-solid fa-arrow-left me-2"></i> Quay lại
-            </a>
-        </div>
-    </form>
-</div>
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+ }

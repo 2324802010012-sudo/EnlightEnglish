@@ -1,83 +1,58 @@
 ﻿@model EnlightEnglishCenter.Models.KhoaHoc
-
 @{
     ViewData["Title"] = "Sửa khóa học";
 }
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-action="KhoaHoc">Khóa học</a></li>
+    <li class="breadcrumb-item active">Sửa</li>
+}
 
-<div class="container mt-5">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-warning">
-            <i class="fa-solid fa-pen-to-square me-2"></i> Sửa thông tin khóa học
-        </h2>
+<form asp-action="SuaKhoaHoc" method="post" class="card p-3">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="MaKhoaHoc" />
+
+    <div class="mb-3">
+        <label class="form-label">Tên khóa học</label>
+        <input asp-for="TenKhoaHoc" class="form-control" required />
     </div>
 
-    <form asp-action="SuaKhoaHoc" method="post" class="shadow-sm p-4 rounded bg-light">
-        <input type="hidden" asp-for="MaKhoaHoc" />
-
-        <div class="mb-3">
-            <label class="form-label fw-bold">Tên khóa học</label>
-            <input asp-for="TenKhoaHoc" class="form-control" required />
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label">Cấp độ</label>
+            <input asp-for="CapDo" class="form-control" />
         </div>
-
-        <!-- 🔹 Cấp độ -->
-        <div class="mb-3">
-            <label class="form-label fw-bold">Cấp độ</label>
-            @{
-                var capDo = Model.CapDo ?? "";
-            }
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="CapDo" value="Cơ bản" @(capDo == "Cơ bản" ? "checked" : "") />
-                <label class="form-check-label">Cơ bản</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="CapDo" value="Trung bình" @(capDo == "Trung bình" ? "checked" : "") />
-                <label class="form-check-label">Trung bình</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="CapDo" value="Nâng cao" @(capDo == "Nâng cao" ? "checked" : "") />
-                <label class="form-check-label">Nâng cao</label>
-            </div>
+        <div class="col-md-4">
+            <label class="form-label">Học phí</label>
+            <input asp-for="HocPhi" class="form-control" />
         </div>
-
-        <!-- 🔹 Lộ trình học -->
-        <div class="mb-3">
-            <label class="form-label fw-bold">Lộ trình học</label>
-            @{
-                var loTrinh = Model.LoTrinhHoc ?? "";
-            }
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="LoTrinhHoc" value="8 tuần / 24 buổi" @(loTrinh == "8 tuần / 24 buổi" ? "checked" : "") />
-                <label class="form-check-label">8 tuần / 24 buổi</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="LoTrinhHoc" value="12 tuần / 36 buổi" @(loTrinh == "12 tuần / 36 buổi" ? "checked" : "") />
-                <label class="form-check-label">12 tuần / 36 buổi</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="LoTrinhHoc" value="16 tuần / 48 buổi" @(loTrinh == "16 tuần / 48 buổi" ? "checked" : "") />
-                <label class="form-check-label">16 tuần / 48 buổi</label>
-            </div>
+        <div class="col-md-4">
+            <label class="form-label">Thời lượng</label>
+            <input asp-for="ThoiLuong" class="form-control" />
         </div>
+    </div>
 
-        <!-- 🔹 Ngày bắt đầu & kết thúc -->
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Ngày bắt đầu</label>
-                <input asp-for="NgayBatDau" type="date" class="form-control" />
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Ngày kết thúc</label>
-                <input asp-for="NgayKetThuc" type="date" class="form-control" />
-            </div>
+    <div class="row g-3 mt-1">
+        <div class="col-md-6">
+            <label class="form-label">Ngày bắt đầu</label>
+            <input asp-for="NgayBatDau" type="date" class="form-control" />
         </div>
+        <div class="col-md-6">
+            <label class="form-label">Ngày kết thúc</label>
+            <input asp-for="NgayKetThuc" type="date" class="form-control" />
+        </div>
+    </div>
 
-        <div class="d-flex justify-content-end">
-            <a href="/PhongDaoTao/KhoaHoc" class="btn btn-secondary me-2">
-                <i class="fa-solid fa-arrow-left"></i> Quay lại
-            </a>
-            <button type="submit" class="btn btn-success">
-                <i class="fa-solid fa-save me-2"></i> Lưu thay đổi
-            </button>
-        </div>
-    </form>
-</div>
+    <div class="mb-3 mt-1">
+        <label class="form-label">Mô tả</label>
+        <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div>
+        <button class="btn btn-primary">Lưu</button>
+        <a asp-action="KhoaHoc" class="btn btn-outline-secondary">Hủy</a>
+    </div>
+</form>
+
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+ }

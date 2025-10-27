@@ -1,0 +1,127 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.TaiLieu>
+@{
+    ViewData["Title"] = "Tài liệu giảng dạy";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h3 class="fw-bold text-success mb-3">
+        <i class="fa-solid fa-folder-open me-2"></i> Tài liệu giảng dạy
+    </h3>
+
+    @if (TempData["Ok"] != null)
+    {
+        <div class="alert alert-success">@TempData["Ok"]</div>
+    }
+    @if (TempData["Err"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Err"]</div>
+    }
+
+    <form method="get" class="row g-2 align-items-end mb-3">
+        <div class="col-md-4">
+            <label class="form-label">Tìm kiếm</label>
+            <input type="text" name="search" value="@Context.Request.Query["search"]" class="form-control" placeholder="Tên/Mô tả/Đường dẫn..." />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Lọc theo lớp</label>
+            @Html.DropDownList("lopId", (SelectList)ViewBag.LopHocList, "-- Tất cả lớp --", new { @class = "form-select" })
+        </div>
+        <div class="col-md-5 text-end">
+            <button class="btn btn-primary me-2"><i class="fa fa-search me-1"></i> Lọc</button>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalUpload">
+                <i class="fa fa-upload me-1"></i> Tải tài liệu
+            </button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Tên tài liệu</th>
+                    <th class="d-none d-md-table-cell">Mô tả</th>
+                    <th class="d-none d-md-table-cell">Lớp</th>
+                    <th class="text-center">Ngày tải lên</th>
+                    <th class="text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a href="@item.DuongDan" target="_blank">@item.TenTaiLieu</a>
+                            </td>
+                            <td class="d-none d-md-table-cell">
+                                <div style="max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                    @item.MoTa
+                                </div>
+                            </td>
+                            <td class="d-none d-md-table-cell">
+                                @(item.MaLop.HasValue ? ("Lớp " + item.MaLop.Value) : "—")
+                            </td>
+                            <td class="text-center">@((item.NgayTaiLen ?? DateTime.MinValue).ToLocalTime().ToString("dd/MM/yyyy HH:mm"))</td>
+                            <td class="text-center">
+                                <a class="btn btn-sm btn-outline-primary me-1"
+                                   href="@Url.Action("DownloadTaiLieu","GiaoVien", new { id = item.MaTaiLieu })">
+                                    <i class="fa fa-download"></i>
+                                </a>
+                                <form method="post" asp-action="XoaTaiLieu" asp-controller="GiaoVien" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.MaTaiLieu" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa tài liệu này?');">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="5" class="text-center text-muted">Chưa có tài liệu.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Upload -->
+<div class="modal fade" id="modalUpload" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" enctype="multipart/form-data" action="@Url.Action("UploadTaiLieu","GiaoVien")">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fa fa-upload me-2"></i> Tải tài liệu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tên tài liệu</label>
+                        <input name="tenTaiLieu" class="form-control" placeholder="VD: Bài giảng Unit 3" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <textarea name="moTa" class="form-control" rows="3" placeholder="Ghi chú ngắn cho học viên"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Gắn với lớp</label>
+                        @Html.DropDownList("maLop", (SelectList)ViewBag.LopHocList, "-- Không gắn lớp --", new { @class = "form-select" })
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Chọn file (PDF/DOC/DOCX/PPT/PPTX/XLS/XLSX, ≤ 20MB)</label>
+                        <input type="file" name="file" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-success"><i class="fa fa-check me-1"></i> Tải lên</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

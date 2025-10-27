@@ -1,65 +1,58 @@
 ﻿@model EnlightEnglishCenter.Models.LopHoc
-
 @{
     ViewData["Title"] = "Thêm lớp học";
 }
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-action="LopHoc">Lớp học</a></li>
+    <li class="breadcrumb-item active">Thêm</li>
+}
 
-<div class="container mt-5">
-    <h2 class="fw-bold text-primary mb-4">
-        <i class="fa-solid fa-layer-group me-2"></i> Thêm lớp học mới
-    </h2>
+<form asp-action="ThemLopHoc" method="post" class="card p-3">
+    @Html.AntiForgeryToken()
 
-    <form asp-action="ThemLopHoc" method="post" class="shadow-sm p-4 bg-light rounded">
-        <div class="mb-3">
-            <label class="form-label fw-bold">Tên lớp học</label>
-            <input asp-for="TenLop" class="form-control" placeholder="VD: IELTS Intermediate A1" required />
+    <div class="mb-3">
+        <label class="form-label">Tên lớp</label>
+        <input asp-for="TenLop" class="form-control" required />
+        <span asp-validation-for="TenLop" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Khóa học</label>
+        <select asp-for="MaKhoaHoc" class="form-select" asp-items="ViewBag.DSKhoaHoc">
+            <option value="">-- Chọn khóa học --</option>
+        </select>
+        <span asp-validation-for="MaKhoaHoc" class="text-danger"></span>
+        <div class="form-text">
+            Thời gian học lấy theo khóa học đã chọn (Ngày bắt đầu / kết thúc của lớp = của khóa).
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-bold">Khóa học</label>
-            <select asp-for="MaKhoaHoc" asp-items="ViewBag.DSKhoaHoc" class="form-select" required>
-                <option value="">-- Chọn khóa học --</option>
-            </select>
+    @* ❌ LOẠI BỎ hai input ngày vì LopHoc không có cột NgayBatDau/NgayKetThuc *@
+    @* <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Ngày bắt đầu</label>
+            <input asp-for="NgayBatDau" type="date" class="form-control" />
+            <span asp-validation-for="NgayBatDau" class="text-danger"></span>
         </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Ngày bắt đầu</label>
-                <input asp-for="NgayBatDau" type="date" class="form-control" />
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Ngày kết thúc</label>
-                <input asp-for="NgayKetThuc" type="date" class="form-control" />
-            </div>
+        <div class="col-md-6">
+            <label class="form-label">Ngày kết thúc</label>
+            <input asp-for="NgayKetThuc" type="date" class="form-control" />
+            <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
         </div>
+    </div> *@
 
-        <div class="mb-3">
-            <label class="form-label fw-bold">Trạng thái</label>
-            <select asp-for="TrangThai" class="form-select">
-                <option value="Đang học">Đang học</option>
-                <option value="Đã kết thúc">Đã kết thúc</option>
-                <option value="Tạm dừng">Tạm dừng</option>
-            </select>
-        </div>
+    <div class="mt-3">
+        <label class="form-label">Trạng thái</label>
+        <input asp-for="TrangThai" class="form-control" value="Đang học" />
+        <span asp-validation-for="TrangThai" class="text-danger"></span>
+    </div>
 
-        <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary px-4">
-                <i class="fa-solid fa-floppy-disk me-2"></i> Lưu lớp học
-            </button>
-            <a asp-action="LopHoc" class="btn btn-outline-secondary ms-2">
-                <i class="fa-solid fa-rotate-left me-2"></i> Quay lại
-            </a>
-        </div>
-    </form>
-</div>
+    <div class="mt-3">
+        <button class="btn btn-primary">Lưu</button>
+        <a asp-action="LopHoc" class="btn btn-outline-secondary">Hủy</a>
+    </div>
+</form>
 
-<style>
-    .container {
-        max-width: 700px;
-    }
-
-    .btn-primary {
-        background: linear-gradient(45deg, #007bff, #00c6ff);
-        border: none;
-    }
-</style>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

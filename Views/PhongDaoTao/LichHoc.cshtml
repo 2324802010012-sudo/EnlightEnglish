@@ -1,61 +1,46 @@
 ﻿@model IEnumerable<EnlightEnglishCenter.Models.LichHoc>
-
 @{
-    ViewData["Title"] = "Quản lý lịch học";
-
+    ViewData["Title"] = "Lịch học";
+}
+@section Breadcrumb {
+    <li class="breadcrumb-item active" aria-current="page">Lịch học</li>
 }
 
-<div class="container mt-4 mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="fw-bold text-primary">
-            <i class="fa-solid fa-calendar-days me-2"></i> Quản lý lịch học
-        </h2>
-        <a asp-action="ThemLichHoc" class="btn btn-success">
-            <i class="fa-solid fa-plus me-1"></i> Thêm buổi học
-        </a>
-    </div>
-
-    <table class="table table-bordered text-center align-middle shadow-sm">
-        <thead class="table-warning text-dark">
-            <tr>
-                <th>Khóa học</th>
-                <th>Lớp</th>
-                <th>Giáo viên</th>
-                <th>Ngày học</th>
-                <th>Giờ học</th>
-                <th>Phòng</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var lh in Model)
-            {
-                <tr>
-                    <td>@(lh.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc ?? "—")</td>
-                    <td>@(lh.LopHoc?.TenLop ?? "—")</td>
-                    <td>@(lh.GiaoVien?.NguoiDung?.HoTen ?? "—")</td>
-                    <td>@(lh.NgayHoc.HasValue? lh.NgayHoc.Value.ToString("dd/MM/yyyy") : "")</td>
-                    <td>@($"{lh.GioBatDau} - {lh.GioKetThuc}")</td>
-                    <td>@lh.PhongHoc</td>
-                    <td>
-                        <a asp-action="SuaLichHoc" asp-route-id="@lh.MaLichHoc"
-                           class="btn btn-sm btn-outline-warning me-1">
-                            <i class="fa-solid fa-pen"></i>
-                        </a>
-                        <form asp-action="XoaLichHoc" asp-route-id="@lh.MaLichHoc" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                    onclick="return confirm('Bạn có chắc muốn xóa buổi học này không?');">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success text-center mt-3">@TempData["Success"]</div>
-    }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="m-0">Danh sách lịch học</h3>
+    <a asp-action="ThemLichHoc" class="btn btn-success">+ Thêm buổi học</a>
 </div>
+
+<table class="table table-bordered align-middle">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Lớp</th>
+            <th>Khóa học</th>
+            <th>Ngày</th>
+            <th>Giờ</th>
+            <th>Phòng</th>
+            <th style="width:160px;">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var lh in Model)
+        {
+            <tr>
+                <td>@lh.MaLich</td> <!-- ✅ -->
+                <td>@(lh.LopHoc?.TenLop ?? "—")</td>
+                <td>@(lh.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc ?? "—")</td>
+                <td>@(lh.NgayHoc?.ToString("dd/MM/yyyy"))</td>
+                <td>@($"{lh.GioBatDau} - {lh.GioKetThuc}")</td>
+                <td>@(lh.PhongHoc ?? "—")</td>
+                <td>
+                    <a asp-action="SuaLichHoc" asp-route-id="@lh.MaLich" class="btn btn-sm btn-primary">Sửa</a> <!-- ✅ -->
+                    <form asp-action="XoaLichHoc" method="post" class="d-inline" onsubmit="return confirm('Xóa buổi học này?')">
+                        <input type="hidden" name="id" value="@lh.MaLich" /> <!-- ✅ -->
+                        <button class="btn btn-sm btn-outline-danger">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

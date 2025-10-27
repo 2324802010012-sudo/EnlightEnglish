@@ -26,6 +26,7 @@ namespace EnlightEnglishCenter.Controllers
             ViewData["Title"] = "Phòng Đào Tạo - Trang chủ";
             return View();
         }
+
         // ===========================
         // 🚪 Đăng xuất khỏi phòng đào tạo
         // ===========================
@@ -33,9 +34,9 @@ namespace EnlightEnglishCenter.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DangXuat()
         {
-            HttpContext.Session.Clear(); // Xóa toàn bộ session
+            HttpContext.Session.Clear();
             TempData["Success"] = "Bạn đã đăng xuất khỏi Phòng đào tạo!";
-            return RedirectToAction("Login", "Account"); // Quay lại trang đăng nhập sẵn có
+            return RedirectToAction("Login", "Account");
         }
 
         // ===========================
@@ -44,8 +45,8 @@ namespace EnlightEnglishCenter.Controllers
         public async Task<IActionResult> DuyetTest()
         {
             var dsTest = await _context.TestDauVaos
-                .Include(t => t.HocVien)
-                .Include(t => t.KhoaHocDeXuatNavigation)
+                .Include(t => t.HocVien)                     // FK -> NguoiDung
+                .Include(t => t.KhoaHocDeXuatNavigation)     // FK -> KhoaHoc
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -58,23 +59,18 @@ namespace EnlightEnglishCenter.Controllers
         {
             var test = await _context.TestDauVaos
                 .Include(t => t.HocVien)
-                .Include(t => t.KhoaHocDeXuatNavigation) // ✅ dùng navigation thật
+                .Include(t => t.KhoaHocDeXuatNavigation)
                 .FirstOrDefaultAsync(t => t.MaTest == id);
 
-            if (test == null)
-                return NotFound();
+            if (test == null) return NotFound();
 
             test.TrangThai = trangThai;
 
-            // ✅ Nếu học viên được duyệt test đầu vào cho khóa IELTS
-            if (trangThai == "Được phép test" && test.KhoaHocDeXuatNavigation?.TenKhoaHoc.Contains("IELTS") == true)
+            // Ví dụ thông báo khi duyệt cho khóa IELTS
+            if (trangThai == "Được phép test" && test.KhoaHocDeXuatNavigation?.TenKhoaHoc?.Contains("IELTS") == true)
             {
-                // Nếu bạn có thêm cột DaLamBaiTest
-                // test.DaLamBaiTest = false;
-
                 await _context.SaveChangesAsync();
 
-                // ✅ Lấy lớp và học phí tương ứng
                 var lop = await _context.LopHocs
                     .Include(l => l.MaKhoaHocNavigation)
                     .FirstOrDefaultAsync(l => l.MaKhoaHoc == test.KhoaHocDeXuat);
@@ -94,8 +90,6 @@ namespace EnlightEnglishCenter.Controllers
         // ===========================
         // 👨‍🏫 QUẢN LÝ GIẢNG VIÊN
         // ===========================
-
-        // ✅ Danh sách giảng viên
         public async Task<IActionResult> GiaoVien()
         {
             var danhSach = await _context.GiaoViens
@@ -107,17 +101,15 @@ namespace EnlightEnglishCenter.Controllers
             return View(danhSach);
         }
 
-        // ✅ Form thêm giảng viên
         [HttpGet]
         public async Task<IActionResult> ThemGiaoVien()
         {
-            ViewBag.DSNguoiDung = new SelectList(
-                await _context.NguoiDungs
-                    .Where(nd => nd.MaVaiTro == 3) // 3 = Giảng viên
-                    .ToListAsync(),
-                "MaNguoiDung", "HoTen"
-            );
+            var dsNguoiDung = await _context.NguoiDungs
+                .Where(nd => nd.MaVaiTro == 5 /* 5 = Giáo viên theo seed của bạn */)
+                .Select(nd => new { nd.MaNguoiDung, nd.HoTen })
+                .ToListAsync();
 
+            ViewBag.DSNguoiDung = new SelectList(dsNguoiDung, "MaNguoiDung", "HoTen");
             return View();
         }
 
@@ -125,26 +117,32 @@ namespace EnlightEnglishCenter.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemGiaoVien(GiaoVien model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.GiaoViens.Add(model);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "✅ Thêm giảng viên thành công!";
-                return RedirectToAction(nameof(GiaoVien));
+                var dsNguoiDung = await _context.NguoiDungs
+                    .Select(nd => new { nd.MaNguoiDung, nd.HoTen })
+                    .ToListAsync();
+                ViewBag.DSNguoiDung = new SelectList(dsNguoiDung, "MaNguoiDung", "HoTen");
+                return View(model);
             }
 
-            ViewBag.DSNguoiDung = new SelectList(await _context.NguoiDungs.ToListAsync(), "MaNguoiDung", "HoTen");
-            return View(model);
+            _context.GiaoViens.Add(model);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "✅ Thêm giảng viên thành công!";
+            return RedirectToAction(nameof(GiaoVien));
         }
 
-        // ✅ Sửa giảng viên
         [HttpGet]
         public async Task<IActionResult> SuaGiaoVien(int id)
         {
             var gv = await _context.GiaoViens.FindAsync(id);
             if (gv == null) return NotFound();
 
-            ViewBag.DSNguoiDung = new SelectList(await _context.NguoiDungs.ToListAsync(), "MaNguoiDung", "HoTen", gv.MaNguoiDung);
+            var dsNguoiDung = await _context.NguoiDungs
+                .Select(nd => new { nd.MaNguoiDung, nd.HoTen })
+                .ToListAsync();
+
+            ViewBag.DSNguoiDung = new SelectList(dsNguoiDung, "MaNguoiDung", "HoTen", gv.MaNguoiDung);
             return View(gv);
         }
 
@@ -152,19 +150,21 @@ namespace EnlightEnglishCenter.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SuaGiaoVien(GiaoVien model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.GiaoViens.Update(model);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "✅ Cập nhật giảng viên thành công!";
-                return RedirectToAction(nameof(GiaoVien));
+                var dsNguoiDung = await _context.NguoiDungs
+                    .Select(nd => new { nd.MaNguoiDung, nd.HoTen })
+                    .ToListAsync();
+                ViewBag.DSNguoiDung = new SelectList(dsNguoiDung, "MaNguoiDung", "HoTen");
+                return View(model);
             }
 
-            ViewBag.DSNguoiDung = new SelectList(await _context.NguoiDungs.ToListAsync(), "MaNguoiDung", "HoTen");
-            return View(model);
+            _context.GiaoViens.Update(model);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "✅ Cập nhật giảng viên thành công!";
+            return RedirectToAction(nameof(GiaoVien));
         }
 
-        // ✅ Xóa giảng viên
         [HttpPost]
         public async Task<IActionResult> XoaGiaoVien(int id)
         {
@@ -178,61 +178,55 @@ namespace EnlightEnglishCenter.Controllers
             return RedirectToAction(nameof(GiaoVien));
         }
 
-
         // ===========================
         // 🧑‍🏫 PHÂN CÔNG GIẢNG VIÊN
         // ===========================
-
-        // ✅ Danh sách phân công
         public async Task<IActionResult> PhanCong()
         {
             var danhSach = await _context.PhanCongGiangDays
-                .Include(p => p.GiaoVien)
-                    .ThenInclude(g => g.NguoiDung)
-                .Include(p => p.LopHoc)
-                    .ThenInclude(l => l.MaKhoaHocNavigation)
+                .Include(p => p.GiaoVien).ThenInclude(g => g.NguoiDung)
+                .Include(p => p.LopHoc).ThenInclude(l => l.MaKhoaHocNavigation)
                 .OrderByDescending(p => p.NgayPhanCong)
+                .AsNoTracking()
                 .ToListAsync();
 
             ViewData["Title"] = "Phân công giảng viên";
             return View(danhSach);
         }
 
-        // ✅ Form thêm phân công
         [HttpGet]
         public async Task<IActionResult> ThemPhanCong()
         {
             var giaoViens = await _context.GiaoViens
                 .Include(g => g.NguoiDung)
+                .Select(g => new { g.MaGiaoVien, HoTen = g.NguoiDung.HoTen })
                 .ToListAsync();
 
             var lopHocs = await _context.LopHocs
-                .Include(l => l.MaKhoaHocNavigation)
+                .Select(l => new { l.MaLop, l.TenLop })
                 .ToListAsync();
 
-            ViewBag.DSGiaoVien = new SelectList(giaoViens, "MaGiaoVien", "NguoiDung.HoTen");
+            ViewBag.DSGiaoVien = new SelectList(giaoViens, "MaGiaoVien", "HoTen");
             ViewBag.DSLopHoc = new SelectList(lopHocs, "MaLop", "TenLop");
             return View();
         }
 
-        // ✅ Xử lý thêm
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemPhanCong(PhanCongGiangDay pc)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.PhanCongGiangDays.Add(pc);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "✅ Phân công giảng viên thành công!";
-                return RedirectToAction(nameof(PhanCong));
+                await LoadDropdownsAsync();
+                return View(pc);
             }
 
-       
-            return View(pc);
+            _context.PhanCongGiangDays.Add(pc);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "✅ Phân công giảng viên thành công!";
+            return RedirectToAction(nameof(PhanCong));
         }
 
-        // ✅ Xóa phân công
         [HttpPost]
         public async Task<IActionResult> XoaPhanCong(int id)
         {
@@ -245,19 +239,17 @@ namespace EnlightEnglishCenter.Controllers
             return RedirectToAction(nameof(PhanCong));
         }
 
-        // Helper tải dropdown
         private async Task LoadDropdownsAsync()
         {
-            var giaoViens = await _context.GiaoViens.Include(g => g.NguoiDung).ToListAsync();
-            var lopHocs = await _context.LopHocs.Include(l => l.MaKhoaHocNavigation).ToListAsync();
+            var lopHocs = await _context.LopHocs
+                .Include(l => l.MaKhoaHocNavigation)
+                .Select(l => new { l.MaLop, TenLop = l.TenLop })
+                .ToListAsync();
 
-            ViewBag.DSGiaoVien = new SelectList(giaoViens, "MaGiaoVien", "NguoiDung.HoTen");
             ViewBag.DSLopHoc = new SelectList(lopHocs, "MaLop", "TenLop");
         }
 
-        // ===========================
-        // 📅 QUẢN LÝ LỊCH HỌC
-        // ===========================
+
         // ===========================
         // 📅 QUẢN LÝ LỊCH HỌC
         // ===========================
@@ -266,8 +258,6 @@ namespace EnlightEnglishCenter.Controllers
             var lichHoc = await _context.LichHocs
                 .Include(l => l.LopHoc)
                     .ThenInclude(lh => lh.MaKhoaHocNavigation)
-                .Include(l => l.GiaoVien)
-                    .ThenInclude(gv => gv.NguoiDung)
                 .AsNoTracking()
                 .OrderByDescending(l => l.NgayHoc)
                 .ToListAsync();
@@ -276,54 +266,43 @@ namespace EnlightEnglishCenter.Controllers
             return View(lichHoc);
         }
 
-        // ➕ GET: Thêm buổi học
         [HttpGet]
         public async Task<IActionResult> ThemLichHoc()
         {
-            var giaoViens = await _context.GiaoViens
-                .Include(g => g.NguoiDung)
-                .AsNoTracking()
-                .ToListAsync();
-
-            ViewBag.DSLopHoc = new SelectList(await _context.LopHocs
-                .Include(l => l.MaKhoaHocNavigation)
-                .Select(l => new
-                {
-                    l.MaLop,
-                    TenLop = l.TenLop + " (" + l.MaKhoaHocNavigation.TenKhoaHoc + ")"
-                })
-                .ToListAsync(), "MaLop", "TenLop");
-
-            ViewBag.DSGiaoVien = new SelectList(giaoViens, "MaGiaoVien", "NguoiDung.HoTen");
+            ViewBag.DSLopHoc = new SelectList(
+                await _context.LopHocs
+                    .Include(l => l.MaKhoaHocNavigation)
+                    .Select(l => new
+                    {
+                        l.MaLop,
+                        TenLop = l.TenLop + " (" + (l.MaKhoaHocNavigation.TenKhoaHoc ?? "") + ")"
+                    }).ToListAsync(),
+                "MaLop", "TenLop");
 
             return View();
         }
 
-        // 💾 POST: Thêm buổi học
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemLichHoc(LichHoc model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.LichHocs.Add(model);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "✅ Đã thêm buổi học thành công!";
-                return RedirectToAction(nameof(LichHoc));
+                await LoadDropdownsAsync();
+                return View(model);
             }
 
-            await LoadDropdownsAsync();
-            return View(model);
+            _context.LichHocs.Add(model);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "✅ Đã thêm buổi học thành công!";
+            return RedirectToAction(nameof(LichHoc));
         }
-
-        // ✏️ GET: Sửa buổi học
         [HttpGet]
         public async Task<IActionResult> SuaLichHoc(int id)
         {
             var lh = await _context.LichHocs
                 .Include(l => l.LopHoc)
-                .Include(l => l.GiaoVien)
-                .FirstOrDefaultAsync(l => l.MaLichHoc == id);
+                .FirstOrDefaultAsync(l => l.MaLich == id); // ✅ dùng MaLich
 
             if (lh == null) return NotFound();
 
@@ -331,24 +310,23 @@ namespace EnlightEnglishCenter.Controllers
             return View(lh);
         }
 
-        // 💾 POST: Sửa buổi học
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SuaLichHoc(LichHoc model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.LichHocs.Update(model);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "✅ Đã cập nhật buổi học thành công!";
-                return RedirectToAction(nameof(LichHoc));
+                await LoadDropdownsAsync();
+                return View(model);
             }
 
-            await LoadDropdownsAsync();
-            return View(model);
+            _context.LichHocs.Update(model);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "✅ Đã cập nhật buổi học thành công!";
+            return RedirectToAction(nameof(LichHoc));
         }
 
-        // ❌ Xóa buổi học
         [HttpPost]
         public async Task<IActionResult> XoaLichHoc(int id)
         {
@@ -369,6 +347,7 @@ namespace EnlightEnglishCenter.Controllers
         {
             var dsKhoaHoc = await _context.KhoaHocs
                 .OrderByDescending(k => k.NgayBatDau)
+                .AsNoTracking()
                 .ToListAsync();
 
             ViewData["Title"] = "Quản lý khóa học";
@@ -386,19 +365,15 @@ namespace EnlightEnglishCenter.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemKhoaHoc(KhoaHoc model)
         {
-            if (ModelState.IsValid)
-            {
-                model.TrangThai = "Đang mở";
-                _context.KhoaHocs.Add(model);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "✅ Đã thêm khóa học mới thành công!";
-                return RedirectToAction(nameof(KhoaHoc));
-            }
-            return View(model);
+            if (!ModelState.IsValid) return View(model);
+
+            model.TrangThai = "Đang mở";
+            _context.KhoaHocs.Add(model);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "✅ Đã thêm khóa học mới thành công!";
+            return RedirectToAction(nameof(KhoaHoc));
         }
-        // ===========================
-        // ✏️ Sửa khóa học
-        // ===========================
+
         [HttpGet]
         public async Task<IActionResult> SuaKhoaHoc(int id)
         {
@@ -422,9 +397,6 @@ namespace EnlightEnglishCenter.Controllers
             return RedirectToAction(nameof(KhoaHoc));
         }
 
-        // ===========================
-        // ❌ Xóa khóa học
-        // ===========================
         [HttpPost]
         public async Task<IActionResult> XoaKhoaHoc(int id)
         {
@@ -438,9 +410,6 @@ namespace EnlightEnglishCenter.Controllers
             return RedirectToAction(nameof(KhoaHoc));
         }
 
-        // ===========================
-        // 🔁 Đóng / Mở khóa học
-        // ===========================
         [HttpPost]
         public async Task<IActionResult> DoiTrangThai(int id)
         {
@@ -453,93 +422,88 @@ namespace EnlightEnglishCenter.Controllers
             TempData["Success"] = $"🔄 Khóa học '{khoaHoc.TenKhoaHoc}' đã được {(khoaHoc.TrangThai == "Đang mở" ? "mở lại" : "đóng")}.";
             return RedirectToAction(nameof(KhoaHoc));
         }
+
         // ===========================
         // 🎓 QUẢN LÝ LỚP HỌC
         // ===========================
-
         public async Task<IActionResult> LopHoc()
         {
             var dsLop = await _context.LopHocs
                 .Include(l => l.MaKhoaHocNavigation)
-                .OrderByDescending(l => l.NgayBatDau)
+                .OrderByDescending(l => l.MaKhoaHocNavigation!.NgayBatDau) // ✅ lấy từ KhoaHoc
                 .ToListAsync();
 
             ViewData["Title"] = "Quản lý lớp học";
             return View(dsLop);
         }
 
-        // ➕ Thêm lớp học (GET)
+
         [HttpGet]
         public async Task<IActionResult> ThemLopHoc()
         {
             ViewBag.DSKhoaHoc = new SelectList(
-                await _context.KhoaHocs.ToListAsync(),
+                await _context.KhoaHocs.Select(k => new { k.MaKhoaHoc, k.TenKhoaHoc }).ToListAsync(),
                 "MaKhoaHoc", "TenKhoaHoc"
+            );
+            ViewBag.DSGiaoVien = new SelectList(
+                await _context.GiaoViens.Include(g => g.NguoiDung)
+                    .Select(g => new { g.MaGiaoVien, HoTen = g.NguoiDung.HoTen }).ToListAsync(),
+                "MaGiaoVien", "HoTen"
             );
             return View();
         }
 
-        // 💾 Thêm lớp học (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemLopHoc(LopHoc model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.LopHocs.Add(model);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "✅ Thêm lớp học thành công!";
-                return RedirectToAction(nameof(LopHoc));
+                await ThemLopHoc(); // nạp lại dropdown
+                return View(model);
             }
 
-            ViewBag.DSKhoaHoc = new SelectList(
-                await _context.KhoaHocs.ToListAsync(),
-                "MaKhoaHoc", "TenKhoaHoc"
-            );
-            return View(model);
+            _context.LopHocs.Add(model);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "✅ Thêm lớp học thành công!";
+            return RedirectToAction(nameof(LopHoc));
         }
 
         // ===========================
         // 📅 QUẢN LÝ LỊCH KHAI GIẢNG
         // ===========================
-
-        // ✅ Hiển thị danh sách lịch khai giảng
         [HttpGet]
         public IActionResult LichKhaiGiang()
         {
             var lichList = _context.KhoaHocs
-                .OrderByDescending(k => k.NgayKhaiGiang)
+                .AsNoTracking()
+                .OrderByDescending(k => k.NgayBatDau) // thay NgayKhaiGiang -> NgayBatDau
                 .ToList();
 
             ViewData["Title"] = "Quản lý lịch khai giảng";
             return View(lichList);
         }
 
-        // ✅ Form thêm mới
         [HttpGet]
         public IActionResult ThemKhaiGiang()
         {
             ViewData["Title"] = "Thêm lịch khai giảng";
-            return View();
+            return View(new KhoaHoc { TrangThai = "Đang mở" });
         }
 
-        // ✅ Xử lý thêm
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ThemKhaiGiang(KhoaHoc model)
         {
-            if (ModelState.IsValid)
-            {
-                model.TrangThai = "Đang mở";
-                _context.KhoaHocs.Add(model);
-                _context.SaveChanges();
-                TempData["Success"] = "✅ Đã thêm lịch khai giảng thành công!";
-                return RedirectToAction(nameof(LichKhaiGiang));
-            }
-            return View(model);
+            if (!ModelState.IsValid) return View(model);
+
+            model.TrangThai = "Đang mở";
+            _context.KhoaHocs.Add(model);
+            _context.SaveChanges();
+            TempData["Success"] = "✅ Đã thêm lịch khai giảng thành công!";
+            return RedirectToAction(nameof(LichKhaiGiang));
         }
 
-        // ✅ Sửa lịch khai giảng
         [HttpGet]
         public IActionResult SuaKhaiGiang(int id)
         {
@@ -554,17 +518,14 @@ namespace EnlightEnglishCenter.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult SuaKhaiGiang(KhoaHoc model)
         {
-            if (ModelState.IsValid)
-            {
-                _context.KhoaHocs.Update(model);
-                _context.SaveChanges();
-                TempData["Success"] = "✅ Cập nhật lịch khai giảng thành công!";
-                return RedirectToAction(nameof(LichKhaiGiang));
-            }
-            return View(model);
+            if (!ModelState.IsValid) return View(model);
+
+            _context.KhoaHocs.Update(model);
+            _context.SaveChanges();
+            TempData["Success"] = "✅ Cập nhật lịch khai giảng thành công!";
+            return RedirectToAction(nameof(LichKhaiGiang));
         }
 
-        // ✅ Xóa lịch khai giảng
         [HttpPost]
         public IActionResult XoaKhaiGiang(int id)
         {
@@ -576,11 +537,6 @@ namespace EnlightEnglishCenter.Controllers
             TempData["Success"] = "🗑️ Đã xóa lịch khai giảng thành công!";
             return RedirectToAction(nameof(LichKhaiGiang));
         }
-
-        // ===========================
-        // ⚙️ Helpers
-        // ===========================
-      
 
         // ===========================
         // 🧠 API lấy thông tin lớp học
@@ -599,14 +555,14 @@ namespace EnlightEnglishCenter.Controllers
                 tenKhoaHoc = lop.MaKhoaHocNavigation?.TenKhoaHoc ?? "Chưa có",
                 ngayKhaiGiang = lop.MaKhoaHocNavigation?.NgayBatDau?.ToString("dd/MM/yyyy") ?? "Chưa rõ"
             };
-
             return Json(data);
         }
+
+        // Tạo nhanh 9 khóa học mẫu (3 chủ đề x 3 cấp độ)
         [HttpGet]
         public async Task<IActionResult> TaoKhoaHocMau()
         {
             var danhSach = new List<KhoaHoc>();
-
             var chuDe = new[] { "IELTS", "TOEIC", "Cambridge" };
             var trinhDo = new[] { "Cơ bản", "Trung bình", "Nâng cao" };
 
@@ -619,10 +575,10 @@ namespace EnlightEnglishCenter.Controllers
                         TenKhoaHoc = $"{cd} {td}",
                         CapDo = td,
                         TrangThai = "Đang mở",
-                        NgayBatDau = DateOnly.FromDateTime(DateTime.Now.AddDays(7)), // sau 1 tuần
-                        NgayKetThuc = DateOnly.FromDateTime(DateTime.Now.AddMonths(3)),
-                        LoTrinhHoc = "12 tuần / 36 buổi",
-                        MoTa = $"Khóa học {cd} trình độ {td} được tổ chức hoàn toàn online.",
+                        NgayBatDau = DateTime.Now.AddDays(7),
+                        NgayKetThuc = DateTime.Now.AddMonths(3),
+                        ThoiLuong = "12 tuần / 36 buổi",    // ✅ thay cho LoTrinhHoc
+                        MoTa = $"Khóa học {cd} trình độ {td} được tổ chức hoàn toàn online."
                     });
                 }
             }
@@ -630,7 +586,7 @@ namespace EnlightEnglishCenter.Controllers
             _context.KhoaHocs.AddRange(danhSach);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "✅ Đã tạo nhanh 3 khóa học mẫu (IELTS, TOEIC, Cambridge)!";
+            TempData["Success"] = "✅ Đã tạo nhanh 3 bộ khóa học mẫu (IELTS, TOEIC, Cambridge)!";
             return RedirectToAction(nameof(KhoaHoc));
         }
 

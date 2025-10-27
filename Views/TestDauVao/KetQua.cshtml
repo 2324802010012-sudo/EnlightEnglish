@@ -10,34 +10,37 @@
     </h2>
 
     <div class="card shadow-sm p-4 border-0 mx-auto" style="max-width: 600px;">
-        <p><b>Học viên:</b> @Model.HocVien?.HoTen ?? "Không xác định"</p>
-        <p><b>Khóa học đăng ký:</b> @Model.KhoaHocDeXuatNavigation?.TenKhoaHoc ?? "Không có"</p>
+        <p><b>Học viên:</b> @((Model.HocVien?.HoTen) ?? "Không xác định")</p>
+        <p><b>Khóa học đăng ký:</b> @((Model.KhoaHocDeXuatNavigation?.TenKhoaHoc) ?? "Không có")</p>
+
         <p>
             <b>Điểm bài test:</b>
-            <span class="fw-bold text-success">@Model.DiemSo?.ToString("0.0") ?? "Chưa có"</span>
+            <span class="fw-bold text-success">
+                @((Model.TongDiem.HasValue ? Model.TongDiem.Value.ToString("0.0") : "Chưa có"))
+            </span>
         </p>
 
-        @if (!string.IsNullOrEmpty(Model.LopDeXuat))
+        @if (!string.IsNullOrWhiteSpace(Model.LoTrinhHoc))
         {
             <p>
-                <b>Lớp được đề xuất:</b>
-                <span class="fw-bold text-primary">@Model.LopDeXuat</span>
+                <b>Lộ trình đề xuất:</b>
+                <span class="fw-bold text-primary">@Model.LoTrinhHoc</span>
             </p>
         }
         else
         {
-            <p><b>Lớp được đề xuất:</b> <span class="text-muted">Đang cập nhật...</span></p>
+            <p><b>Lộ trình đề xuất:</b> <span class="text-muted">Đang cập nhật...</span></p>
         }
 
         <div class="mt-4">
-            <a href="/HocVien/Index" class="btn btn-outline-primary">
+            <a asp-controller="HocVien" asp-action="Index" class="btn btn-outline-primary">
                 <i class="fa-solid fa-house me-2"></i> Quay về trang học viên
             </a>
 
-            @if (!string.IsNullOrEmpty(Model.LopDeXuat))
+            @if (!string.IsNullOrWhiteSpace(Model.LoTrinhHoc))
             {
-                <a href="/ThanhToan/Index?lop=@Model.LopDeXuat" class="btn btn-success ms-2">
-                    <i class="fa-solid fa-credit-card me-2"></i> Thanh toán học phí lớp @Model.LopDeXuat
+                <a asp-controller="ThanhToan" asp-action="Index" asp-route-lop="@Model.LoTrinhHoc" class="btn btn-success ms-2">
+                    <i class="fa-solid fa-credit-card me-2"></i> Thanh toán học phí lộ trình @Model.LoTrinhHoc
                 </a>
             }
         </div>

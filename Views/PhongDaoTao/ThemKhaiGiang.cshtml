@@ -1,60 +1,65 @@
 ﻿@model EnlightEnglishCenter.Models.KhoaHoc
 @{
-    ViewData["Title"] = "Thêm/Sửa lịch khai giảng";
+    ViewData["Title"] = "Thêm lịch khai giảng";
 }
+<form asp-action="ThemKhaiGiang" method="post" class="card p-3">
+    @Html.AntiForgeryToken()
 
-<div class="container mt-4">
-    <h3 class="fw-bold text-primary mb-3">
-        <i class="fa-solid fa-pen-to-square me-2"></i> @ViewData["Title"]
-    </h3>
+    <div class="mb-3">
+        <label class="form-label">Tên khóa học</label>
+        <input asp-for="TenKhoaHoc" class="form-control" required />
+        <span asp-validation-for="TenKhoaHoc" class="text-danger"></span>
+    </div>
 
-    <form asp-action="@ViewContext.RouteData.Values["action"]" method="post" class="shadow-sm p-4 bg-light rounded">
-        <div class="mb-3">
-            <label class="form-label fw-bold">Tên khóa học</label>
-            <input asp-for="TenKhoaHoc" class="form-control" required />
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Cấp độ</label>
+            <input asp-for="CapDo" class="form-control" />
         </div>
-
-        <div class="mb-3">
-            <label class="form-label fw-bold">Trình độ</label>
-            <select asp-for="CapDo" class="form-select">
-                <option value="Cơ bản">Cơ bản</option>
-                <option value="Trung bình">Trung bình</option>
-                <option value="Nâng cao">Nâng cao</option>
-            </select>
+        <div class="col-md-6">
+            <label class="form-label">Thời lượng</label>
+            <input asp-for="ThoiLuong" class="form-control" />
         </div>
+    </div>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Ngày khai giảng</label>
-                <input asp-for="NgayKhaiGiang" type="date" class="form-control" />
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Thời gian học</label>
-                <input asp-for="ThoiGianHoc" class="form-control" placeholder="VD: Tối 2-4-6, 18h-20h" />
-            </div>
+    <div class="row g-3 mt-0">
+        <div class="col-md-6">
+            <label class="form-label">Ngày bắt đầu (khai giảng)</label>
+            <input asp-for="NgayBatDau" type="date" class="form-control" />
         </div>
+        <div class="col-md-6">
+            <label class="form-label">Ngày kết thúc</label>
+            <input asp-for="NgayKetThuc" type="date" class="form-control" />
+        </div>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-bold">Giảng viên</label>
-            <input asp-for="GiangVien" class="form-control" />
+    <div class="row g-3 mt-0">
+        <div class="col-md-6">
+            <label class="form-label">Học phí</label>
+            <input asp-for="HocPhi" type="number" step="1000" class="form-control" />
         </div>
+        <div class="col-md-6">
+            <label class="form-label">Trạng thái</label>
+            <input asp-for="TrangThai" class="form-control" value="Đang mở" />
+        </div>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-bold">Hình thức</label>
-            <select asp-for="HinhThuc" class="form-select">
-                <option value="Online">Online</option>
-                <option value="Offline">Offline</option>
-                <option value="Kết hợp">Kết hợp</option>
-            </select>
-        </div>
+    <div class="mt-3">
+        <label class="form-label">Chuẩn đầu ra</label>
+        <textarea asp-for="ChuanDauRa" class="form-control" rows="3"></textarea>
+    </div>
 
-        <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary px-4">
-                <i class="fa-solid fa-floppy-disk me-2"></i> Lưu
-            </button>
-            <a asp-action="LichKhaiGiang" class="btn btn-secondary ms-2">
-                <i class="fa-solid fa-arrow-left me-2"></i> Quay lại
-            </a>
-        </div>
-    </form>
-</div>
+    <div class="mt-3">
+        <label class="form-label">Mô tả</label>
+        <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="mt-3">
+        <button class="btn btn-primary">Lưu</button>
+        <a asp-action="LichKhaiGiang" class="btn btn-outline-secondary">Hủy</a>
+    </div>
+</form>
+
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+ }

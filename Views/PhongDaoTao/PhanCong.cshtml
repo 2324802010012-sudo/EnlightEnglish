@@ -1,55 +1,43 @@
 ﻿@model IEnumerable<EnlightEnglishCenter.Models.PhanCongGiangDay>
 @{
-    ViewData["Title"] = "Phân công giảng viên";
+    ViewData["Title"] = "Phân công giảng dạy";
+}
+@section Breadcrumb {
+    <li class="breadcrumb-item active" aria-current="page">Phân công giảng dạy</li>
 }
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-danger mb-0">
-            <i class="fa-solid fa-people-arrows me-2"></i> Phân công giảng viên
-        </h2>
-        <a href="@Url.Action("ThemPhanCong", "PhongDaoTao")" class="btn btn-success">
-            <i class="fa-solid fa-plus me-1"></i> Thêm phân công
-        </a>
-    </div>
-
-    <table class="table table-bordered text-center align-middle shadow-sm">
-        <thead class="table-danger">
-            <tr>
-                <th>Mã PC</th>
-                <th>Giảng viên</th>
-                <th>Lớp học</th>
-                <th>Khóa học</th>
-                <th>Ngày phân công</th>
-                <th>Ghi chú</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var pc in Model)
-            {
-                <tr>
-                    <td>PC@pc.MaPhanCong</td>
-                    <td>@pc.GiaoVien?.NguoiDung?.HoTen</td>
-                    <td>@pc.LopHoc?.TenLop</td>
-                    <td>@pc.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc</td>
-                    <td>@(pc.NgayPhanCong.HasValue? pc.NgayPhanCong.Value.ToString("dd/MM/yyyy") : "—")</td>
-                    <td>@(string.IsNullOrEmpty(pc.GhiChu) ? "—" : pc.GhiChu)</td>
-                    <td>
-                        <form asp-action="XoaPhanCong" asp-route-id="@pc.MaPhanCong" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-outline-danger btn-sm"
-                                    onclick="return confirm('Bạn có chắc muốn xóa phân công này không?');">
-                                <i class="fa-solid fa-trash"></i> Xóa
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success mt-3 text-center">@TempData["Success"]</div>
-    }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="m-0">Danh sách phân công</h3>
+    <a asp-action="ThemPhanCong" class="btn btn-success">+ Thêm phân công</a>
 </div>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Giảng viên</th>
+            <th>Lớp</th>
+            <th>Khóa học</th>
+            <th>Ngày phân công</th>
+            <th style="width:120px;">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pc in Model)
+        {
+            <tr>
+                <td>@pc.MaPhanCong</td>
+                <td>@(pc.GiaoVien?.NguoiDung?.HoTen ?? "—")</td>
+                <td>@(pc.LopHoc?.TenLop ?? "—")</td>
+                <td>@(pc.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc ?? "—")</td>
+                <td>@pc.NgayPhanCong?.ToString("dd/MM/yyyy")</td>
+                <td>
+                    <form asp-action="XoaPhanCong" method="post" class="d-inline" onsubmit="return confirm('Xóa phân công này?')">
+                        <input type="hidden" name="id" value="@pc.MaPhanCong" />
+                        <button class="btn btn-sm btn-outline-danger">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

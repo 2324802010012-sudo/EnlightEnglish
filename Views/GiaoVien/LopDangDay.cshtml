@@ -27,20 +27,39 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var pc in Model)
+            @if (Model == null || !Model.Any())
             {
                 <tr>
-                    <td>@pc.LopHoc.MaLop</td>
-                    <td>@pc.LopHoc.TenLop</td>
-                    <td>@pc.LopHoc.MaKhoaHocNavigation?.TenKhoaHoc</td>
-                    <td>@pc.LopHoc.NgayBatDau?.ToString("dd/MM/yyyy")</td>
-                    <td>
-                        <a href="@Url.Action("ChiTietLop", "GiaoVien", new { id = pc.LopHoc.MaLop })"
-                           class="btn btn-outline-success btn-sm">
-                            <i class="fa-solid fa-eye me-1"></i> Xem chi tiết
-                        </a>
-                    </td>
+                    <td colspan="5" class="text-muted">Chưa có lớp nào được phân công.</td>
                 </tr>
+            }
+            else
+            {
+                foreach (var pc in Model)
+                {
+                    var lop = pc.LopHoc;
+                    var khoa = lop?.MaKhoaHocNavigation;
+
+                    <tr>
+                        <td>@(lop?.MaLop)</td>
+                        <td>@(lop?.TenLop ?? "—")</td>
+                        <td>@(khoa?.TenKhoaHoc ?? "—")</td>
+                        <td>@(khoa?.NgayBatDau?.ToString("dd/MM/yyyy") ?? "—")</td> @* ✅ đọc từ KhoaHoc *@
+                        <td>
+                            @if (lop != null)
+                            {
+                                <a href="@Url.Action("ChiTietLop", "GiaoVien", new { id = lop.MaLop })"
+                                   class="btn btn-outline-success btn-sm">
+                                    <i class="fa-solid fa-eye me-1"></i> Xem chi tiết
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
+                    </tr>
+                }
             }
         </tbody>
     </table>

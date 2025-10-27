@@ -1,159 +1,79 @@
 ﻿@{
-    ViewData["Title"] = "Phòng Đào Tạo - Trang chủ";
-    Layout = "~/Views/Shared/phongdaotaoLayout.cshtml";
+    ViewData["Title"] = "Trang chủ";
+}
+@section Breadcrumb {
+    <li class="breadcrumb-item active" aria-current="page">Trang chủ</li>
 }
 
-<div class="container-fluid mt-4">
-    <div class="text-center mb-5">
-        <h2 class="fw-bold text-primary">
-            <i class="fa-solid fa-school me-2"></i> Phòng Đào Tạo - Trung Tâm Anh Ngữ Enlight
-        </h2>
-        <p class="text-muted fs-5">Quản lý học viên • Khóa học • Giảng viên • Lịch học</p>
+<div class="row g-3">
+    <div class="col-sm-6 col-xl-3">
+        <a asp-action="DuyetTest" class="text-decoration-none">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="fw-bold">🧪 Duyệt test đầu vào</div>
+                    <div class="text-muted small">Xem & cập nhật trạng thái</div>
+                </div>
+            </div>
+        </a>
     </div>
-
-    <!-- Thống kê tổng quan -->
-    <div class="row text-center g-4 mb-5">
-        <div class="col-md-3">
-            <div class="card shadow-lg border-0 rounded-4 bg-gradient bg-primary text-white p-3">
+    <div class="col-sm-6 col-xl-3">
+        <a asp-action="GiaoVien" class="text-decoration-none">
+            <div class="card h-100">
                 <div class="card-body">
-                    <i class="fa-solid fa-book fa-2x mb-2"></i>
-                    <h5>Khóa học đang mở</h5>
-                    <h3 class="fw-bold">@ViewBag.TongKhoaHoc</h3>
+                    <div class="fw-bold">👨‍🏫 Giảng viên</div>
+                    <div class="text-muted small">Danh sách / thêm / sửa / xóa</div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-lg border-0 rounded-4 bg-success text-white p-3">
-                <div class="card-body">
-                    <i class="fa-solid fa-users fa-2x mb-2"></i>
-                    <h5>Lớp học hiện tại</h5>
-                    <h3 class="fw-bold">@ViewBag.TongLop</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-lg border-0 rounded-4 bg-warning text-white p-3">
-                <div class="card-body">
-                    <i class="fa-solid fa-chalkboard-user fa-2x mb-2"></i>
-                    <h5>Giảng viên</h5>
-                    <h3 class="fw-bold">@ViewBag.TongGiaoVien</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-lg border-0 rounded-4 bg-danger text-white p-3">
-                <div class="card-body">
-                    <i class="fa-solid fa-clipboard-list fa-2x mb-2"></i>
-                    <h5>Test đầu vào</h5>
-                    <h3 class="fw-bold">@ViewBag.TongTest</h3>
-                </div>
-            </div>
-        </div>
+        </a>
     </div>
-
-    <!-- Menu điều hướng -->
-    <div class="row text-center g-4">
-        <div class="col-md-3">
-            <a asp-action="DuyetTest" class="text-decoration-none">
-                <div class="card shadow-sm border-0 hover-zoom rounded-4">
-                    <div class="card-body py-4">
-                        <i class="fa-solid fa-check-to-slot fa-2x text-primary mb-3"></i>
-                        <h5 class="fw-bold">Duyệt Test đầu vào</h5>
-                        <p class="text-muted">Xem & phê duyệt học viên mới</p>
-                    </div>
+    <div class="col-sm-6 col-xl-3">
+        <a asp-action="PhanCong" class="text-decoration-none">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="fw-bold">🗂️ Phân công giảng dạy</div>
+                    <div class="text-muted small">Gán GV vào lớp</div>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-3">
-            <a asp-action="KhoaHoc" class="text-decoration-none">
-                <div class="card shadow-sm border-0 hover-zoom rounded-4">
-                    <div class="card-body py-4">
-                        <i class="fa-solid fa-book-open fa-2x text-success mb-3"></i>
-                        <h5 class="fw-bold">Quản lý khóa học</h5>
-                        <p class="text-muted">Thêm, sửa, đóng/mở khóa học</p>
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3">
-            <a asp-action="LopHoc" class="text-decoration-none">
-                <div class="card shadow-sm border-0 hover-zoom rounded-4">
-                    <div class="card-body py-4">
-                        <i class="fa-solid fa-people-group fa-2x text-info mb-3"></i>
-                        <h5 class="fw-bold">Quản lý lớp học</h5>
-                        <p class="text-muted">Tạo lớp & theo dõi sĩ số</p>
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3">
-            <a asp-action="GiaoVien" class="text-decoration-none">
-                <div class="card shadow-sm border-0 hover-zoom rounded-4">
-                    <div class="card-body py-4">
-                        <i class="fa-solid fa-person-chalkboard fa-2x text-warning mb-3"></i>
-                        <h5 class="fw-bold">Quản lý giảng viên</h5>
-                        <p class="text-muted">Thêm, sửa, phân công giảng dạy</p>
-                    </div>
-                </div>
-            </a>
-        </div>
+            </div>
+        </a>
     </div>
-
-    <div class="row text-center g-4 mt-4">
-        <div class="col-md-3">
-            <a asp-action="PhanCong" class="text-decoration-none">
-                <div class="card shadow-sm border-0 hover-zoom rounded-4">
-                    <div class="card-body py-4">
-                        <i class="fa-solid fa-calendar-days fa-2x text-danger mb-3"></i>
-                        <h5 class="fw-bold">Phân công giảng viên</h5>
-                        <p class="text-muted">Gán lớp cho giảng viên</p>
-                    </div>
+    <div class="col-sm-6 col-xl-3">
+        <a asp-action="LichHoc" class="text-decoration-none">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="fw-bold">📅 Lịch học</div>
+                    <div class="text-muted small">Quản lý buổi học</div>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-3">
-            <a asp-action="LichHoc" class="text-decoration-none">
-                <div class="card shadow-sm border-0 hover-zoom rounded-4">
-                    <div class="card-body py-4">
-                        <i class="fa-solid fa-clock fa-2x text-secondary mb-3"></i>
-                        <h5 class="fw-bold">Quản lý lịch học</h5>
-                        <p class="text-muted">Tạo, sửa và theo dõi buổi học</p>
-                    </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <a asp-action="KhoaHoc" class="text-decoration-none">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="fw-bold">📚 Khóa học</div>
+                    <div class="text-muted small">Tạo/sửa/đóng-mở</div>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-3">
-            <a asp-action="LichKhaiGiang" class="text-decoration-none">
-                <div class="card shadow-sm border-0 hover-zoom rounded-4">
-                    <div class="card-body py-4">
-                        <i class="fa-solid fa-bullhorn fa-2x text-success mb-3"></i>
-                        <h5 class="fw-bold">Lịch khai giảng</h5>
-                        <p class="text-muted">Tạo và theo dõi các khóa sắp mở</p>
-                    </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <a asp-action="LopHoc" class="text-decoration-none">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="fw-bold">🏫 Lớp học</div>
+                    <div class="text-muted small">Tạo lớp cho khóa</div>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-3">
-            <a asp-controller="Account" asp-action="Logout" class="text-decoration-none">
-                <div class="card shadow-sm border-0 hover-zoom rounded-4 bg-light">
-                    <div class="card-body py-4">
-                        <i class="fa-solid fa-right-from-bracket fa-2x text-dark mb-3"></i>
-                        <h5 class="fw-bold">Đăng xuất</h5>
-                        <p class="text-muted">Thoát khỏi hệ thống</p>
-                    </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <a asp-action="LichKhaiGiang" class="text-decoration-none">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="fw-bold">🗓️ Lịch khai giảng</div>
+                    <div class="text-muted small">Quản lý ngày khai giảng</div>
                 </div>
-            </a>
-        </div>
+            </div>
+        </a>
     </div>
 </div>
-
-<style>
-    .hover-zoom {
-        transition: all 0.3s ease;
-    }
-
-        .hover-zoom:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-        }
-</style>

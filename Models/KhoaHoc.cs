@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace EnlightEnglishCenter.Models
 {
@@ -12,13 +10,12 @@ namespace EnlightEnglishCenter.Models
         [Key]
         public int MaKhoaHoc { get; set; }
 
-        [StringLength(100)]
-        public string TenKhoaHoc { get; set; } = null!;
+        [Required, StringLength(100)]
+        public string TenKhoaHoc { get; set; } = string.Empty;
 
         [StringLength(255)]
         public string? MoTa { get; set; }
 
-        [Column(TypeName = "decimal(12,2)")]
         public decimal? HocPhi { get; set; }
 
         [StringLength(50)]
@@ -27,35 +24,15 @@ namespace EnlightEnglishCenter.Models
         [StringLength(50)]
         public string? CapDo { get; set; }
 
-        public DateOnly? NgayBatDau { get; set; }
-        public DateOnly? NgayKetThuc { get; set; }
+        public DateTime? NgayBatDau { get; set; }
+        public DateTime? NgayKetThuc { get; set; }
 
         public string? ChuanDauRa { get; set; }
 
         [StringLength(20)]
-        public string? TrangThai { get; set; }
+        public string? TrangThai { get; set; } = "Đang mở";
 
-        public string? LoTrinhHoc { get; set; }
-        public DateTime? NgayKhaiGiang { get; set; }
-
-        [StringLength(100)]
-        public string? ThoiGianHoc { get; set; }
-
-        [StringLength(50)]
-        public string? TrinhDo { get; set; }
-
-        [StringLength(100)]
-        public string? GiangVien { get; set; }
-
-        [StringLength(30)]
-        public string? HinhThuc { get; set; }
-
-        // 🔹 Quan hệ 1 - N với LopHoc
-        [InverseProperty("MaKhoaHocNavigation")]
-        public virtual ICollection<LopHoc> LopHocs { get; set; } = new List<LopHoc>();
-
-        // 🔹 Quan hệ 1 - N với TestDauVao
-        [InverseProperty("KhoaHocDeXuatNavigation")]
-        public virtual ICollection<TestDauVao> TestDauVaos { get; set; } = new List<TestDauVao>();
+        // Navigation (nếu cần)
+        public virtual ICollection<LopHoc>? LopHocs { get; set; }
     }
 }

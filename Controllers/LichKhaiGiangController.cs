@@ -16,13 +16,18 @@ namespace EnlightEnglishCenter.Controllers
 
         public IActionResult Index()
         {
-            // Lấy danh sách các lớp học (lịch khai giảng) có trạng thái đang mở hoặc chưa xác định
+            // Lấy danh sách lớp + khóa học + (giảng viên -> người dùng)
             var lichKhaiGiang = _context.LopHocs
                 .Include(l => l.MaKhoaHocNavigation)
                 .Include(l => l.MaGiaoVienNavigation)
                     .ThenInclude(gv => gv.NguoiDung)
-                .Where(l => l.TrangThai == "Đang mở" || l.TrangThai == "Chưa xác định" || l.TrangThai == "Đang học")
-                .OrderBy(l => l.NgayBatDau)
+                .Where(l =>
+                       l.TrangThai == "Đang mở"
+                    || l.TrangThai == "Đang học"
+                    || l.TrangThai == "Chưa xác định"
+                    || l.TrangThai == null)
+                .OrderBy(l => l.MaKhoaHocNavigation!.NgayBatDau)   // ✅ ngày từ KhoaHoc
+                .AsNoTracking()
                 .ToList();
 
             return View(lichKhaiGiang);

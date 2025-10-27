@@ -81,7 +81,8 @@ namespace EnlightEnglishCenter.Models
         [InverseProperty("NguoiDungs")]
         public virtual VaiTro? MaVaiTroNavigation { get; set; }
         [InverseProperty("HocVien")]
-        public virtual ICollection<TestDauVao> TestDauVaos { get; set; } = new List<TestDauVao>();
-
+        public virtual ICollection<TestDauVao> TestDauVaos { get; set; } = new HashSet<TestDauVao>();
     }
 }
+
+
