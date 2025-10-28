@@ -161,6 +161,7 @@ namespace EnlightEnglishCenter.Controllers
             return View(allQuestions);
         }
 
+
         // ======================================================
         // 5️⃣ Nộp bài & tính điểm
         // ======================================================
@@ -262,18 +263,22 @@ namespace EnlightEnglishCenter.Controllers
         // ======================================================
         // 6️⃣ Trang Kết quả
         // ======================================================
-        public IActionResult KetQua()
+        [HttpGet]
+        public IActionResult KetQua(int? id)
         {
             int? maHocVien = HttpContext.Session.GetInt32("MaNguoiDung");
-            if (maHocVien == null)
-                return RedirectToAction("Login", "Account");
+            if (maHocVien == null) return RedirectToAction("Login", "Account");
 
-            // 🔹 Lấy bài test mới nhất của học viên
-            var test = _context.TestDauVaos
+            var query = _context.TestDauVaos
                 .Include(t => t.HocVien)
                 .Include(t => t.KhoaHocDeXuatNavigation)
-                .OrderByDescending(t => t.NgayTest)
-                .FirstOrDefault(t => t.MaHocVien == maHocVien);
+                .AsQueryable();
+
+            var test = id.HasValue
+                ? query.FirstOrDefault(t => t.MaTest == id.Value && t.MaHocVien == maHocVien)
+                : query.Where(t => t.MaHocVien == maHocVien)
+                       .OrderByDescending(t => t.NgayTest)
+                       .FirstOrDefault();
 
             if (test == null)
             {
@@ -281,9 +286,9 @@ namespace EnlightEnglishCenter.Controllers
                 return RedirectToAction("Index", "HocVien");
             }
 
-            // ✅ Truyền model cho View
             return View(test);
         }
+
 
 
         // ======================================================

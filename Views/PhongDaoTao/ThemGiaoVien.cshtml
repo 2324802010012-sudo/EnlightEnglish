@@ -1,43 +1,50 @@
-﻿@model EnlightEnglishCenter.Models.GiaoVien
-@{
+﻿@{
     ViewData["Title"] = "Thêm giảng viên";
 }
-@section Breadcrumb {
-    <li class="breadcrumb-item"><a asp-action="GiaoVien">Giảng viên</a></li>
-    <li class="breadcrumb-item active">Thêm</li>
-}
 
-<form asp-action="ThemGiaoVien" method="post" class="card p-3">
-    @Html.AntiForgeryToken()
-    <div class="mb-3">
-        <label class="form-label">Người dùng</label>
-        <select asp-for="MaNguoiDung" class="form-select" asp-items="ViewBag.DSNguoiDung">
-            <option value="">-- Chọn người dùng --</option>
-        </select>
-        <span asp-validation-for="MaNguoiDung" class="text-danger"></span>
-    </div>
+<div class="container mt-4">
+    <h3 class="fw-bold mb-4">Thêm giảng viên</h3>
 
-    <div class="row g-3">
-        <div class="col-md-6">
-            <label class="form-label">Chuyên môn</label>
-            <input asp-for="ChuyenMon" class="form-control" />
+    <form asp-action="ThemGiaoVien" method="post" enctype="multipart/form-data">
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Chọn người dùng</label>
+            <select name="MaNguoiDung" class="form-select" required>
+                <option value="">-- Chọn người dùng --</option>
+                @foreach (var nd in ViewBag.DSNguoiDung as SelectList)
+                {
+                    <option value="@nd.Value">@nd.Text</option>
+                }
+            </select>
         </div>
-        <div class="col-md-6">
-            <label class="form-label">Trình độ</label>
-            <input asp-for="TrinhDo" class="form-control" />
-        </div>
-        <div class="col-12">
-            <label class="form-label">Kinh nghiệm</label>
-            <input asp-for="KinhNghiem" class="form-control" />
-        </div>
-    </div>
 
-    <div class="mt-3">
-        <button class="btn btn-primary">Lưu</button>
-        <a asp-action="GiaoVien" class="btn btn-outline-secondary">Hủy</a>
-    </div>
-</form>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Chuyên môn</label>
+                <input name="ChuyenMon" class="form-control" placeholder="VD: IELTS, Ngữ pháp" required />
+            </div>
 
-@section Scripts {
-<partial name="_ValidationScriptsPartial" />
- }
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Trình độ</label>
+                <select name="TrinhDo" class="form-select" required>
+                    <option value="">-- Chọn trình độ --</option>
+                    <option>Giáo viên bản ngữ</option>
+                    <option>Thạc sĩ Ngôn ngữ Anh</option>
+                    <option>Đại học Ngôn ngữ Anh</option>
+                    <option>Cao đẳng</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Kinh nghiệm</label>
+            <input name="KinhNghiem" class="form-control" placeholder="VD: 3 năm giảng dạy" />
+        </div>
+
+      
+
+      
+        <button type="submit" class="btn btn-primary">Lưu</button>
+        <a asp-action="GiaoVien" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

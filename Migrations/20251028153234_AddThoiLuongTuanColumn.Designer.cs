@@ -4,6 +4,7 @@ using EnlightEnglishCenter.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnlightEnglishCenter.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251028153234_AddThoiLuongTuanColumn")]
+    partial class AddThoiLuongTuanColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -284,10 +287,6 @@ namespace EnlightEnglishCenter.Migrations
                     b.Property<decimal?>("HocPhi")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("LichHoc")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
                     b.Property<string>("MoTa")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -496,9 +495,6 @@ namespace EnlightEnglishCenter.Migrations
                     b.Property<string>("TenLop")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ThuTrongTuan")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TrangThai")
                         .ValueGeneratedOnAdd()
@@ -819,9 +815,6 @@ namespace EnlightEnglishCenter.Migrations
 
                     b.Property<int?>("MaHocVien")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("NgayDangKy")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("NgayTest")
                         .HasColumnType("datetime2");

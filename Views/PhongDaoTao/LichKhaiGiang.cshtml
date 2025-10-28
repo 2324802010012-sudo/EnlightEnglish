@@ -1,51 +1,115 @@
 ﻿@model IEnumerable<EnlightEnglishCenter.Models.KhoaHoc>
+
 @{
     ViewData["Title"] = "Quản lý lịch khai giảng";
+    string q = ViewBag.CurrentQ as string ?? "";
+    string tt = ViewBag.CurrentTrangThai as string ?? "Tất cả";
+
+    string Badge(string s) => s == "Đang mở"
+        ? "badge bg-success"
+        : "badge bg-secondary";
 }
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="m-0">Lịch khai giảng</h3>
-    <a asp-action="ThemKhaiGiang" class="btn btn-success">+ Thêm lịch</a>
-</div>
 
-<table class="table table-striped align-middle">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Khóa học</th>
-            <th>Cấp độ</th>
-            <th>Thời lượng</th>
-            <th>Khai giảng</th>
-            <th>Kết thúc</th>
-            <th>Học phí</th>
-            <th>Trạng thái</th>
-            <th style="width:160px;">Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var k in Model)
-        {
-            var capDo =
-            k.TenKhoaHoc?.Contains("Nâng cao", StringComparison.OrdinalIgnoreCase) == true ? "Nâng cao" :
-            k.TenKhoaHoc?.Contains("Trung bình", StringComparison.OrdinalIgnoreCase) == true ? "Trung bình" :
-            k.TenKhoaHoc?.Contains("Cơ bản", StringComparison.OrdinalIgnoreCase) == true ? "Cơ bản" : "—";
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">Lịch khai giảng</h3>
 
+        <div>
+            <a asp-action="ThemKhoaHoc" class="btn btn-success me-2">
+                <i class="fa fa-plus me-1"></i> Thêm khóa học
+            </a>
+            <a asp-action="ThemKhaiGiang" class="btn btn-outline-primary">
+                <i class="fa fa-calendar-plus me-1"></i> Thêm lịch khai giảng
+            </a>
+        </div>
+    </div>
+
+    <!-- Form lọc -->
+    <form method="get" class="row g-2 mb-3">
+        <div class="col-md-6">
+            <input name="q"
+                   value="@q"
+                   class="form-control"
+                   placeholder="Tìm theo tên khóa hoặc cấp độ..." />
+        </div>
+
+        <div class="col-md-3">
+            <select name="trangThai" class="form-select" onchange="this.form.submit()">
+                <option value="Tất cả"
+                        selected="@(tt == "Tất cả" ? "selected" : null)">Tất cả</option>
+
+                <option value="Đang mở"
+                        selected="@(tt == "Đang mở" ? "selected" : null)">Đang mở</option>
+
+                <option value="Đã đóng"
+                        selected="@(tt == "Đã đóng" ? "selected" : null)">Đã đóng</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 text-end">
+            <button class="btn btn-outline-secondary">
+                <i class="fa fa-search me-1"></i>Lọc
+            </button>
+        </div>
+    </form>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success shadow-sm">@TempData["Success"]</div>
+    }
+
+    <!-- Bảng dữ liệu -->
+    <table class="table table-bordered align-middle text-center shadow-sm">
+        <thead class="table-light">
             <tr>
-                <td>@k.MaKhoaHoc</td>
-                <td>@k.TenKhoaHoc</td>
-                <td>@capDo</td>
-                <td>@k.ThoiLuong</td>
-                <td>@k.NgayBatDau?.ToString("dd/MM/yyyy")</td>
-                <td>@k.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
-                <td>@(k.HocPhi?.ToString("N0"))</td>
-                <td>@k.TrangThai</td>
-                <td>
-                    <a asp-action="SuaKhaiGiang" asp-route-id="@k.MaKhoaHoc" class="btn btn-sm btn-primary">Sửa</a>
-                    <form asp-action="XoaKhaiGiang" method="post" class="d-inline" onsubmit="return confirm('Xóa lịch này?')">
-                        <input type="hidden" name="id" value="@k.MaKhoaHoc" />
-                        <button class="btn btn-sm btn-outline-danger">Xóa</button>
-                    </form>
-                </td>
+                <th>#</th>
+                <th>Tên khóa</th>
+                <th>Cấp độ</th>
+                <th>Học phí</th>
+                <th>Bắt đầu</th>
+                <th>Kết thúc</th>
+                <th>Trạng thái</th>
+                <th style="width:230px">Thao tác</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @{
+                if (Model != null && Model.Any())
+                {
+                    int stt = 1;
+                    foreach (var k in Model)
+                    {
+                        <tr>
+                            <td>@stt++</td>
+                            <td class="text-start">@k.TenKhoaHoc</td>
+                            <td>@k.CapDo</td>
+                            <td>@string.Format("{0:N0}", k.HocPhi) đ</td>
+                            <td>@k.NgayBatDau?.ToString("dd/MM/yyyy")</td>
+                            <td>@k.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
+                            <td><span class="@Badge(k.TrangThai)">@k.TrangThai</span></td>
+                            <td class="text-nowrap">
+                                <a asp-action="SuaKhoaHoc" asp-route-id="@k.MaKhoaHoc"
+                                   class="btn btn-primary btn-sm">Sửa</a>
+
+                                <form asp-action="DoiTrangThai" asp-route-id="@k.MaKhoaHoc"
+                                      method="post" class="d-inline">
+                                    <button class="btn btn-warning btn-sm">Đóng/Mở</button>
+                                </form>
+
+                                <form asp-action="XoaKhoaHoc" asp-route-id="@k.MaKhoaHoc"
+                                      method="post" class="d-inline"
+                                      onsubmit="return confirm('Xóa khóa học này?');">
+                                    <button class="btn btn-danger btn-sm">Xóa</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="8">⛔ Không tìm thấy dữ liệu</td></tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

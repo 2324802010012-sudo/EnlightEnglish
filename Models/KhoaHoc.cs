@@ -15,7 +15,7 @@ namespace EnlightEnglishCenter.Models
 
         [StringLength(255)]
         public string? MoTa { get; set; }
-
+        public int ThoiLuongTuan { get; set; }
         public decimal? HocPhi { get; set; }
 
         [StringLength(50)]
@@ -28,6 +28,9 @@ namespace EnlightEnglishCenter.Models
         public DateTime? NgayKetThuc { get; set; }
 
         public string? ChuanDauRa { get; set; }
+        [StringLength(10)]
+        public string? LichHoc { get; set; }
+
 
         [StringLength(20)]
         public string? TrangThai { get; set; } = "Đang mở";

@@ -8,7 +8,7 @@ namespace EnlightEnglishCenter.Models
     public class TestDauVao
     {
         [Key] public int MaTest { get; set; }
-
+        public DateTime NgayDangKy { get; set; } = DateTime.Now;
         public int? MaHocVien { get; set; }         // FK -> NguoiDung.MaNguoiDung
         public DateTime? NgayTest { get; set; }     // default GETDATE() trong DB cũng OK
 

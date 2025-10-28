@@ -10,7 +10,8 @@
 
     @if (ViewBag.TestStatus == null)
     {
-        <a href="/TestDauVao/DangKy" class="btn btn-primary btn-lg shadow-sm">
+        <!-- ✅ Đưa học viên đến danh sách khóa test -->
+        <a asp-controller="LichKhaiGiang" asp-action="Index" class="btn btn-primary btn-lg shadow-sm">
             <i class="fa-solid fa-pen-to-square me-2"></i> Đăng ký Test đầu vào
         </a>
     }
@@ -24,28 +25,14 @@
     {
         <div class="card border-success shadow-sm p-4 my-4">
             <h4 class="fw-bold text-success mb-3">
-                <i class="fa-solid fa-circle-check me-2"></i> Bạn đã được duyệt làm bài Test IELTS
+                <i class="fa-solid fa-circle-check me-2"></i> Bạn đã được duyệt làm bài Test
             </h4>
-            <p>Khóa học: <b>@TempData["LopHoc"] ?? "IELTS 6.5+" </b></p>
-            <p>
-                Học phí dự kiến:
-                <b class="text-danger">
-                    @String.Format("{0:N0} VNĐ", TempData["HocPhi"] ?? 3500000)
-                </b>
-            </p>
-            <a href="/TestDauVao/LamBai" class="btn btn-success btn-lg shadow-sm mt-3">
-                <i class="fa-solid fa-play me-2"></i> Làm bài Test IELTS
-            </a>
-            <a href="/ThanhToan/IELTS" class="btn btn-outline-primary btn-lg shadow-sm mt-3">
-                <i class="fa-solid fa-credit-card me-2"></i> Thanh toán học phí
+            <p>Khóa học: <b>@TempData["KhoaHoc"] ?? "Chưa xác định"</b></p>
+
+            <a asp-controller="TestDauVao" asp-action="LamBai" class="btn btn-success btn-lg shadow-sm mt-3">
+                <i class="fa-solid fa-play me-2"></i> Làm bài Test ngay
             </a>
         </div>
-    }
-    else if (ViewBag.TestStatus == "Hoàn thành")
-    {
-        <a href="/TestDauVao/KetQua" class="btn btn-secondary btn-lg shadow-sm">
-            <i class="fa-solid fa-chart-line me-2"></i> Xem kết quả Test
-        </a>
     }
     else if (ViewBag.TestStatus == "Hoàn thành")
     {
@@ -53,13 +40,12 @@
             <h4 class="fw-bold text-info mb-3">
                 <i class="fa-solid fa-check-circle me-2"></i> Bạn đã hoàn thành bài Test
             </h4>
-            <p>Điểm bài test: <b>@Model.DiemSo</b></p>
-            <p>Lớp đề xuất: <b class="text-primary">@Model.LopDeXuat</b></p>
+            <p>Điểm bài test: <b>@ViewBag.DiemSo</b></p>
+            <p>Lớp đề xuất: <b class="text-primary">@ViewBag.LopDeXuat</b></p>
 
-            <a href="/ThanhToan/Index?lop=@Model.LopDeXuat" class="btn btn-success mt-3">
-                <i class="fa-solid fa-credit-card me-2"></i> Thanh toán lớp @Model.LopDeXuat
+            <a asp-controller="TestDauVao" asp-action="KetQua" class="btn btn-secondary btn-lg shadow-sm mt-3">
+                <i class="fa-solid fa-chart-line me-2"></i> Xem kết quả Test
             </a>
         </div>
     }
-
 </div>

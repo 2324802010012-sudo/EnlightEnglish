@@ -41,5 +41,6 @@ namespace EnlightEnglishCenter.Models
         // Hai cột có thật trong DB
         public int? SiSoHienTai { get; set; }
         public int? SiSoToiDa { get; set; }
+        public string? ThuTrongTuan { get; set; }
     }
 }
