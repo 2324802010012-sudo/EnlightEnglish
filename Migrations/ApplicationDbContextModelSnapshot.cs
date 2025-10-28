@@ -113,10 +113,10 @@ namespace EnlightEnglishCenter.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaDiem"));
 
                     b.Property<decimal?>("DiemCuoiKy")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("DiemGiuaKy")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("MaHocVien")
                         .HasColumnType("int");
@@ -125,15 +125,20 @@ namespace EnlightEnglishCenter.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("NhanXet")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("MaDiem");
+
+                    b.HasIndex("MaHocVien");
+
+                    b.HasIndex("MaLop");
 
                     b.HasIndex(new[] { "MaHocVien" }, "IX_DiemSo_MaHocVien");
 
                     b.HasIndex(new[] { "MaLop" }, "IX_DiemSo_MaLop");
 
-                    b.ToTable("DiemSo");
+                    b.ToTable("DiemSo", (string)null);
                 });
 
             modelBuilder.Entity("EnlightEnglishCenter.Models.DkHocVienLopHoc", b =>
@@ -150,6 +155,10 @@ namespace EnlightEnglishCenter.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("TrangThai")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TrangThaiHoc")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -261,59 +270,6 @@ namespace EnlightEnglishCenter.Migrations
                     b.ToTable("HocVien");
                 });
 
-            modelBuilder.Entity("EnlightEnglishCenter.Models.HocVien", b =>
-                {
-                    b.Property<int>("MaHocVien")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaHocVien"));
-
-                    b.Property<string>("DiaChi")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DienThoai")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GhiChu")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GioiTinh")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HoTen")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("KhoaHoc")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LopHoc")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("NgayBatDauHoc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("NgayDangKy")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("NgaySinh")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("TinhTrangHoc")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TrinhDo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("MaHocVien");
-
-                    b.ToTable("HocVien");
-                });
-
             modelBuilder.Entity("EnlightEnglishCenter.Models.KhoaHoc", b =>
                 {
                     b.Property<int>("MaKhoaHoc")
@@ -322,46 +278,24 @@ namespace EnlightEnglishCenter.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaKhoaHoc"));
 
-                    b.Property<string>("CapDo")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<string>("ChuanDauRa")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GiangVien")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("HinhThuc")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
                     b.Property<decimal?>("HocPhi")
-                        .HasColumnType("decimal(12,2)");
-
-                    b.Property<string>("LoTrinhHoc")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("MoTa")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<DateOnly?>("NgayBatDau")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("NgayBatDau")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateOnly?>("NgayKetThuc")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime?>("NgayKhaiGiang")
+                    b.Property<DateTime?>("NgayKetThuc")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("TenKhoaHoc")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ThoiGianHoc")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -370,50 +304,46 @@ namespace EnlightEnglishCenter.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("TrangThai")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("TrinhDo")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Đang mở");
 
                     b.HasKey("MaKhoaHoc");
 
-                    b.ToTable("KhoaHoc");
+                    b.ToTable("KhoaHoc", (string)null);
                 });
 
             modelBuilder.Entity("EnlightEnglishCenter.Models.LichHoc", b =>
                 {
-                    b.Property<int>("MaLichHoc")
+                    b.Property<int>("MaLich")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("MaLich");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaLichHoc"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaLich"));
 
-                    b.Property<string>("GioBatDau")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                    b.Property<TimeSpan?>("GioBatDau")
+                        .HasColumnType("time");
 
-                    b.Property<string>("GioKetThuc")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<int?>("MaGiaoVien")
-                        .HasColumnType("int");
+                    b.Property<TimeSpan?>("GioKetThuc")
+                        .HasColumnType("time");
 
                     b.Property<int?>("MaLop")
                         .HasColumnType("int");
 
-                    b.Property<DateOnly?>("NgayHoc")
+                    b.Property<DateTime?>("NgayHoc")
                         .HasColumnType("date");
 
+                    b.Property<string>("NoiDung")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("PhongHoc")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("MaLichHoc");
-
-                    b.HasIndex("MaGiaoVien");
+                    b.HasKey("MaLich");
 
                     b.HasIndex("MaLop");
 
@@ -529,7 +459,7 @@ namespace EnlightEnglishCenter.Migrations
 
                     b.HasKey("MaLienHe");
 
-                    b.ToTable("LienHeKhachHangs");
+                    b.ToTable("LienHeKhachHang");
                 });
 
             modelBuilder.Entity("EnlightEnglishCenter.Models.LopHoc", b =>
@@ -546,23 +476,25 @@ namespace EnlightEnglishCenter.Migrations
                     b.Property<int?>("MaKhoaHoc")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("NgayBatDau")
-                        .HasColumnType("datetime2");
+                    b.Property<int?>("SiSoHienTai")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
-                    b.Property<DateTime?>("NgayKetThuc")
-                        .HasColumnType("datetime2");
+                    b.Property<int?>("SiSoToiDa")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(20);
 
                     b.Property<string>("TenLop")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("TrangThai")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("TrinhDo")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasDefaultValue("Đang học");
 
                     b.HasKey("MaLop");
 
@@ -570,7 +502,7 @@ namespace EnlightEnglishCenter.Migrations
 
                     b.HasIndex("MaKhoaHoc");
 
-                    b.ToTable("LopHoc");
+                    b.ToTable("LopHoc", (string)null);
                 });
 
             modelBuilder.Entity("EnlightEnglishCenter.Models.LuongGiaoVien", b =>
@@ -812,17 +744,17 @@ namespace EnlightEnglishCenter.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("LoaiTaiLieu")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<int?>("MaGiaoVien")
                         .HasColumnType("int");
 
                     b.Property<int?>("MaLop")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("NgayDang")
+                    b.Property<string>("MoTa")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("NgayTaiLen")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("TenTaiLieu")
@@ -831,9 +763,9 @@ namespace EnlightEnglishCenter.Migrations
 
                     b.HasKey("MaTaiLieu");
 
-                    b.HasIndex(new[] { "MaGiaoVien" }, "IX_TaiLieu_MaGiaoVien");
+                    b.HasIndex("MaGiaoVien");
 
-                    b.HasIndex(new[] { "MaLop" }, "IX_TaiLieu_MaLop");
+                    b.HasIndex("MaLop");
 
                     b.ToTable("TaiLieu");
                 });
@@ -846,67 +778,64 @@ namespace EnlightEnglishCenter.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaTest"));
 
-                    b.Property<bool>("DaLamBaiTest")
-                        .HasColumnType("bit");
-
                     b.Property<decimal?>("DiemDoc")
-                        .HasColumnType("decimal(5,2)");
+                        .HasColumnType("decimal(4,1)");
 
                     b.Property<decimal?>("DiemNghe")
-                        .HasColumnType("decimal(5,2)");
+                        .HasColumnType("decimal(4,1)");
 
                     b.Property<decimal?>("DiemNguPhap")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<double?>("DiemSo")
-                        .HasColumnType("float");
+                        .HasColumnType("decimal(4,1)");
 
                     b.Property<decimal?>("DiemViet")
-                        .HasColumnType("decimal(5,2)");
+                        .HasColumnType("decimal(4,1)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("HoTen")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int?>("HocVienMaHocVien")
                         .HasColumnType("int");
-
-                    b.Property<string>("KetQua")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int?>("KhoaHocDeXuat")
                         .HasColumnType("int");
 
                     b.Property<string>("LoTrinhHoc")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("LopDeXuat")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("MaHocVien")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("NgayDangKy")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("NgayTest")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("NguoiDungMaNguoiDung")
+                        .HasColumnType("int");
+
                     b.Property<decimal?>("TongDiem")
-                        .HasColumnType("decimal(5,2)");
+                        .HasColumnType("decimal(4,1)");
 
                     b.Property<string>("TrangThai")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)")
+                        .HasDefaultValue("Chờ xác nhận");
 
                     b.HasKey("MaTest");
 
                     b.HasIndex("HocVienMaHocVien");
 
-                    b.HasIndex(new[] { "KhoaHocDeXuat" }, "IX_TestDauVao_KhoaHocDeXuat");
+                    b.HasIndex("KhoaHocDeXuat");
 
-                    b.HasIndex(new[] { "MaHocVien" }, "IX_TestDauVao_MaHocVien");
+                    b.HasIndex("MaHocVien");
 
-                    b.ToTable("TestDauVao");
+                    b.HasIndex("NguoiDungMaNguoiDung");
+
+                    b.ToTable("TestDauVao", (string)null);
                 });
 
             modelBuilder.Entity("EnlightEnglishCenter.Models.VaiTro", b =>
@@ -957,7 +886,7 @@ namespace EnlightEnglishCenter.Migrations
                     b.HasOne("EnlightEnglishCenter.Models.NguoiDung", "MaHocVienNavigation")
                         .WithMany("DiemSos")
                         .HasForeignKey("MaHocVien")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EnlightEnglishCenter.Models.LopHoc", "MaLopNavigation")
@@ -1020,15 +949,9 @@ namespace EnlightEnglishCenter.Migrations
 
             modelBuilder.Entity("EnlightEnglishCenter.Models.LichHoc", b =>
                 {
-                    b.HasOne("EnlightEnglishCenter.Models.GiaoVien", "GiaoVien")
-                        .WithMany()
-                        .HasForeignKey("MaGiaoVien");
-
                     b.HasOne("EnlightEnglishCenter.Models.LopHoc", "LopHoc")
                         .WithMany("LichHocs")
                         .HasForeignKey("MaLop");
-
-                    b.Navigation("GiaoVien");
 
                     b.Navigation("LopHoc");
                 });
@@ -1061,7 +984,8 @@ namespace EnlightEnglishCenter.Migrations
 
                     b.HasOne("EnlightEnglishCenter.Models.KhoaHoc", "MaKhoaHocNavigation")
                         .WithMany("LopHocs")
-                        .HasForeignKey("MaKhoaHoc");
+                        .HasForeignKey("MaKhoaHoc")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("MaGiaoVienNavigation");
 
@@ -1133,8 +1057,7 @@ namespace EnlightEnglishCenter.Migrations
 
                     b.HasOne("EnlightEnglishCenter.Models.LopHoc", "MaLopNavigation")
                         .WithMany("TaiLieus")
-                        .HasForeignKey("MaLop")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("MaLop");
 
                     b.Navigation("MaGiaoVienNavigation");
 
@@ -1148,13 +1071,18 @@ namespace EnlightEnglishCenter.Migrations
                         .HasForeignKey("HocVienMaHocVien");
 
                     b.HasOne("EnlightEnglishCenter.Models.KhoaHoc", "KhoaHocDeXuatNavigation")
-                        .WithMany("TestDauVaos")
-                        .HasForeignKey("KhoaHocDeXuat");
+                        .WithMany()
+                        .HasForeignKey("KhoaHocDeXuat")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("EnlightEnglishCenter.Models.NguoiDung", "HocVien")
-                        .WithMany("TestDauVaos")
+                        .WithMany()
                         .HasForeignKey("MaHocVien")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EnlightEnglishCenter.Models.NguoiDung", null)
+                        .WithMany("TestDauVaos")
+                        .HasForeignKey("NguoiDungMaNguoiDung");
 
                     b.Navigation("HocVien");
 
@@ -1178,8 +1106,6 @@ namespace EnlightEnglishCenter.Migrations
             modelBuilder.Entity("EnlightEnglishCenter.Models.KhoaHoc", b =>
                 {
                     b.Navigation("LopHocs");
-
-                    b.Navigation("TestDauVaos");
                 });
 
             modelBuilder.Entity("EnlightEnglishCenter.Models.LichHoc", b =>

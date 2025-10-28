@@ -29,7 +29,11 @@ namespace EnlightEnglishCenter.Controllers
             }
 
             var user = _context.NguoiDungs.FirstOrDefault(u =>
-                u.TenDangNhap == Username || u.Email == Username);
+           (u.TenDangNhap.ToLower() == Username.ToLower()
+            || u.Email.ToLower() == Username.ToLower())
+           && u.MatKhau == Password);
+
+
 
             if (user == null)
             {

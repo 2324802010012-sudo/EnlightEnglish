@@ -1,81 +1,69 @@
 ﻿@model IEnumerable<EnlightEnglishCenter.Models.TestDauVao>
 
 @{
-    ViewData["Title"] = "Duyệt test đầu vào";
+    ViewData["Title"] = "Duyệt Test đầu vào";
+
 }
 
-@section Breadcrumb {
-    <li class="breadcrumb-item active" aria-current="page">Duyệt test đầu vào</li>
-}
+<div class="container mt-5">
+    <h2 class="text-center text-primary fw-bold mb-4">
+        <i class="bi bi-clipboard-check me-2"></i> Duyệt Test đầu vào
+    </h2>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="m-0">Danh sách test đầu vào</h3>
-</div>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show text-center shadow-sm" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
-<table class="table table-bordered table-striped align-middle">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Học viên</th>
-            <th>Email</th>
-            <th>Khóa đề xuất</th>
-            <th>Ngày test</th>
-            <th>Điểm (Nghe/Đọc/Viết/Ngữ pháp)</th>
-            <th>Tổng điểm</th>
-            <th>Trạng thái</th>
-            <th class="text-center" style="width:240px;">Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var t in Model)
-        {
-            var tenHv = t.HocVien?.HoTen ?? "—";
-            var emailHv = t.HocVien?.Email ?? "—";
-            var khoaDx = t.KhoaHocDeXuatNavigation?.TenKhoaHoc ?? "—";
-            var ngay = t.NgayTest?.ToString("dd/MM/yyyy") ?? "—";
-
-            string fmt(decimal? v) => v.HasValue ? v.Value.ToString("0.0") : "—";
-
+    <table class="table table-bordered table-striped text-center align-middle shadow-sm">
+        <thead class="table-info">
             <tr>
-                <td>@t.MaTest</td>
-                <td>@tenHv</td>
-                <td>@emailHv</td>
-                <td>@khoaDx</td>
-                <td>@ngay</td>
-                <td>@($"{fmt(t.DiemNghe)}/{fmt(t.DiemDoc)}/{fmt(t.DiemViet)}/{fmt(t.DiemNguPhap)}")</td>
-                <td>@(t.TongDiem.HasValue ? t.TongDiem.Value.ToString("0.0") : "—")</td>
-                <td>
-                    <span class="badge bg-info">
-                        @(string.IsNullOrWhiteSpace(t.TrangThai) ? "Chờ duyệt" : t.TrangThai)
-                    </span>
-                </td>
-                <td class="text-center">
-                    <form asp-action="CapNhatTrangThai" method="post" class="d-inline">
-                        <input type="hidden" name="id" value="@t.MaTest" />
-                        <select name="trangThai" class="form-select d-inline w-auto me-2">
-                            @{
-                                // KHÔNG dùng tag helper ở select/option -> tránh lỗi "option tag helper..."
-                                var states = new[] { "Chờ duyệt", "Được phép test", "Hoàn thành", "Từ chối" };
-                                var current = string.IsNullOrWhiteSpace(t.TrangThai) ? "Chờ duyệt" : t.TrangThai;
-                                foreach (var s in states)
-                                {
-                                    if (string.Equals(current, s, StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        @:
-                                        <option value="@s" selected="selected">@s</option>
-                                    }
-                                    else
-                                    {
-                                        @:
-                                        <option value="@s">@s</option>
-                                    }
-                                }
-                            }
-                        </select>
-                        <button class="btn btn-sm btn-primary" type="submit">Lưu</button>
-                    </form>
-                </td>
+                <th>Họ tên học viên</th>
+                <th>Email</th>
+                <th>Ngày test</th>
+                <th>Khóa học đề xuất</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.HocVien?.HoTen</td>
+                    <td>@item.HocVien?.Email</td>
+                    <td>@(item.NgayTest?.ToString("dd/MM/yyyy"))</td>
+                    <td>@item.KhoaHocDeXuat</td>
+                    <td>
+                        @if (item.TrangThai == "Chờ xác nhận")
+                        {
+                            <span class="badge bg-warning text-dark">@item.TrangThai</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">@item.TrangThai</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.TrangThai == "Chờ xác nhận")
+                        {
+                            <form asp-action="XacNhan" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@item.MaTest" />
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="bi bi-check2-circle me-1"></i> Xác nhận
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="text-success fw-semibold">Đã xác nhận</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
