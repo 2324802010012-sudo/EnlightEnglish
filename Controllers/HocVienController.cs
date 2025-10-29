@@ -9,7 +9,6 @@ namespace EnlightEnglishCenter.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        // ✅ Constructor để inject DbContext
         public HocVienController(ApplicationDbContext context)
         {
             _context = context;
@@ -21,18 +20,34 @@ namespace EnlightEnglishCenter.Controllers
             if (maNguoiDung == null)
                 return RedirectToAction("Login", "Account");
 
-            // ✅ Lấy test gần nhất của học viên
+            var hocVien = _context.HocViens.FirstOrDefault(h => h.MaNguoiDung == maNguoiDung);
+            if (hocVien == null)
+                return RedirectToAction("Register", "Account");
+
+            // ✅ Lấy bài test
             var test = _context.TestDauVaos
-                .Where(t => t.MaHocVien == maNguoiDung)
-                .OrderByDescending(t => t.NgayTest)
-                .FirstOrDefault();
+                .Include(t => t.KhoaHocDeXuatNavigation)
+                .FirstOrDefault(t => t.MaHocVien == hocVien.MaHocVien);
 
             if (test != null)
+            {
                 ViewBag.TestStatus = test.TrangThai;
-            else
-                ViewBag.TestStatus = null;
+                ViewBag.DiemSo = test.TongDiem?.ToString("0.0");
+                ViewBag.LopDeXuat = test.KhoaHocDeXuatNavigation?.TenKhoaHoc ?? test.LoTrinhHoc ?? "Chưa xác định";
+            }
+
+            // ✅ Lấy danh sách đơn học phí của học viên
+            var donHocPhi = _context.DonHocPhis
+                .Include(d => d.LopHoc)
+                .ThenInclude(l => l.MaKhoaHocNavigation)
+                .Where(d => d.MaHocVien == hocVien.MaHocVien)
+                .OrderByDescending(d => d.NgayTao)
+                .ToList();
+
+            ViewBag.DonHocPhi = donHocPhi;
 
             return View();
         }
+
     }
 }

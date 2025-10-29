@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿
+        using System.Diagnostics;
 using EnlightEnglishCenter.Data;
 using EnlightEnglishCenter.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -63,7 +64,8 @@ namespace EnlightEnglishCenter.Controllers
         public IActionResult XacNhan(int id)
         {
             var vaiTro = HttpContext.Session.GetString("VaiTro");
-            if (vaiTro != "Admin")
+
+            if (vaiTro != "Admin" && vaiTro != "Phòng đào tạo")
             {
                 TempData["Error"] = "⚠️ Bạn không có quyền thực hiện thao tác này!";
                 return RedirectToAction("Index", "Home");
@@ -73,13 +75,17 @@ namespace EnlightEnglishCenter.Controllers
             if (test == null)
                 return NotFound();
 
-            test.TrangThai = "Đã xác nhận";
+            test.TrangThai = "Được phép test";
+
             _context.SaveChanges();
 
             TempData["Success"] = "✅ Đã xác nhận bài Test của học viên thành công!";
+
+            // ✅ Giữ lại ở trang duyệt test của Phòng đào tạo
             return RedirectToAction("DuyetTest");
         }
-    
+
+
 
         // ==========================================================
         // 👩‍🏫 QUẢN LÝ GIẢNG VIÊN
@@ -377,49 +383,73 @@ namespace EnlightEnglishCenter.Controllers
         // ==========================================================
         // 🏫 LỚP HỌC
         // ==========================================================
+        // ✅ Danh sách lớp học
         [HttpGet]
         public async Task<IActionResult> LopHoc()
         {
-            var dsLop = await _context.LopHocs
-                .Include(l => l.MaKhoaHocNavigation)
-                .OrderByDescending(l => l.MaKhoaHocNavigation!.NgayBatDau)
-                .AsNoTracking()
-                .ToListAsync();
-
-            ViewData["Title"] = "Quản lý lớp học";
-            return View(dsLop);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ThemLopHoc()
-        {
-            ViewBag.DSKhoaHoc = new SelectList(
+            ViewBag.KhoaHocList = new SelectList(
                 await _context.KhoaHocs
                     .Where(k => k.TrangThai == "Đang mở")
-                    .Select(k => new { k.MaKhoaHoc, k.TenKhoaHoc })
                     .ToListAsync(),
                 "MaKhoaHoc", "TenKhoaHoc"
             );
 
-            return View();
+            var dsLop = await _context.LopHocs
+                .Include(l => l.MaKhoaHocNavigation)
+                .OrderByDescending(l => l.NgayBatDau)
+                .ToListAsync();
+
+            return View(dsLop);
         }
 
+
+        // ✅ POST – Thêm lớp học
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ThemLopHoc(LopHoc model)
+        public IActionResult ThemLopHoc(LopHoc model)
         {
-            if (!ModelState.IsValid)
-            {
-                await ThemLopHoc();
-                return View(model);
-            }
+            var khoaHoc = _context.KhoaHocs.FirstOrDefault(x => x.MaKhoaHoc == model.MaKhoaHoc);
+            if (khoaHoc == null) return RedirectToAction(nameof(LopHoc));
+
+            // ✅ Lấy dữ liệu tự động từ khóa học
+            model.HocPhi = khoaHoc.HocPhi;
+            model.NgayBatDau = khoaHoc.NgayBatDau;
+            model.NgayKetThuc = khoaHoc.NgayKetThuc;
+            model.ThoiLuong = khoaHoc.ThoiLuong;
+            model.ThoiLuongTuan = khoaHoc.ThoiLuongTuan;
+            model.LichHoc = khoaHoc.LichHoc;   // 👈 THÊM DÒNG NÀY
+
+            model.SiSoHienTai = 0;
+            model.TrangThai = "Đang mở";
 
             _context.LopHocs.Add(model);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
-            TempData["Success"] = "✅ Thêm lớp học thành công!";
+            TempData["Success"] = "✅ Tạo lớp học thành công!";
             return RedirectToAction(nameof(LopHoc));
         }
+
+
+
+
+        // ✅ API lấy thông tin khóa học theo ID cho AJAX
+        [HttpGet]
+        public IActionResult LayKhoaHoc(int id)
+        {
+            var k = _context.KhoaHocs.FirstOrDefault(x => x.MaKhoaHoc == id);
+            if (k == null) return NotFound();
+
+            return Json(new
+            {
+                hocPhi = k.HocPhi,
+                ngayBatDau = k.NgayBatDau?.ToString("yyyy-MM-dd"),
+                ngayKetThuc = k.NgayKetThuc?.ToString("yyyy-MM-dd"),
+                thoiLuong = k.ThoiLuong,
+                thoiLuongTuan = k.ThoiLuongTuan
+            });
+        }
+
+
+
 
         // ==========================================================
         // 📅 LỊCH KHAI GIẢNG = DANH SÁCH KHOÁ HỌC
@@ -427,21 +457,25 @@ namespace EnlightEnglishCenter.Controllers
         [HttpGet]
         public async Task<IActionResult> LichKhaiGiang(string? q, string? trangThai = "Tất cả")
         {
-            var query = _context.KhoaHocs.AsNoTracking();
+            ViewBag.CurrentQ = q ?? "";
+            ViewBag.CurrentTrangThai = trangThai ?? "Tất cả";
+
+            var query = _context.KhoaHocs
+                .Include(k => k.LopHocs)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(q))
-                query = query.Where(k => k.TenKhoaHoc.Contains(q) || k.CapDo.Contains(q));
+            {
+                query = query.Where(k => k.TenKhoaHoc.Contains(q) || (k.CapDo ?? "").Contains(q));
+            }
 
-            if (!string.IsNullOrWhiteSpace(trangThai) && trangThai != "Tất cả")
+            if (trangThai != "Tất cả")
+            {
                 query = query.Where(k => k.TrangThai == trangThai);
+            }
 
-            var data = await query
-                .OrderByDescending(k => k.NgayBatDau)
-                .ToListAsync();
-
-            ViewBag.CurrentQ = q;
-            ViewBag.CurrentTrangThai = trangThai;
-            return View(data); // Views/PhongDaoTao/LichKhaiGiang.cshtml
+            var list = await query.OrderBy(k => k.NgayBatDau).ToListAsync();
+            return View(list);
         }
 
         // 🔄 Mở/đóng nhanh
@@ -473,6 +507,9 @@ namespace EnlightEnglishCenter.Controllers
             TempData["Success"] = "🗑️ Đã xóa khóa học.";
             return RedirectToAction(nameof(LichKhaiGiang));
         }
+    
+
+
 
         // ======================== API JSON ========================
         [HttpGet]
@@ -503,3 +540,5 @@ namespace EnlightEnglishCenter.Controllers
         }
     }
 }
+
+

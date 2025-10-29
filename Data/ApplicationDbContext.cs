@@ -36,8 +36,9 @@ namespace EnlightEnglishCenter.Data
         public DbSet<PhongDaoTao> PhongDaoTaos { get; set; }
         public DbSet<NhanVienLeTan> NhanVienLeTans { get; set; }
         public DbSet<PhongHoc> PhongHocs { get; set; }
+        public DbSet<DonHocPhi> DonHocPhis { get; set; }
 
-      
+
         // ==========================
         // Fluent config
         // ==========================

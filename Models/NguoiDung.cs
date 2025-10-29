@@ -55,6 +55,9 @@ namespace EnlightEnglishCenter.Models
         public int SoLanSaiMatKhau { get; set; }
 
         // ================== QUAN HỆ ===================
+        [InverseProperty("NguoiDung")]
+        public virtual HocVien? HocVien { get; set; }
+
         [InverseProperty("NguoiLapNavigation")]
         public virtual ICollection<BaoCao> BaoCaos { get; set; } = new List<BaoCao>();
 

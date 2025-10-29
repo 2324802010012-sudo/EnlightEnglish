@@ -49,3 +49,82 @@
         </div>
     }
 </div>
+<hr class="my-5" />
+
+<h3 class="fw-bold text-primary mb-3">
+    <i class="fa-solid fa-book-open me-2"></i> Khóa học và lớp học của bạn
+</h3>
+
+@if (ViewBag.DonHocPhi == null || !((IEnumerable<dynamic>)ViewBag.DonHocPhi).Any())
+{
+    <div class="alert alert-warning text-center shadow-sm">
+        <i class="fa-solid fa-info-circle me-2"></i> Bạn chưa đăng ký lớp học nào.
+    </div>
+}
+else
+{
+    <table class="table table-bordered table-striped align-middle text-center shadow-sm">
+        <thead class="table-info">
+            <tr>
+                <th>Ngày đăng ký</th>
+                <th>Khóa học</th>
+                <th>Lớp học</th>
+                <th>Học phí</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var don in ViewBag.DonHocPhi)
+            {
+                <tr>
+                    <td>@(don.NgayTao?.ToString("dd/MM/yyyy"))</td>
+                    <td>@don.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc</td>
+                    <td>@don.LopHoc?.TenLop</td>
+                    <td>@string.Format("{0:N0} đ", don.TongTien)</td>
+                    <td>
+                        <span class="badge @(don.TrangThai == "Đã thanh toán" ? "bg-success" : "bg-warning text-dark")">
+                            @don.TrangThai
+                        </span>
+                    </td>
+                    <td>
+                        @if (don.TrangThai == "Chờ thanh toán")
+                        {
+                            <form asp-controller="ThanhToan" asp-action="XacNhanThanhToan" method="post">
+                                <input type="hidden" name="maDon" value="@don.MaDon" />
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="fa-solid fa-credit-card me-1"></i> Thanh toán
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a asp-controller="LopHoc" asp-action="ChiTiet" asp-route-id="@don.MaLop"
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fa-solid fa-eye me-1"></i> Xem lớp
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@if (ViewBag.DuocHoc == true)
+{
+    <div class="alert alert-success mt-4 shadow-sm">
+        🎓 Bạn đã được xác nhận thanh toán!
+        Hãy vào xem lịch học của bạn bên dưới:
+    </div>
+
+    <a asp-controller="LopHoc" asp-action="ChiTiet" class="btn btn-success mt-2">
+        <i class="fa-solid fa-calendar-days me-2"></i> Xem lịch học
+    </a>
+}
+else
+{
+    <div class="alert alert-warning mt-4 shadow-sm">
+        ⏳ Bạn chưa được xác nhận thanh toán.
+        Vui lòng liên hệ lễ tân để hoàn tất thủ tục học phí.
+    </div>
+}

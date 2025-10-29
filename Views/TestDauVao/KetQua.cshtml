@@ -1,5 +1,4 @@
 ﻿@model EnlightEnglishCenter.Models.TestDauVao
-
 @{
     ViewData["Title"] = "Kết quả Test đầu vào";
 }
@@ -9,12 +8,12 @@
         <i class="fa-solid fa-square-poll-vertical me-2"></i> Kết quả Test đầu vào
     </h2>
 
-    <div class="card shadow-sm p-4 border-0 mx-auto" style="max-width: 600px;">
-        <p><b>Học viên:</b> @((Model.HocVien?.HoTen) ?? "Không xác định")</p>
-        <p><b>Khóa học đăng ký:</b> @((Model.KhoaHocDeXuatNavigation?.TenKhoaHoc) ?? "Không có")</p>
+    <div class="card shadow-sm p-4 border-0 mx-auto" style="max-width: 650px;">
+        <p><b>👩‍🎓 Học viên:</b> @((Model.HocVien?.HoTen) ?? "Không xác định")</p>
+        <p><b>📘 Khóa học đề xuất:</b> @((Model.KhoaHocDeXuatNavigation?.TenKhoaHoc) ?? "—")</p>
 
         <p>
-            <b>Điểm bài test:</b>
+            <b>💯 Điểm bài test:</b>
             <span class="fw-bold text-success">
                 @((Model.TongDiem.HasValue ? Model.TongDiem.Value.ToString("0.0") : "Chưa có"))
             </span>
@@ -23,24 +22,29 @@
         @if (!string.IsNullOrWhiteSpace(Model.LoTrinhHoc))
         {
             <p>
-                <b>Lộ trình đề xuất:</b>
+                <b>🧭 Lộ trình học đề xuất:</b>
                 <span class="fw-bold text-primary">@Model.LoTrinhHoc</span>
             </p>
         }
         else
         {
-            <p><b>Lộ trình đề xuất:</b> <span class="text-muted">Đang cập nhật...</span></p>
+            <p><b>🧭 Lộ trình học đề xuất:</b> <span class="text-muted">Đang cập nhật...</span></p>
         }
 
-        <div class="mt-4">
+        <hr class="my-4" />
+
+        <div class="d-flex flex-column flex-md-row justify-content-center gap-2">
             <a asp-controller="HocVien" asp-action="Index" class="btn btn-outline-primary">
                 <i class="fa-solid fa-house me-2"></i> Quay về trang học viên
             </a>
 
-            @if (!string.IsNullOrWhiteSpace(Model.LoTrinhHoc))
+            @if (Model.KhoaHocDeXuat.HasValue)
             {
-                <a asp-controller="ThanhToan" asp-action="Index" asp-route-lop="@Model.LoTrinhHoc" class="btn btn-success ms-2">
-                    <i class="fa-solid fa-credit-card me-2"></i> Thanh toán học phí lộ trình @Model.LoTrinhHoc
+                <a asp-controller="ThanhToan"
+                   asp-action="DanhSachLopTheoKhoa"
+                   asp-route-khoaHocId="@Model.KhoaHocDeXuat"
+                   class="btn btn-success">
+                    🎯 Chọn lớp & Thanh toán
                 </a>
             }
         </div>

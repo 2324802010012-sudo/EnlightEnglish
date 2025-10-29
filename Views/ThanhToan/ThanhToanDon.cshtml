@@ -1,0 +1,17 @@
+﻿@model DonHocPhi
+
+<div class="container text-center py-4">
+    <h3 class="text-success fw-bold">✅ Đăng ký lớp thành công!</h3>
+
+    <p><b>Lớp học:</b> @Model.LopHoc?.TenLop</p>
+    <p><b>Khóa học:</b> @Model.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc</p>
+    <p><b>Học phí:</b> @String.Format("{0:#,0} đ", Model.TongTien)</p>
+
+    <div class="alert alert-warning mt-3">
+        Vui lòng liên hệ trung tâm hoặc thanh toán trực tiếp khi bắt đầu học.
+    </div>
+
+    <a asp-controller="HocVien" asp-action="Index" class="btn btn-primary">
+        Về trang học viên
+    </a>
+</div>

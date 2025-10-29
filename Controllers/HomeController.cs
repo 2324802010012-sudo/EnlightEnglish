@@ -1,6 +1,7 @@
 ﻿using EnlightEnglishCenter.Data;
 using EnlightEnglishCenter.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace EnlightEnglishCenter.Controllers
@@ -16,7 +17,7 @@ namespace EnlightEnglishCenter.Controllers
             _context = context;
         }
 
-
+  
         public IActionResult Index()
         {
             return View();

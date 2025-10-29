@@ -1,0 +1,80 @@
+﻿@model EnlightEnglishCenter.Models.LopHoc
+
+<div class="container py-5">
+    <h2 class="fw-bold text-primary mb-3">
+        <i class="fa-solid fa-school me-2"></i> Thông tin lớp học
+    </h2>
+
+    <div class="card shadow-sm p-4 mb-4">
+        <h4 class="fw-bold">@Model.TenLop</h4>
+        <p><b>Khóa học:</b> @Model.MaKhoaHocNavigation?.TenKhoaHoc</p>
+        <p><b>Cấp độ:</b> @Model.MaKhoaHocNavigation?.CapDo</p>
+        <p><b>Học phí:</b> @string.Format("{0:N0} đ", @Model.HocPhi)</p>
+        <p>
+            <b>Thời gian:</b>
+            @Model.NgayBatDau?.ToString("dd/MM/yyyy") - @Model.NgayKetThuc?.ToString("dd/MM/yyyy")
+        </p>
+        <p>
+            <b>Trạng thái:</b>
+            <span class="badge bg-@(Model.TrangThai == "Đang mở" ? "success" : "secondary")">
+                @Model.TrangThai
+            </span>
+        </p>
+    </div>
+
+    <!-- 👩‍🏫 Giảng viên -->
+    @if (Model.PhanCongGiangDays != null && Model.PhanCongGiangDays.Any())
+    {
+        <div class="card shadow-sm p-4 mb-4">
+            <h5 class="fw-bold text-info mb-3">
+                <i class="fa-solid fa-user-tie me-2"></i> Giảng viên phụ trách
+            </h5>
+            <ul class="list-group list-group-flush">
+                @foreach (var pc in Model.PhanCongGiangDays)
+                {
+                    <li class="list-group-item">
+                        @pc.GiaoVien?.NguoiDung?.HoTen
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- 🗓️ Lịch học -->
+    @if (Model.LichHocs != null && Model.LichHocs.Any())
+    {
+        <div class="card shadow-sm p-4">
+            <h5 class="fw-bold text-success mb-3">
+                <i class="fa-solid fa-calendar-days me-2"></i> Lịch học
+            </h5>
+
+            <table class="table table-bordered text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ngày học</th>
+                        <th>Giờ học</th>
+                        <th>Phòng</th>
+                        <th>Nội dung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var buoi in Model.LichHocs.OrderBy(l => l.NgayHoc))
+                    {
+                        <tr>
+                            <td>@buoi.NgayHoc?.ToString("dd/MM/yyyy")</td>
+                            <td>@buoi.GioBatDau?.ToString(@"hh\:mm") - @buoi.GioKetThuc?.ToString(@"hh\:mm")</td>
+                            <td>@buoi.PhongHoc</td>
+                            <td>@buoi.NoiDung</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div class="mt-4 text-center">
+        <a asp-controller="HocVien" asp-action="Index" class="btn btn-outline-primary">
+            <i class="fa-solid fa-arrow-left me-2"></i> Quay lại trang học viên
+        </a>
+    </div>
+</div>

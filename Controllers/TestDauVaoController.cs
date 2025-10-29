@@ -76,8 +76,17 @@ namespace EnlightEnglishCenter.Controllers
         // ======================================================
         public IActionResult DanhSach()
         {
-            var vaiTro = HttpContext.Session.GetString("VaiTro");
-            if (vaiTro != "Admin" && vaiTro != "Phòng đào tạo")
+            var vaiTro = HttpContext.Session.GetString("VaiTro")?.Trim();
+
+            if (string.IsNullOrEmpty(vaiTro))
+            {
+                TempData["Error"] = "⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (!vaiTro.Equals("Admin", StringComparison.OrdinalIgnoreCase) &&
+                !vaiTro.Equals("Phòng đào tạo", StringComparison.OrdinalIgnoreCase) &&
+                !vaiTro.Equals("Phòng Đào Tạo", StringComparison.OrdinalIgnoreCase))
             {
                 TempData["Error"] = "⚠️ Chỉ Admin hoặc Phòng đào tạo được phép truy cập.";
                 return RedirectToAction("Index", "Home");
@@ -117,7 +126,20 @@ namespace EnlightEnglishCenter.Controllers
             );
 
             TempData["Success"] = "✅ Đã duyệt học viên làm test.";
-            return RedirectToAction("DanhSach");
+
+            var vaiTro = HttpContext.Session.GetString("VaiTro")?.Trim();
+
+            if (!string.IsNullOrEmpty(vaiTro) &&
+                vaiTro.Equals("Phòng đào tạo", StringComparison.OrdinalIgnoreCase))
+            {
+                // Khi người duyệt là Phòng đào tạo → quay lại đúng layout của họ
+                return RedirectToAction("DuyetTest", "PhongDaoTao");
+            }
+            else
+            {
+                // Còn lại (Admin, vv) → quay về danh sách Test
+                return RedirectToAction("DanhSach", "TestDauVao");
+            }
         }
 
         // ======================================================
@@ -180,7 +202,6 @@ namespace EnlightEnglishCenter.Controllers
             for (int i = 0; i < count; i++)
                 if (answers[i] == correctAnswers[i]) correct++;
 
-            // Quy về thang 10
             double score10 = count > 0 ? (correct / (double)count) * 10 : 0;
 
             string deXuat = score10 < 4 ? "Cấp độ Cơ bản"
@@ -198,13 +219,11 @@ namespace EnlightEnglishCenter.Controllers
 
             if (test != null)
             {
-                // Ghi điểm: có thể dồn vào DiemNguPhap hoặc chia ra các kỹ năng nếu bạn tách bài
                 test.DiemNguPhap = (decimal)score10;
-                test.TongDiem = (decimal)score10;     // ✅ lưu tổng điểm đúng cột có thật
+                test.TongDiem = (decimal)score10;
                 test.TrangThai = "Hoàn thành";
                 test.NgayTest = DateTime.Now;
-                test.LoTrinhHoc = deXuat;             // ✅ gợi ý lộ trình
-
+                test.LoTrinhHoc = deXuat;
                 _context.SaveChanges();
 
                 GuiEmailKetQua(
@@ -215,12 +234,17 @@ namespace EnlightEnglishCenter.Controllers
                 );
             }
 
-            ViewBag.Score = score10;
-            ViewBag.DeXuat = deXuat;
-            ViewBag.Course = course;
+            // ✅ Cách 1: redirect sang trang Kết quả (sạch sẽ)
+            return RedirectToAction("KetQua");
 
-            return View("KetQua");
+            // ✅ Cách 2 (nếu bạn muốn giữ nguyên view):
+            // var testDaHoanThanh = _context.TestDauVaos
+            //     .Include(t => t.HocVien)
+            //     .Include(t => t.KhoaHocDeXuatNavigation)
+            //     .FirstOrDefault(t => t.MaHocVien == maHocVien);
+            // return View("KetQua", testDaHoanThanh);
         }
+
 
 
 

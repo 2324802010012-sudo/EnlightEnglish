@@ -1,0 +1,80 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.LopHoc>
+
+@{
+    ViewData["Title"] = "Chọn lớp phù hợp";
+    var khoa = ViewBag.Khoa as EnlightEnglishCenter.Models.KhoaHoc;
+}
+
+<div class="container py-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">
+            🎓 Chọn lớp phù hợp – @khoa?.TenKhoaHoc
+        </h2>
+        <p class="text-muted">Vui lòng chọn lớp học trong khóa <b>@khoa?.TenKhoaHoc</b> để tiếp tục thanh toán.</p>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Tên lớp</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ca học</th>
+                    <th>Học phí</th>
+                    <th>Sĩ số</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    foreach (var lop in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">@lop.TenLop</td>
+                            <td>@lop.NgayBatDau?.ToString("dd/MM/yyyy")</td>
+
+                            <!-- 🕒 Ca học -->
+                            <td>
+                                @{
+                                    string caHoc = lop.LichHoc switch
+                                    {
+                                        "246" => "Thứ 2 - 4 - 6",
+                                        "357" => "Thứ 3 - 5 - 7",
+                                        "17" => "Thứ 7 - CN",
+                                        _ => "—"
+                                    };
+                                }
+                                @caHoc
+                            </td>
+
+                            <td>@String.Format("{0:#,0} đ", lop.HocPhi ?? 0)</td>
+                            <td>@lop.SiSoHienTai / @lop.SiSoToiDa</td>
+
+                            <!-- ✅ Hiển thị trạng thái -->
+                            <td>
+                                <span class="badge bg-@(lop.TrangThai == "Đang mở" ? "success" : "secondary")">
+                                    @lop.TrangThai
+                                </span>
+                            </td>
+
+                            <td>
+                                <a asp-action="ChonLop" asp-route-id="@lop.MaLop" class="btn btn-success btn-sm">
+                                    <i class="fa fa-check me-1"></i> Chọn & Thanh toán
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-muted">⚠️ Hiện chưa có lớp nào được mở trong khóa học này.</td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+</div>

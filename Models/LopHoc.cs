@@ -20,6 +20,8 @@ namespace EnlightEnglishCenter.Models
         public string? TrangThai { get; set; } = "Đang học";
 
         // FK
+        public decimal? HocPhi { get; set; }  // ✅ học phí lớp
+
         public int? MaGiaoVien { get; set; }
         [ForeignKey("MaGiaoVien")]
         [InverseProperty("LopHocs")]
@@ -42,5 +44,11 @@ namespace EnlightEnglishCenter.Models
         public int? SiSoHienTai { get; set; }
         public int? SiSoToiDa { get; set; }
         public string? ThuTrongTuan { get; set; }
+        public DateTime? NgayBatDau { get; set; }
+        public string? LichHoc { get; set; }
+        public String? ThoiLuong { get; set; }
+        public int? ThoiLuongTuan { get; set; }
+        public DateTime? NgayKetThuc { get; set; }
+
     }
 }

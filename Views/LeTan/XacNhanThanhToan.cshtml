@@ -1,0 +1,51 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.DonHocPhi>
+
+@{
+    ViewData["Title"] = "Xác nhận thanh toán";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center fw-bold text-primary mb-4">
+        <i class="fa-solid fa-cash-register me-2"></i> Xác nhận thanh toán
+    </h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success text-center">@TempData["Success"]</div>
+    }
+
+    <table class="table table-bordered table-striped align-middle text-center shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th>Mã đơn</th>
+                <th>Học viên</th>
+                <th>Lớp học</th>
+                <th>Khóa học</th>
+                <th>Tổng tiền</th>
+                <th>Ngày tạo</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.MaDon</td>
+                    <td>@item.HocVien?.HoTen</td>
+                    <td>@item.LopHoc?.TenLop</td>
+                    <td>@item.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc</td>
+                    <td>@string.Format("{0:N0} đ", item.TongTien)</td>
+                    <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <form asp-action="XacNhan" method="post">
+                            <input type="hidden" name="id" value="@item.MaDon" />
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fa-solid fa-check me-1"></i> Xác nhận
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

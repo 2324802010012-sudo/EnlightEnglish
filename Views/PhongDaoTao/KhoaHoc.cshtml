@@ -2,9 +2,6 @@
 @{
     ViewData["Title"] = "Khóa học";
 }
-@section Breadcrumb {
-    <li class="breadcrumb-item active" aria-current="page">Khóa học</li>
-}
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h3 class="m-0">Danh sách khóa học</h3>
@@ -37,7 +34,7 @@
                 <td>@String.Format("{0:#,0}", k.HocPhi)</td>
                 <td>@k.NgayBatDau?.ToString("dd/MM/yyyy")</td>
                 <td>@k.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
-                <td><span class="badge bg-@(k.TrangThai=="Đang mở"?"success":"secondary")">@k.TrangThai</span></td>
+                <td><span class="badge bg-@(k.TrangThai == "Đang mở" ? "success" : "secondary")">@k.TrangThai</span></td>
                 <td>
                     <a asp-action="SuaKhoaHoc" asp-route-id="@k.MaKhoaHoc" class="btn btn-sm btn-primary">Sửa</a>
                     <form asp-action="DoiTrangThai" method="post" class="d-inline">
@@ -46,7 +43,7 @@
                     </form>
                     <form asp-action="XoaKhoaHoc" method="post" class="d-inline" onsubmit="return confirm('Xóa khóa học này?')">
                         <input type="hidden" name="id" value="@k.MaKhoaHoc" />
-                        <button class="btn btn-sm btn-outline-danger">Xóa</button>
+                        <button class="btn btn-sm btn-danger">Xóa</button>
                     </form>
                 </td>
             </tr>

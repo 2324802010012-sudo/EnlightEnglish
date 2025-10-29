@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EnlightEnglishCenter.Models.LopHoc>
+﻿@model IEnumerable<EnlightEnglishCenter.Models.KhoaHoc>
 @{
     ViewData["Title"] = "Lịch khai giảng tháng này";
 }
@@ -11,47 +11,77 @@
     <table class="table table-bordered text-center align-middle shadow-sm">
         <thead class="table-primary">
             <tr>
+                <th>#</th>
                 <th>Tên khóa học</th>
                 <th>Trình độ</th>
                 <th>Ngày khai giảng</th>
                 <th>Thời lượng</th>
+                <th>Lịch học</th>
                 <th>Giảng viên</th>
-                <th>Trạng thái lớp</th>
+                <th>Trạng thái</th>
                 <th>Đăng ký</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var lop in Model)
+            @if (Model != null && Model.Any())
             {
-                <tr>
-                    <td>@(lop.MaKhoaHocNavigation?.TenKhoaHoc ?? "—")</td>
-                    <td>@(lop.MaKhoaHocNavigation?.CapDo ?? "—")</td>
-                    <td>@(lop.MaKhoaHocNavigation?.NgayBatDau?.ToString("dd/MM/yyyy") ?? "—")</td>
-                    <td>@(lop.MaKhoaHocNavigation?.ThoiLuong ?? "—")</td>
-                    <td>@(lop.MaGiaoVienNavigation?.NguoiDung?.HoTen ?? "Chưa phân công")</td>
-                    <td>
-                        @if (lop.TrangThai == "Đang mở")
-                        {
-                            <span class="badge bg-success">Đang mở</span>
-                        }
-                        else if (lop.TrangThai == "Đang học")
-                        {
-                            <span class="badge bg-warning text-dark">Đang học</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">@((lop.TrangThai ?? "Chưa xác định"))</span>
-                        }
-                    </td>
-                    <td>
-                        <a asp-controller="TestDauVao"
-                           asp-action="DangKy"
-                           asp-route-maKhoaHoc="@(lop.MaKhoaHoc ?? 0)"
-                           class="btn btn-outline-primary btn-sm">
-                            <i class="fa-solid fa-pen-to-square me-1"></i>Đăng ký Test
-                        </a>
-                    </td>
-                </tr>
+                int stt = 1;
+                foreach (var k in Model)
+                {
+                    <tr>
+                        <td>@stt++</td>
+                        <td>@(k.TenKhoaHoc ?? "—")</td>
+                        <td>@(k.CapDo ?? "—")</td>
+                        <td>@(k.NgayBatDau?.ToString("dd/MM/yyyy") ?? "—")</td>
+                        <td>
+                            @if (k.ThoiLuongTuan > 0)
+                            {
+                                @($"{k.ThoiLuongTuan} tuần")
+                            }
+                            else
+                            {
+                                @("—")
+                            }
+                        </td>
+                        <td>
+                            @if (k.NgayBatDau.HasValue && k.NgayKetThuc.HasValue)
+                            {
+                                @($"{k.NgayBatDau.Value:dd/MM/yyyy} - {k.NgayKetThuc.Value:dd/MM/yyyy}")
+                            }
+                            else
+                            {
+                                @("—")
+                            }
+                        </td>
+                        <td>Chưa phân công</td>
+                        <td>
+                            @if (k.TrangThai == "Đang mở")
+                            {
+                                <span class="badge bg-success">Đang mở</span>
+                            }
+                            else if (k.TrangThai == "Đang học")
+                            {
+                                <span class="badge bg-warning text-dark">Đang học</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@((k.TrangThai ?? "Chưa xác định"))</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-controller="TestDauVao"
+                               asp-action="DangKy"
+                               asp-route-maKhoaHoc="@k.MaKhoaHoc"
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fa-solid fa-pen-to-square me-1"></i>Đăng ký Test
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="9" class="text-muted">⛔ Không có khóa học nào đang mở.</td></tr>
             }
         </tbody>
     </table>

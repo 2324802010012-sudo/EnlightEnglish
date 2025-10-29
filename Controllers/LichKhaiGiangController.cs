@@ -1,4 +1,4 @@
-﻿using EnlightEnglishCenter.Data;
+﻿﻿using EnlightEnglishCenter.Data;
 using EnlightEnglishCenter.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,21 +16,15 @@ namespace EnlightEnglishCenter.Controllers
 
         public IActionResult Index()
         {
-            // Lấy danh sách lớp + khóa học + (giảng viên -> người dùng)
-            var lichKhaiGiang = _context.LopHocs
-                .Include(l => l.MaKhoaHocNavigation)
-                .Include(l => l.MaGiaoVienNavigation)
-                    .ThenInclude(gv => gv.NguoiDung)
-                .Where(l =>
-                       l.TrangThai == "Đang mở"
-                    || l.TrangThai == "Đang học"
-                    || l.TrangThai == "Chưa xác định"
-                    || l.TrangThai == null)
-                .OrderBy(l => l.MaKhoaHocNavigation!.NgayBatDau)   // ✅ ngày từ KhoaHoc
+            // 🧠 Lấy danh sách khóa học đang mở hoặc đang học
+            var danhSach = _context.KhoaHocs
+                .Where(k => k.TrangThai == "Đang mở" || k.TrangThai == "Đang học")
+                .OrderBy(k => k.NgayBatDau)
                 .AsNoTracking()
                 .ToList();
 
-            return View(lichKhaiGiang);
+            return View(danhSach);
         }
+
     }
 }

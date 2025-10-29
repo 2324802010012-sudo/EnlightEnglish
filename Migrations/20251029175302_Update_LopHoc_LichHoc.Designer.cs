@@ -4,6 +4,7 @@ using EnlightEnglishCenter.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnlightEnglishCenter.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251029175302_Update_LopHoc_LichHoc")]
+    partial class Update_LopHoc_LichHoc
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -186,9 +189,6 @@ namespace EnlightEnglishCenter.Migrations
                     b.Property<DateTime>("NgayTao")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("NgayThanhToan")
-                        .HasColumnType("datetime2");
-
                     b.Property<decimal>("TongTien")
                         .HasColumnType("decimal(18,2)");
 
@@ -290,9 +290,6 @@ namespace EnlightEnglishCenter.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("MaNguoiDung")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("NgayDangKy")
                         .HasColumnType("datetime2");
 
@@ -305,10 +302,6 @@ namespace EnlightEnglishCenter.Migrations
                         .HasColumnType("nvarchar(30)");
 
                     b.HasKey("MaHocVien");
-
-                    b.HasIndex("MaNguoiDung")
-                        .IsUnique()
-                        .HasFilter("[MaNguoiDung] IS NOT NULL");
 
                     b.ToTable("HocVien");
                 });
@@ -1040,15 +1033,6 @@ namespace EnlightEnglishCenter.Migrations
                     b.Navigation("MaLopNavigation");
                 });
 
-            modelBuilder.Entity("EnlightEnglishCenter.Models.HocVien", b =>
-                {
-                    b.HasOne("EnlightEnglishCenter.Models.NguoiDung", "NguoiDung")
-                        .WithOne("HocVien")
-                        .HasForeignKey("EnlightEnglishCenter.Models.HocVien", "MaNguoiDung");
-
-                    b.Navigation("NguoiDung");
-                });
-
             modelBuilder.Entity("EnlightEnglishCenter.Models.LichHoc", b =>
                 {
                     b.HasOne("EnlightEnglishCenter.Models.LopHoc", "LopHoc")
@@ -1245,8 +1229,6 @@ namespace EnlightEnglishCenter.Migrations
                     b.Navigation("GiaoViens");
 
                     b.Navigation("HocPhis");
-
-                    b.Navigation("HocVien");
 
                     b.Navigation("LichSuTruyCaps");
 

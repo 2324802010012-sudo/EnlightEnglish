@@ -1,52 +1,144 @@
 ﻿@model IEnumerable<EnlightEnglishCenter.Models.LopHoc>
-
 @{
     ViewData["Title"] = "Quản lý lớp học";
 }
 
 <div class="container mt-4">
-    <h3 class="fw-bold mb-3">Danh sách lớp học</h3>
 
-    <a asp-action="ThemLopHoc" class="btn btn-success mb-3">
-        <i class="fa fa-plus"></i> Thêm lớp học
-    </a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold text-primary">📚 Quản lý lớp học</h3>
+        <button class="btn btn-success" data-bs-toggle="collapse" data-bs-target="#formThemLop">
+            + Thêm lớp học
+        </button>
+    </div>
 
-    <table class="table table-bordered text-center align-middle shadow-sm">
-        <thead class="table-light">
+    <!-- ✅ FORM TẠO LỚP HỌC -->
+    <div id="formThemLop" class="collapse mb-4">
+        <div class="card p-3 shadow-sm bg-light">
+            <form asp-action="ThemLopHoc" method="post">
+                <div class="row">
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Tên lớp</label>
+                        <input name="TenLop" class="form-control" required />
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Khóa học</label>
+                        <select id="MaKhoaHoc" name="MaKhoaHoc"
+                                class="form-select" asp-items="ViewBag.KhoaHocList"
+                                onchange="LayThongTinKhoaHoc()" required></select>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Sĩ số tối đa</label>
+                        <input name="SiSoToiDa" type="number" class="form-control" required />
+                    </div>
+
+                    <!-- ✅ Dữ liệu tự động từ khóa học -->
+                    <div class="col-md-3 mb-3">
+                        <label>Học phí</label>
+                        <input id="HocPhi" name="HocPhi" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Ngày bắt đầu</label>
+                        <input id="NgayBatDau" name="NgayBatDau" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Ngày kết thúc</label>
+                        <input id="NgayKetThuc" name="NgayKetThuc" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Thời lượng</label>
+                        <input id="ThoiLuong" name="ThoiLuong" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Thời lượng / tuần</label>
+                        <input id="ThoiLuongTuan" name="ThoiLuongTuan" class="form-control" readonly />
+                    </div>
+
+                </div>
+
+                <button class="btn btn-primary">✅ Tạo lớp học</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ✅ DANH SÁCH LỚP -->
+    <table class="table table-bordered table-hover text-center align-middle shadow-sm">
+        <thead class="table-primary">
             <tr>
                 <th>#</th>
                 <th>Tên lớp</th>
                 <th>Khóa học</th>
-                <th>Ngày khai giảng</th>
-                <th>Sĩ số tối đa</th>
+                <th>Ngày bắt đầu</th>
+                <th>Sĩ số</th>
                 <th>Thao tác</th>
             </tr>
         </thead>
         <tbody>
-            @if (Model != null && Model.Any())
-            {
+            @{
                 int stt = 1;
-                foreach (var l in Model)
-                {
-                    <tr>
-                        <td>@stt++</td>
-                        <td>@l.TenLop</td>
-                        <td>@l.MaKhoaHocNavigation?.TenKhoaHoc</td>
-                        <td>@l.MaKhoaHocNavigation?.NgayBatDau?.ToString("dd/MM/yyyy")</td>
-                        <td>@l.SiSoToiDa</td>
-                        <td>
-                            <a class="btn btn-primary btn-sm" asp-action="SuaLopHoc" asp-route-id="@l.MaLop">Sửa</a>
-                            <form asp-action="XoaLopHoc" asp-route-id="@l.MaLop" method="post" class="d-inline">
-                                <button class="btn btn-danger btn-sm">Xóa</button>
-                            </form>
-                        </td>
-                    </tr>
-                }
             }
-            else
+            @foreach (var lop in Model)
             {
-                <tr><td colspan="6">Chưa có lớp học nào</td></tr>
+                <tr>
+                    <td>@stt++</td>
+                    <td>@lop.TenLop</td>
+                    <td>@lop.MaKhoaHocNavigation?.TenKhoaHoc</td>
+                    <td>@lop.NgayBatDau?.ToString("dd/MM/yyyy")</td>
+                    <td>@lop.SiSoHienTai / @lop.SiSoToiDa</td>
+                    <td>
+                        <a asp-action="SuaLopHoc" asp-route-id="@lop.MaLop" class="btn btn-primary btn-sm">Sửa</a>
+                        <a asp-controller="LichHoc" asp-action="Index" asp-route-lopId="@lop.MaLop"
+                           class="btn btn-info btn-sm">Lịch học</a>
+                        <form asp-action="XoaLopHoc" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@lop.MaLop" />
+                            <button class="btn btn-danger btn-sm">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
 </div>
+
+
+<script>
+    // Chờ toàn trang load xong
+    $(document).ready(function () {
+
+        // Khi người dùng chọn khóa học
+        $("#MaKhoaHoc").on("change", function () {
+            var id = $(this).val();
+            if (!id) return;
+
+            $.ajax({
+                url: "/PhongDaoTao/LayKhoaHoc",
+                type: "GET",
+                data: { id: id },
+                success: function (data) {
+                    console.log("Dữ liệu nhận được:", data); // để kiểm tra console
+
+                    // ✅ Gán dữ liệu nhận được vào các ô input
+                    $("#HocPhi").val(data.hocPhi?.toLocaleString("vi-VN") || "");
+                    $("#NgayBatDau").val(data.ngayBatDau || "");
+                    $("#NgayKetThuc").val(data.ngayKetThuc || "");
+                    $("#ThoiLuong").val(data.thoiLuong || "");
+                    $("#ThoiLuongTuan").val(data.thoiLuongTuan || "");
+                },
+                error: function () {
+                    alert("⚠️ Không thể lấy dữ liệu khóa học. Kiểm tra lại controller!");
+                }
+            });
+        });
+    });
+</script>
+
+
+
+

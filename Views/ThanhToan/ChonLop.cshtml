@@ -1,0 +1,15 @@
+﻿@model EnlightEnglishCenter.Models.LopHoc
+
+<div class="container py-4 text-center">
+    <h3>📚 Xác nhận đăng ký lớp: @Model.TenLop</h3>
+    <p>Khóa học: <b>@Model.MaKhoaHocNavigation?.TenKhoaHoc</b></p>
+    <p>Học phí: <b>@String.Format("{0:#,0} đ", Model.HocPhi ?? 0)</b></p>
+
+    <form asp-action="TaoPhieuDangKy" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="maLop" value="@Model.MaLop" />
+        <button class="btn btn-success btn-lg mt-3">
+            ✅ Xác nhận và chuyển sang thanh toán
+        </button>
+    </form>
+</div>

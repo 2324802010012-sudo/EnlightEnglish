@@ -1,0 +1,22 @@
+﻿<h3 class="fw-bold text-primary mb-3">📅 Lịch học của bạn</h3>
+<table class="table table-striped text-center align-middle shadow-sm">
+    <thead class="table-info">
+        <tr>
+            <th>Ngày học</th>
+            <th>Giờ</th>
+            <th>Lớp</th>
+            <th>Phòng</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.NgayHoc.ToString("dd/MM/yyyy")</td>
+                <td>@($"{item.GioBatDau:hh\\:mm} - {item.GioKetThuc:hh\\:mm}")</td>
+                <td>@item.LopHoc?.TenLop</td>
+                <td>@item.PhongHoc</td>
+            </tr>
+        }
+    </tbody>
+</table>

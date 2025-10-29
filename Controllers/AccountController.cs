@@ -102,9 +102,12 @@ namespace EnlightEnglishCenter.Controllers
             };
         }
 
-            // ======================= ĐĂNG KÝ =======================
-            [HttpGet]
-        public IActionResult Register() => View();
+        // ======================= ĐĂNG KÝ =======================
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
 
         [HttpPost]
         public IActionResult Register(string FullName, string Email, string Password)
@@ -121,22 +124,44 @@ namespace EnlightEnglishCenter.Controllers
                 return View();
             }
 
+            // ✅ Tạo tên đăng nhập duy nhất
+            var baseUsername = Email.Split('@')[0];
+            var username = baseUsername;
+            int counter = 1;
+            while (_context.NguoiDungs.Any(u => u.TenDangNhap == username))
+            {
+                username = $"{baseUsername}{counter}";
+                counter++;
+            }
+
+            // ✅ Tạo tài khoản người dùng mới
             var newUser = new NguoiDung
             {
                 HoTen = FullName.Trim(),
                 Email = Email.Trim(),
-                TenDangNhap = Email.Split('@')[0],
+                TenDangNhap = username,
                 MatKhau = Password.Trim(),
-                MaVaiTro = 4, // Học viên
-                TrangThai = "Hoạt động"
+                MaVaiTro = 4, // Vai trò: Học viên
+                TrangThai = "Hoạt động",
+                SoLanSaiMatKhau = 0
             };
 
             _context.NguoiDungs.Add(newUser);
             _context.SaveChanges();
 
+            // ✅ Tự động thêm vào bảng HOCVIEN
+            var hocVien = new HocVien
+            {
+                MaNguoiDung = newUser.MaNguoiDung,
+                HoTen = newUser.HoTen
+            };
+            _context.HocViens.Add(hocVien);
+            _context.SaveChanges();
+
             TempData["RegisterSuccess"] = "🎉 Đăng ký thành công! Vui lòng đăng nhập.";
             return RedirectToAction("Login");
         }
+
 
         // ======================= ĐĂNG XUẤT =======================
         public IActionResult Logout()

@@ -20,6 +20,13 @@ namespace EnlightEnglishCenter.Models
         [StringLength(20)]
         public string? SoDienThoai { get; set; }
 
+        public int? MaNguoiDung { get; set; }
+
+
+        [ForeignKey("MaNguoiDung")]
+        [InverseProperty("HocVien")] // 👈 phải trùng với property ở NguoiDung.cs
+        public virtual NguoiDung? NguoiDung { get; set; }
+
         public DateTime? NgayDangKy { get; set; }
 
         [StringLength(30)]

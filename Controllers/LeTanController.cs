@@ -91,7 +91,42 @@ namespace EnlightEnglishCenter.Controllers
             TempData["Success"] = "✅ Đã cập nhật thông tin học viên!";
             return RedirectToAction("DanhSachHocVien");
         }
+        public IActionResult XacNhanThanhToan()
+        {
+            var ds = _context.DonHocPhis
+                .Include(d => d.HocVien)
+                .Include(d => d.LopHoc)
+                .ThenInclude(l => l.MaKhoaHocNavigation)
+                .Where(d => d.TrangThai == "Chờ thanh toán")
+                .OrderByDescending(d => d.NgayTao)
+                .ToList();
 
+            return View(ds);
+        }
+
+        // ✅ Lễ tân xác nhận thanh toán
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult XacNhan(int id)
+        {
+            var don = _context.DonHocPhis
+                .Include(d => d.LopHoc)
+                .FirstOrDefault(d => d.MaDon == id);
+
+            if (don == null)
+            {
+                TempData["Error"] = "Không tìm thấy đơn học phí!";
+                return RedirectToAction(nameof(XacNhanThanhToan));
+            }
+
+            don.TrangThai = "Đã thanh toán";
+            don.NgayThanhToan = DateTime.Now;
+            _context.SaveChanges();
+
+            TempData["Success"] = "✅ Đã xác nhận thanh toán cho học viên.";
+            return RedirectToAction(nameof(XacNhanThanhToan));
+        }
+    
 
         // ===============================
         // ❌ 4. Xóa học viên
