@@ -1,64 +1,67 @@
 ﻿@model EnlightEnglishCenter.Models.LopHoc
 @{
     ViewData["Title"] = "Chi tiết lớp học";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container py-4">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-primary">
-            <i class="fa-solid fa-chalkboard-user me-2"></i>Chi tiết lớp @ViewBag.TenLop
-        </h2>
-        <p class="text-muted mb-1">Khóa học: <strong>@ViewBag.KhoaHoc</strong></p>
-        <p class="text-muted mb-1">Giảng viên: <strong>@ViewBag.GiangVien</strong></p>
-        <p class="text-muted mb-1">Ngày bắt đầu: <strong>@ViewBag.NgayBatDau</strong></p>
-        <p class="text-muted mb-1">Tổng buổi học: <strong>@ViewBag.TongBuoi</strong></p>
-        <p class="text-muted">Phòng học: <strong>@ViewBag.PhongHoc</strong></p>
+<div class="container mt-4">
+    <h3 class="fw-bold text-primary mb-3">
+        <i class="fa fa-info-circle me-2"></i>Chi tiết lớp: @ViewBag.TenLop
+    </h3>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <p><strong>📘 Khóa học:</strong> @ViewBag.KhoaHoc</p>
+            <p><strong>👩‍🏫 Giảng viên:</strong> @ViewBag.GiangVien</p>
+            <p><strong>🏫 Phòng học:</strong> @ViewBag.PhongHoc</p>
+            <p><strong>📅 Ngày bắt đầu:</strong> @ViewBag.NgayBatDau</p>
+            <p><strong>🕒 Tổng số buổi:</strong> @ViewBag.TongBuoi</p>
+        </div>
     </div>
 
-    <hr />
-
-    <h4 class="text-success mb-3">
-        <i class="fa-solid fa-calendar-days me-2"></i>Thời khóa biểu
-    </h4>
-
-    <div class="table-responsive">
-        <table class="table table-bordered text-center align-middle shadow-sm">
-            <thead class="table-primary">
-                <tr>
-                    <th>Ngày học</th>
-                    <th>Giờ học</th>
-                    <th>Phòng học</th>
+    <h5 class="fw-bold mb-3">📆 Lịch học</h5>
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light text-center">
+            <tr>
+                <th>#</th>
+                <th>Ngày</th>
+                <th>Ca học</th>
+                <th>Phòng học</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.LichHocs == null || !Model.LichHocs.Any())
+            {
+                <tr class="text-center text-muted">
+                    <td colspan="4">Chưa có lịch học.</td>
                 </tr>
-            </thead>
-            <tbody>
-                @if (Model.LichHocs != null && Model.LichHocs.Any())
-                {
-                    foreach (var lich in Model.LichHocs.OrderBy(l => l.NgayHoc))
-                    {
-                        <tr>
-                            <td>@lich.NgayHoc?.ToString("dd/MM/yyyy")</td>
-                            <td>@lich.GioBatDau - @lich.GioKetThuc</td>
-                            <td>@lich.PhongHoc</td>
-                        </tr>
-                    }
-                }
-                else
+            }
+            else
+            {
+                int i = 1;
+                foreach (var lich in Model.LichHocs)
                 {
                     <tr>
-                        <td colspan="3" class="text-muted">⏳ Chưa có lịch học nào được sắp xếp</td>
+                        <td class="text-center">@i++</td>
+                        <td>@lich.NgayHoc?.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @{
+                                var batDau = lich.GioBatDau.HasValue ? lich.GioBatDau.Value.ToString(@"hh\:mm") : "—";
+                                var ketThuc = lich.GioKetThuc.HasValue ? lich.GioKetThuc.Value.ToString(@"hh\:mm") : "—";
+                            }
+                            @($"{batDau} - {ketThuc}")
+                        </td>
+
+
+                        <td>@lich.PhongHoc</td>
                     </tr>
                 }
-            </tbody>
-        </table>
-    </div>
+            }
+        </tbody>
+    </table>
 
-    <div class="text-end mt-3">
-        <a asp-action="DanhSachHocVien" asp-route-id="@Model.MaLop" class="btn btn-success">
-            <i class="fa-solid fa-users"></i> Xem danh sách học viên
-        </a>
+    <div class="mt-3">
         <a asp-action="LopDangDay" class="btn btn-secondary">
-            <i class="fa-solid fa-arrow-left"></i> Quay lại
+            <i class="fa fa-arrow-left me-1"></i>Quay lại
         </a>
     </div>
 </div>

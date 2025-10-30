@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EnlightEnglishCenter.Models.HocVien>
+﻿@model IEnumerable<EnlightEnglishCenter.Models.DkHocVienLopHoc>
 
 @{
     ViewData["Title"] = "Danh sách học viên";
@@ -35,9 +35,9 @@ else
             @foreach (var hv in Model)
             {
                 <tr>
-                    <td>@hv.HoTen</td>
-                    <td>@hv.Email</td>
-                    <td>@hv.SoDienThoai</td>
+                    <td>@hv.MaHocVienNavigation?.HoTen</td>
+                    <td>@hv.MaHocVienNavigation?.Email</td>
+                    <td>@hv.MaHocVienNavigation?.SoDienThoai</td>
                     <td>@hv.NgayDangKy?.ToShortDateString()</td>
                     <td>@hv.TrangThai</td>
                     <td>

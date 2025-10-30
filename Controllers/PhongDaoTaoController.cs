@@ -149,6 +149,7 @@ namespace EnlightEnglishCenter.Controllers
         // ==========================================================
         // 🧑‍🏫 PHÂN CÔNG GIẢNG VIÊN
         // ==========================================================
+        // ------------------ 📋 DANH SÁCH PHÂN CÔNG ------------------
         [HttpGet]
         public async Task<IActionResult> PhanCong()
         {
@@ -162,16 +163,20 @@ namespace EnlightEnglishCenter.Controllers
             return View(danhSach);
         }
 
+        // ------------------ ➕ THÊM PHÂN CÔNG (GET) ------------------
         [HttpGet]
         public async Task<IActionResult> ThemPhanCong()
         {
+            // Danh sách giảng viên
             var dsGiaoVien = await _context.GiaoViens
                 .Include(g => g.NguoiDung)
                 .Select(g => new { g.MaGiaoVien, Ten = g.NguoiDung.HoTen })
                 .ToListAsync();
 
+            // Danh sách lớp chưa được phân công
             var dsLop = await _context.LopHocs
                 .Include(l => l.MaKhoaHocNavigation)
+                .Where(l => !_context.PhanCongGiangDays.Any(p => p.MaLop == l.MaLop))
                 .Select(l => new
                 {
                     l.MaLop,
@@ -184,23 +189,25 @@ namespace EnlightEnglishCenter.Controllers
             return View();
         }
 
+        // ------------------ 💾 LƯU PHÂN CÔNG (POST) ------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemPhanCong(PhanCongGiangDay model)
         {
             if (!ModelState.IsValid)
             {
+                TempData["Error"] = "⚠️ Vui lòng chọn đầy đủ thông tin!";
                 await ThemPhanCong();
                 return View(model);
             }
 
-            // chống trùng
+            // Kiểm tra trùng
             bool tonTai = await _context.PhanCongGiangDays
                 .AnyAsync(p => p.MaGiaoVien == model.MaGiaoVien && p.MaLop == model.MaLop);
 
             if (tonTai)
             {
-                ModelState.AddModelError("", "⚠️ Giảng viên này đã được phân công lớp này rồi!");
+                TempData["Error"] = "⚠️ Giảng viên này đã được phân công lớp này rồi!";
                 await ThemPhanCong();
                 return View(model);
             }
@@ -209,9 +216,42 @@ namespace EnlightEnglishCenter.Controllers
             _context.PhanCongGiangDays.Add(model);
             await _context.SaveChangesAsync();
 
+            // ✅ Cập nhật MaGiaoVien vào bảng LopHoc sau khi phân công
+            if (model.MaLop.HasValue && model.MaGiaoVien.HasValue)
+            {
+                var lop = await _context.LopHocs.FirstOrDefaultAsync(l => l.MaLop == model.MaLop);
+                if (lop != null)
+                {
+                    lop.MaGiaoVien = model.MaGiaoVien;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             TempData["Success"] = "✅ Phân công giảng viên thành công!";
             return RedirectToAction(nameof(PhanCong));
+
         }
+        // ===============================
+        // 🗑️ XÓA PHÂN CÔNG GIẢNG DẠY
+        // ===============================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult XoaPhanCong(int id)
+        {
+            var phanCong = _context.PhanCongGiangDays.FirstOrDefault(p => p.MaPhanCong == id);
+            if (phanCong == null)
+            {
+                TempData["Error"] = "Không tìm thấy bản ghi phân công!";
+                return RedirectToAction("PhanCong");
+            }
+
+            _context.PhanCongGiangDays.Remove(phanCong);
+            _context.SaveChanges();
+
+            TempData["Success"] = "✅ Đã xóa phân công giảng dạy thành công!";
+            return RedirectToAction("PhanCong");
+        }
+
 
         // ==========================================================
         // 📅 LỊCH HỌC (BUỔI HỌC)
@@ -229,7 +269,6 @@ namespace EnlightEnglishCenter.Controllers
             return View(list);
         }
 
-        // GET: /PhongDaoTao/ThemLichHoc (theo lớp)
         [HttpGet]
         public async Task<IActionResult> ThemLichHoc()
         {
@@ -272,52 +311,6 @@ namespace EnlightEnglishCenter.Controllers
             return RedirectToAction(nameof(LichHoc));
         }
 
-        // Thêm buổi học nhanh (UI khác)
-        [HttpGet]
-        public async Task<IActionResult> ThemBuoiHoc()
-        {
-            var lop = await _context.LopHocs
-                .Include(l => l.MaKhoaHocNavigation)
-                .Where(l => l.MaKhoaHocNavigation.TrangThai == "Đang mở")
-                .Select(l => new
-                {
-                    l.MaLop,
-                    Ten = l.TenLop + " (" + (l.MaKhoaHocNavigation.TenKhoaHoc ?? "") + ")"
-                })
-                .AsNoTracking()
-                .ToListAsync();
-
-            ViewBag.LopHoc = new SelectList(lop, "MaLop", "Ten");
-            ViewBag.PhongHoc = new List<SelectListItem> {
-                new("-- Không chọn --", ""),
-                new("P101", "P101"),
-                new("P102", "P102"),
-                new("P201", "P201"),
-                new("Online (Zoom)", "Online-Zoom"),
-            };
-
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ThemBuoiHoc(LichHoc model)
-        {
-            if (model.GioBatDau >= model.GioKetThuc)
-                ModelState.AddModelError(nameof(model.GioKetThuc), "Giờ kết thúc phải sau giờ bắt đầu.");
-
-            if (!ModelState.IsValid)
-            {
-                await ThemBuoiHoc();
-                return View(model);
-            }
-
-            _context.LichHocs.Add(model);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "✅ Đã thêm buổi học!";
-            return RedirectToAction(nameof(LichHoc));
-        }
 
         // ==========================================================
         // 🧾 KHOÁ HỌC

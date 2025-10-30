@@ -24,5 +24,6 @@ namespace EnlightEnglishCenter.Models
         [ForeignKey("MaLop")]
         public virtual LopHoc? LopHoc { get; set; }
 
+
     }
 }

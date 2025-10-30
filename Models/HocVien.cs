@@ -33,5 +33,6 @@ namespace EnlightEnglishCenter.Models
         public string? TrangThai { get; set; }
 
         public virtual ICollection<TestDauVao>? TestDauVaos { get; set; }
+
     }
 }

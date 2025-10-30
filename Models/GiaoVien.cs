@@ -40,5 +40,8 @@ namespace EnlightEnglishCenter.Models
 
         [InverseProperty("MaGiaoVienNavigation")]
         public virtual ICollection<LuongGiaoVien> LuongGiaoViens { get; set; } = new List<LuongGiaoVien>();
+        [InverseProperty("GiaoVien")]
+        public virtual ICollection<PhanCongGiangDay> PhanCongGiangDays { get; set; } = new List<PhanCongGiangDay>();
+
     }
 }

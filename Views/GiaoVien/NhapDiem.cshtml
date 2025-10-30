@@ -1,104 +1,73 @@
 ﻿@model List<EnlightEnglishCenter.Models.DiemSo>
 @{
     ViewData["Title"] = "Nhập điểm học viên";
-    var maLop = ViewBag.MaLop as int?;
 }
 
-<div class="container py-4">
-    <h2 class="fw-bold text-primary mb-3">
-        <i class="fa-solid fa-clipboard-list me-2"></i>Nhập điểm học viên
-    </h2>
+<div class="container mt-4">
+    <h3 class="fw-bold text-primary mb-3">
+        <i class="fa fa-pencil-alt me-2"></i>Nhập điểm học viên
+    </h3>
 
-    <form method="get" class="row g-2 mb-4">
-        <div class="col-md-6">
-            <select name="maLop" class="form-select" asp-items="ViewBag.DSLopHoc">
-                <option value="">-- Chọn lớp để nhập điểm --</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <button class="btn btn-primary w-100" type="submit">
-                <i class="fa-solid fa-filter me-1"></i>Tải danh sách
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <form asp-action="LuuDiem" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="maLop" value="@ViewBag.MaLop" />
+
+        <table class="table table-bordered align-middle shadow-sm">
+            <thead class="table-light text-center">
+                <tr>
+                    <th>#</th>
+                    <th>Họ tên</th>
+                    <th>Giữa kỳ</th>
+                    <th>Cuối kỳ</th>
+                    <th>Nhận xét</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="5" class="text-center text-muted">Không có học viên nào trong lớp này.</td></tr>
+                }
+                else
+                {
+                    int i = 0;
+                    foreach (var hv in Model)
+                    {
+                        <tr>
+                            <td class="text-center">@(++i)</td>
+                            <td>@hv.HoTen</td>
+                            <td>
+                                <input type="number" step="0.1" name="diemList[@(i - 1)].DiemGiuaKy"
+                                       value="@hv.DiemGiuaKy" class="form-control text-center" />
+                            </td>
+                            <td>
+                                <input type="number" step="0.1" name="diemList[@(i - 1)].DiemCuoiKy"
+                                       value="@hv.DiemCuoiKy" class="form-control text-center" />
+                            </td>
+                            <td>
+                                <input type="text" name="diemList[@(i - 1)].NhanXet"
+                                       value="@hv.NhanXet" class="form-control" />
+                                <input type="hidden" name="diemList[@(i - 1)].MaHocVien" value="@hv.MaHocVien" />
+                                <input type="hidden" name="diemList[@(i - 1)].MaDiem" value="@hv.MaDiem" />
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-save me-1"></i> Lưu điểm
             </button>
         </div>
     </form>
-
-    @if (maLop == null)
-    {
-        <div class="alert alert-info">Vui lòng chọn lớp để nhập điểm.</div>
-    }
-    else if (Model == null || !Model.Any())
-    {
-        <div class="alert alert-warning">Lớp chưa có học viên đăng ký.</div>
-    }
-    else
-    {
-        <form asp-action="LuuDiem" method="post" class="card p-3 shadow-sm">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="maLop" value="@maLop" />
-
-            <div class="table-responsive">
-                <table class="table table-bordered align-middle text-center">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width:70px;">#</th>
-                            <th>Họ tên</th>
-                            <th style="width:140px;">Giữa kỳ (0-10)</th>
-                            <th style="width:140px;">Cuối kỳ (0-10)</th>
-                            <th>Nhận xét</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < Model.Count; i++)
-                        {
-                            <tr>
-                                <td>@(i + 1)</td>
-                                <td>@(Model[i].HoTen ?? Model[i].MaHocVienNavigation?.HoTen ?? "—")</td>
-
-                                <!-- Hidden để binding -->
-                                <input type="hidden" name="diemList[@i].MaDiem" value="@Model[i].MaDiem" />
-                                <input type="hidden" name="diemList[@i].MaHocVien" value="@Model[i].MaHocVien" />
-                                <input type="hidden" name="diemList[@i].MaLop" value="@Model[i].MaLop" />
-
-                                <td>
-                                    <input class="form-control text-center" type="number" step="0.1" min="0" max="10"
-                                           name="diemList[@i].DiemGiuaKy"
-                                           value="@(Model[i].DiemGiuaKy?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "0")" />
-                                </td>
-                                <td>
-                                    <input class="form-control text-center" type="number" step="0.1" min="0" max="10"
-                                           name="diemList[@i].DiemCuoiKy"
-                                           value="@(Model[i].DiemCuoiKy?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "0")" />
-                                </td>
-                                <td>
-                                    <input class="form-control" type="text"
-                                           name="diemList[@i].NhanXet"
-                                           value="@Model[i].NhanXet" />
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-3 d-flex gap-2">
-                <button class="btn btn-success">
-                    <i class="fa-regular fa-floppy-disk me-1"></i>Lưu điểm
-                </button>
-                <a href="@Url.Action("LopDangDay","GiaoVien")" class="btn btn-outline-secondary">Quay lại</a>
-            </div>
-        </form>
-    }
-
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success mt-3">@TempData["Success"]</div>
-    }
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger mt-3">@TempData["Error"]</div>
-    }
 </div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}

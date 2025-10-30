@@ -213,6 +213,70 @@ namespace EnlightEnglishCenter.Controllers
             TempData["Success"] = "🗑️ Đã xóa liên hệ khách hàng thành công!";
             return RedirectToAction("LienHeHocVien");
         }
+        // ===============================
+        // 💰 Quản lý thu học phí (cho Lễ tân)
+        // ===============================
+        public IActionResult QuanLyThuHocPhi()
+        {
+            var ds = _context.DonHocPhis
+                .Include(d => d.HocVien)
+                .Include(d => d.LopHoc)
+                .ThenInclude(l => l.MaKhoaHocNavigation)
+                .OrderByDescending(d => d.NgayTao)
+                .ToList();
+
+            return View(ds);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult XacNhanHocPhi(int id)
+        {
+            var don = _context.DonHocPhis
+                .Include(d => d.HocVien)
+                .Include(d => d.LopHoc)
+                .FirstOrDefault(d => d.MaDon == id);
+
+            if (don == null)
+            {
+                TempData["Error"] = "Không tìm thấy đơn học phí!";
+                return RedirectToAction(nameof(QuanLyThuHocPhi));
+            }
+
+            // ✅ Cập nhật trạng thái thanh toán
+            don.TrangThai = "Đã thanh toán";
+            don.NgayThanhToan = DateTime.Now;
+
+            // ✅ Cập nhật sĩ số lớp
+            var lop = _context.LopHocs.FirstOrDefault(l => l.MaLop == don.MaLop);
+            if (lop != null)
+            {
+                lop.SiSoHienTai = (lop.SiSoHienTai ?? 0) + 1;
+            }
+
+            // ✅ Thêm học viên vào bảng DK_HocVien_LopHoc nếu chưa tồn tại
+            var daTonTai = _context.DkHocVienLopHocs
+                .Any(x => x.MaHocVien == don.MaHocVien && x.MaLop == don.MaLop);
+
+            if (!daTonTai)
+            {
+                var dk = new DkHocVienLopHoc
+                {
+                    MaHocVien = don.MaHocVien,
+                    MaLop = don.MaLop,
+                    NgayDangKy = DateTime.Now,
+                    TrangThai = "Đã thanh toán",
+                    TrangThaiHoc = "Chưa bắt đầu"
+                };
+                _context.DkHocVienLopHocs.Add(dk);
+            }
+
+            _context.SaveChanges();
+
+            TempData["Success"] = $"💰 Đã xác nhận thanh toán và thêm học viên {don.HocVien?.HoTen} vào lớp {don.LopHoc?.TenLop}.";
+            return RedirectToAction(nameof(QuanLyThuHocPhi));
+        }
+
 
         // Optional: action để lấy chi tiết (AJAX)
         [HttpGet]
@@ -232,5 +296,6 @@ namespace EnlightEnglishCenter.Controllers
             }
             return BadRequest();
         }
+
     }
 }

@@ -22,9 +22,29 @@ namespace EnlightEnglishCenter.Controllers
         // ======================================================
         // 1️⃣ Học viên xem danh sách khóa học
         // ======================================================
+        [HttpGet]
         public IActionResult Index()
         {
-            var khoaHoc = _context.KhoaHocs.ToList();
+            int? maHocVien = HttpContext.Session.GetInt32("MaNguoiDung");
+            if (maHocVien == null)
+            {
+                TempData["Error"] = "⚠️ Bạn cần đăng nhập để đăng ký test.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            // 🔹 Lấy danh sách khóa học đang mở
+            var khoaHoc = _context.KhoaHocs
+                .Where(k => k.TrangThai == "Đang mở")
+                .OrderBy(k => k.NgayBatDau)
+                .ToList();
+
+            // 🔹 Lấy danh sách test của học viên
+            var dsTest = _context.TestDauVaos
+                .Where(t => t.MaHocVien == maHocVien)
+                .ToList();
+
+            ViewBag.DanhSachTest = dsTest;
+
             return View(khoaHoc);
         }
 
@@ -41,21 +61,25 @@ namespace EnlightEnglishCenter.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Kiểm tra học viên đã có test chưa
-            var testCu = _context.TestDauVaos.FirstOrDefault(t => t.MaHocVien == maHocVien);
+            // 🔸 Kiểm tra học viên đã có test chưa
+            var testCu = _context.TestDauVaos
+                .FirstOrDefault(t => t.MaHocVien == maHocVien && t.KhoaHocDeXuat == maKhoaHoc);
+
             if (testCu != null)
             {
-                TempData["Error"] = "⚠️ Bạn đã đăng ký hoặc hoàn thành Test đầu vào.";
-                return RedirectToAction("Index", "HocVien");
+                TempData["Error"] = "⚠️ Bạn đã đăng ký hoặc hoàn thành Test đầu vào cho khóa này.";
+                return RedirectToAction("Index", "TestDauVao");
             }
 
+            // 🔸 Kiểm tra khóa học hợp lệ
             var khoaHoc = _context.KhoaHocs.Find(maKhoaHoc);
             if (khoaHoc == null)
             {
                 TempData["Error"] = "❌ Không tìm thấy khóa học.";
-                return RedirectToAction("Index", "HocVien");
+                return RedirectToAction("Index", "TestDauVao");
             }
 
+            // 🔸 Tạo bản ghi Test mới
             var test = new TestDauVao
             {
                 MaHocVien = maHocVien.Value,
@@ -68,13 +92,14 @@ namespace EnlightEnglishCenter.Controllers
             _context.SaveChanges();
 
             TempData["Success"] = $"✅ Đăng ký Test đầu vào cho khóa '{khoaHoc.TenKhoaHoc}' thành công! Vui lòng chờ duyệt.";
-            return RedirectToAction("Index", "HocVien");
+            return RedirectToAction("Index", "TestDauVao");
         }
+    
 
-        // ======================================================
-        // 3️⃣ Admin xem danh sách và duyệt Test
-        // ======================================================
-        public IActionResult DanhSach()
+// ======================================================
+// 3️⃣ Admin xem danh sách và duyệt Test
+// ======================================================
+public IActionResult DanhSach()
         {
             var vaiTro = HttpContext.Session.GetString("VaiTro")?.Trim();
 

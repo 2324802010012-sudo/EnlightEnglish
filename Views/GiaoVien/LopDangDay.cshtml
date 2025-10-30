@@ -1,66 +1,89 @@
 ﻿@model IEnumerable<EnlightEnglishCenter.Models.PhanCongGiangDay>
+
 @{
     ViewData["Title"] = "Lớp đang dạy";
+    string search = ViewBag.Search as string ?? "";
 }
 
-<div class="container py-4">
-    <h2 class="fw-bold text-success mb-4">
-        <i class="fa-solid fa-chalkboard-teacher me-2"></i>Lớp đang giảng dạy
-    </h2>
+<div class="container mt-4">
+    <h3 class="fw-bold text-primary mb-4">
+        <i class="fa fa-users me-2"></i>Danh sách lớp đang giảng dạy
+    </h3>
 
-    <form class="mb-4 d-flex" method="get">
-        <input type="text" name="search" value="@ViewBag.Search"
-               class="form-control me-2" placeholder="🔍 Nhập tên hoặc mã lớp..." />
-        <button class="btn btn-primary" type="submit">
-            <i class="fa-solid fa-search me-1"></i>Tìm kiếm
-        </button>
+    <!-- 🔍 Ô tìm kiếm -->
+    <form method="get" class="row mb-3 g-2">
+        <div class="col-md-6">
+            <input type="text" name="search" class="form-control"
+                   placeholder="Tìm theo tên lớp, mã lớp hoặc tên giảng viên..."
+                   value="@search" />
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fa fa-search me-1"></i>Tìm kiếm
+            </button>
+        </div>
     </form>
 
-    <table class="table table-bordered align-middle text-center shadow-sm">
-        <thead class="table-success">
-            <tr>
-                <th>Mã lớp</th>
-                <th>Tên lớp</th>
-                <th>Khóa học</th>
-                <th>Ngày bắt đầu</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model == null || !Model.Any())
-            {
+    <!-- 📋 Bảng dữ liệu -->
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-bordered table-hover align-middle mb-0">
+            <thead class="table-light text-center">
                 <tr>
-                    <td colspan="5" class="text-muted">Chưa có lớp nào được phân công.</td>
+                    <th>#</th>
+                    <th>Tên lớp</th>
+                    <th>Khóa học</th>
+                    <th>Giảng viên</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Thao tác</th>
                 </tr>
-            }
-            else
-            {
-                foreach (var pc in Model)
+            </thead>
+            <tbody>
+                @if (!Model.Any())
                 {
-                    var lop = pc.LopHoc;
-                    var khoa = lop?.MaKhoaHocNavigation;
-
-                    <tr>
-                        <td>@(lop?.MaLop)</td>
-                        <td>@(lop?.TenLop ?? "—")</td>
-                        <td>@(khoa?.TenKhoaHoc ?? "—")</td>
-                        <td>@(khoa?.NgayBatDau?.ToString("dd/MM/yyyy") ?? "—")</td> @* ✅ đọc từ KhoaHoc *@
-                        <td>
-                            @if (lop != null)
-                            {
-                                <a href="@Url.Action("ChiTietLop", "GiaoVien", new { id = lop.MaLop })"
-                                   class="btn btn-outline-success btn-sm">
-                                    <i class="fa-solid fa-eye me-1"></i> Xem chi tiết
-                                </a>
-                            }
-                            else
-                            {
-                                <span class="text-muted">—</span>
-                            }
-                        </td>
+                    <tr class="text-center text-muted">
+                        <td colspan="6">Không có lớp nào phù hợp.</td>
                     </tr>
                 }
-            }
-        </tbody>
-    </table>
+                else
+                {
+                    int i = 1;
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center">@i++</td>
+                            <td>@item.LopHoc?.TenLop</td>
+                            <td>@item.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc</td>
+                            <td>@item.GiaoVien?.NguoiDung?.HoTen</td>
+                            <td class="text-center">
+                                @item.LopHoc?.MaKhoaHocNavigation?.NgayBatDau?.ToString("dd/MM/yyyy")
+                            </td>
+                            <td class="text-center">
+
+                                @if (item.LopHoc != null && item.LopHoc.MaLop > 0)
+                                {
+                                    <a asp-controller="GiaoVien" asp-action="ChiTietLop"
+                                       asp-route-id="@item.LopHoc.MaLop"
+                                       class="btn btn-outline-primary btn-sm me-1">
+                                        <i class="fa fa-eye me-1"></i>Chi tiết
+                                    </a>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-outline-secondary btn-sm me-1" disabled>
+                                        <i class="fa fa-eye me-1"></i>Không có lớp
+                                    </button>
+                                }
+
+                                <a asp-action="DanhSachHocVien"
+                                   asp-route-id="@item.LopHoc?.MaLop"
+                                   class="btn btn-outline-success btn-sm">
+                                    <i class="fa fa-list me-1"></i>Học viên
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 </div>

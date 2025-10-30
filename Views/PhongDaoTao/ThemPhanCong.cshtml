@@ -1,34 +1,52 @@
-﻿@{
-    ViewData["Title"] = "Phân công giảng dạy";
+﻿@model EnlightEnglishCenter.Models.PhanCongGiangDay
+@{
+    ViewData["Title"] = "Phân công giảng viên";
 }
 
 <div class="container mt-4">
-    <h3 class="fw-bold mb-3">Phân công giảng viên</h3>
+    <h3 class="fw-bold mb-4 text-primary">
+        <i class="fa fa-user-plus me-2"></i>Phân công giảng viên
+    </h3>
 
-    <form asp-action="ThemPhanCong" method="post">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <form asp-action="ThemPhanCong" method="post" class="card p-4 shadow-sm">
+        @Html.AntiForgeryToken()
+
         <div class="mb-3">
-            <label class="form-label fw-bold">Giảng viên</label>
-            <select name="MaGiaoVien" class="form-select" required>
+            <label asp-for="MaGiaoVien" class="form-label fw-bold">Giảng viên</label>
+            <select asp-for="MaGiaoVien" asp-items="ViewBag.GiaoVien" class="form-select" required>
                 <option value="">-- Chọn giảng viên --</option>
-                @foreach (var gv in ViewBag.GiaoVien as SelectList)
-                {
-                    <option value="@gv.Value">@gv.Text</option>
-                }
             </select>
+            <span asp-validation-for="MaGiaoVien" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label class="form-label fw-bold">Lớp học</label>
-            <select name="MaLopHoc" class="form-select" required>
+            <label asp-for="MaLop" class="form-label fw-bold">Lớp học</label>
+            <select asp-for="MaLop" asp-items="ViewBag.LopHoc" class="form-select" required>
                 <option value="">-- Chọn lớp học --</option>
-                @foreach (var lh in ViewBag.LopHoc as SelectList)
-                {
-                    <option value="@lh.Value">@lh.Text</option>
-                }
             </select>
+            <span asp-validation-for="MaLop" class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-primary">Lưu</button>
-        <a asp-action="PhanCong" class="btn btn-secondary">Hủy</a>
+        <div class="text-end mt-3">
+            <button type="submit" class="btn btn-primary me-2">
+                <i class="fa fa-save me-1"></i>Lưu
+            </button>
+            <a asp-action="PhanCong" class="btn btn-secondary">
+                <i class="fa fa-times me-1"></i>Hủy
+            </a>
+        </div>
     </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

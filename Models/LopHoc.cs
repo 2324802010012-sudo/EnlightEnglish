@@ -49,6 +49,8 @@ namespace EnlightEnglishCenter.Models
         public String? ThoiLuong { get; set; }
         public int? ThoiLuongTuan { get; set; }
         public DateTime? NgayKetThuc { get; set; }
+      
+
 
     }
 }

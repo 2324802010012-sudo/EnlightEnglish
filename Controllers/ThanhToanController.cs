@@ -31,7 +31,7 @@ namespace EnlightEnglishCenter.Controllers
             return View(lop);
         }
 
-        // ✅ Tạo phiếu đăng ký lớp và qua trang thanh toán
+        // ✅ Học viên tạo đơn đăng ký lớp
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult TaoPhieuDangKy(int maLop)
@@ -40,10 +40,15 @@ namespace EnlightEnglishCenter.Controllers
             if (maNguoiDung == null)
                 return RedirectToAction("Login", "Account");
 
-            var hocVien = _context.HocViens.FirstOrDefault(h => h.MaNguoiDung == maNguoiDung);
+            // 🔍 Chỉ lấy người dùng đã có bản ghi trong bảng HOCVIEN
+            var hocVien = _context.HocViens
+             .Include(h => h.NguoiDung)
+
+                .FirstOrDefault(h => h.MaNguoiDung == maNguoiDung);
+
             if (hocVien == null)
             {
-                TempData["Error"] = "Không tìm thấy thông tin học viên!";
+                TempData["Error"] = "⚠️ Tài khoản này chưa được đăng ký là học viên. Vui lòng liên hệ lễ tân!";
                 return RedirectToAction("Index", "HocVien");
             }
 
@@ -51,38 +56,23 @@ namespace EnlightEnglishCenter.Controllers
             if (lop == null)
                 return NotFound();
 
-            // ✅ Tạo đơn học phí
+            // ✅ Tạo đơn học phí đúng học viên
             var don = new DonHocPhi
             {
-                MaHocVien = hocVien.MaHocVien,
+                MaHocVien = hocVien.MaHocVien,     // ✅ CHUẨN: lấy mã học viên thật
                 MaLop = maLop,
                 NgayTao = DateTime.Now,
                 TongTien = lop.HocPhi ?? 0,
-                TrangThai = "Chờ thanh toán"
+                TrangThai = "Chờ xác nhận lễ tân"
             };
             _context.DonHocPhis.Add(don);
-
-            // ✅ Ghi danh lớp
-            var dk = new DkHocVienLopHoc
-            {
-                MaHocVien = hocVien.MaHocVien,
-                MaLop = maLop
-            };
-            _context.DkHocVienLopHocs.Add(dk);
-
-            // ✅ Cập nhật sĩ số lớp
-            lop.SiSoHienTai = (lop.SiSoHienTai ?? 0) + 1;
-
             _context.SaveChanges();
 
-            // ✅ Chuyển đúng sang trang "ThanhToanDon"
-            return RedirectToAction("ThanhToanDon", "ThanhToan", new { id = don.MaDon });
-
+            TempData["Info"] = "🕒 Đơn đăng ký của bạn đang chờ lễ tân xác nhận!";
+            return RedirectToAction("ThanhToanDon", new { id = don.MaDon });
         }
 
-
-
-        // ✅ Trang Thanh Toán
+        // ✅ Trang xem chi tiết đơn thanh toán
         public IActionResult ThanhToanDon(int id)
         {
             var don = _context.DonHocPhis
@@ -96,6 +86,8 @@ namespace EnlightEnglishCenter.Controllers
 
             return View(don);
         }
+
+        // ✅ Danh sách lớp theo khóa (hiển thị cho học viên)
         [HttpGet]
         public IActionResult DanhSachLopTheoKhoa(int khoaHocId)
         {
@@ -110,42 +102,57 @@ namespace EnlightEnglishCenter.Controllers
 
             return View(lopMo);
         }
+        // ✅ Xác nhận thanh toán thành công (Lễ tân hoặc hệ thống)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult XacNhanThanhToan(int maDon)
         {
+            // 1️⃣ Tìm đơn học phí
             var don = _context.DonHocPhis
-      .Include(d => d.LopHoc)
-      .ThenInclude(l => l.MaKhoaHocNavigation)
-      .FirstOrDefault(d => d.MaDon == maDon);
-
+                .Include(d => d.LopHoc)
+                .Include(d => d.HocVien)
+                .FirstOrDefault(d => d.MaDon == maDon);
 
             if (don == null)
             {
-                TempData["Error"] = "Không tìm thấy đơn đăng ký.";
-                return RedirectToAction("Index", "HocVien");
+                TempData["Error"] = "Không tìm thấy đơn học phí!";
+                return RedirectToAction("Index", "LeTan");
             }
 
+            // 2️⃣ Cập nhật trạng thái thanh toán
             don.TrangThai = "Đã thanh toán";
-            don.NgayThanhToan = DateTime.Now;
             _context.SaveChanges();
 
-            // ✅ Cập nhật sĩ số lớp
-            if (don.MaLop != null)
+            // 3️⃣ Thêm học viên vào lớp nếu chưa có trong DK_HocVien_LopHoc
+            bool daCo = _context.DkHocVienLopHocs.Any(dk =>
+                dk.MaHocVien == don.MaHocVien && dk.MaLop == don.MaLop);
+
+            if (!daCo)
             {
+                var dk = new DkHocVienLopHoc
+                {
+                    MaHocVien = don.HocVien?.MaNguoiDung ?? 0, // ✅ Trỏ đúng tới NguoiDung
+                    MaLop = don.MaLop,
+                    NgayDangKy = DateTime.Now,
+                    TrangThai = "Đã thanh toán",
+                    TrangThaiHoc = "Chưa bắt đầu"
+                };
+
+                _context.DkHocVienLopHocs.Add(dk);
+
+                // Cập nhật sĩ số lớp
                 var lop = _context.LopHocs.FirstOrDefault(l => l.MaLop == don.MaLop);
                 if (lop != null)
                 {
                     lop.SiSoHienTai = (lop.SiSoHienTai ?? 0) + 1;
-                    _context.SaveChanges();
                 }
+
+                _context.SaveChanges();
             }
 
-            TempData["Success"] = "💰 Xác nhận thanh toán thành công!";
-            return RedirectToAction("Index", "HocVien");
+            TempData["Success"] = "💰 Đã xác nhận thanh toán và thêm học viên vào lớp!";
+            return RedirectToAction("DanhSachDon", "LeTan"); // hoặc "Index" tuỳ vai trò
         }
-
 
     }
 }
-

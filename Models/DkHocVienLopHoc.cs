@@ -35,5 +35,6 @@ namespace EnlightEnglishCenter.Models
         [ForeignKey(nameof(MaLop))]
         [InverseProperty(nameof(LopHoc.DkHocVienLopHocs))]
         public virtual LopHoc MaLopNavigation { get; set; } = null!;
+
     }
 }
