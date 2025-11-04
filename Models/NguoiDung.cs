@@ -64,14 +64,16 @@ namespace EnlightEnglishCenter.Models
         [InverseProperty("MaHocVienNavigationMaNguoiDungNavigation")]
         public virtual ICollection<DiemDanh> DiemDanhs { get; set; } = new List<DiemDanh>();
 
-        [InverseProperty("MaHocVienNavigation")]
-        public virtual ICollection<DiemSo> DiemSos { get; set; } = new List<DiemSo>();
+        //[InverseProperty("MaHocVienNavigation")]
+        //public virtual ICollection<DiemSo> DiemSos { get; set; } = new List<DiemSo>();
 
         [InverseProperty("MaHocVienNavigation")]
         public virtual ICollection<DkHocVienLopHoc> DkHocVienLopHocs { get; set; } = new List<DkHocVienLopHoc>();
 
         // ✅ Sửa lại đúng tên để khớp với GiaoVien.NguoiDung
-        [InverseProperty("NguoiDung")]
+        //[InverseProperty("NguoiDung")]
+        //public virtual ICollection<GiaoVien> GiaoViens { get; set; } = new List<GiaoVien>();
+        [InverseProperty(nameof(GiaoVien.NguoiDung))]
         public virtual ICollection<GiaoVien> GiaoViens { get; set; } = new List<GiaoVien>();
 
         [InverseProperty("MaHocVienNavigation")]

@@ -176,7 +176,6 @@ namespace EnlightEnglishCenter.Controllers
                                 DiemCuoiKy = d != null ? d.DiemCuoiKy : null,
                                 NhanXet = d != null ? d.NhanXet : null,
                                 HoTen = nd.HoTen,
-                                MaHocVienNavigation = nd
                             })
                             .AsNoTracking()
                             .ToListAsync();

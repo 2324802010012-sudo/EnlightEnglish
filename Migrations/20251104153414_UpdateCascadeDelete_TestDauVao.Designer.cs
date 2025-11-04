@@ -4,6 +4,7 @@ using EnlightEnglishCenter.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnlightEnglishCenter.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251104153414_UpdateCascadeDelete_TestDauVao")]
+    partial class UpdateCascadeDelete_TestDauVao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -957,10 +960,10 @@ namespace EnlightEnglishCenter.Migrations
 
             modelBuilder.Entity("EnlightEnglishCenter.Models.DiemSo", b =>
                 {
-                    b.HasOne("EnlightEnglishCenter.Models.HocVien", "MaHocVienNavigation")
+                    b.HasOne("EnlightEnglishCenter.Models.NguoiDung", "MaHocVienNavigation")
                         .WithMany("DiemSos")
                         .HasForeignKey("MaHocVien")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EnlightEnglishCenter.Models.LopHoc", "MaLopNavigation")
@@ -1180,7 +1183,7 @@ namespace EnlightEnglishCenter.Migrations
                     b.HasOne("EnlightEnglishCenter.Models.NguoiDung", "HocVien")
                         .WithMany()
                         .HasForeignKey("MaHocVien")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EnlightEnglishCenter.Models.NguoiDung", null)
                         .WithMany("TestDauVaos")
@@ -1204,8 +1207,6 @@ namespace EnlightEnglishCenter.Migrations
 
             modelBuilder.Entity("EnlightEnglishCenter.Models.HocVien", b =>
                 {
-                    b.Navigation("DiemSos");
-
                     b.Navigation("TestDauVaos");
                 });
 
@@ -1241,6 +1242,8 @@ namespace EnlightEnglishCenter.Migrations
                     b.Navigation("BaoCaos");
 
                     b.Navigation("DiemDanhs");
+
+                    b.Navigation("DiemSos");
 
                     b.Navigation("DkHocVienLopHocs");
 

@@ -48,6 +48,53 @@ namespace EnlightEnglishCenter.Controllers
 
             return View();
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            // 🧠 1️⃣ Kiểm tra quyền Admin
+            var vaiTro = HttpContext.Session.GetString("VaiTro");
+            if (vaiTro != "Admin")
+            {
+                TempData["ErrorMessage"] = "⚠️ Chỉ quản trị viên mới được phép xóa học viên.";
+                return RedirectToAction("Index");
+            }
+
+            // 🧠 2️⃣ Tìm học viên cần xóa
+            var hocVien = await _context.HocViens
+                .Include(h => h.MaNguoiDung)
+                .FirstOrDefaultAsync(h => h.MaHocVien == id);
+
+            if (hocVien == null)
+            {
+                TempData["ErrorMessage"] = "❌ Không tìm thấy học viên.";
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                // 🧹 Xóa tất cả bài Test đầu vào liên quan tới học viên này
+                var tests = _context.TestDauVaos.Where(t => t.MaHocVien == id).ToList();
+                if (tests.Any())
+                {
+                    _context.TestDauVaos.RemoveRange(tests);
+                }
+
+                // 🧹 Sau đó xóa học viên
+                _context.HocViens.Remove(hocVien);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "✅ Đã xóa học viên và các bài Test đầu vào liên quan thành công!";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "❌ Lỗi khi xóa học viên: " + ex.Message;
+            }
+
+
+            return RedirectToAction("Index");
+        }
+
 
     }
 }

@@ -1,5 +1,4 @@
-﻿
-        using System.Diagnostics;
+﻿using System.Diagnostics;
 using EnlightEnglishCenter.Data;
 using EnlightEnglishCenter.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +53,7 @@ namespace EnlightEnglishCenter.Controllers
             }
 
             var danhSach = _context.TestDauVaos
-                // .Include(t => t.HocVien)
+                 .Include(t => t.HocVien)
                 .ToList();
 
             return View(danhSach);
@@ -90,12 +89,16 @@ namespace EnlightEnglishCenter.Controllers
         // ==========================================================
         // 👩‍🏫 QUẢN LÝ GIẢNG VIÊN
         // ==========================================================
+        // ==========================================================
+        // 👩‍🏫 QUẢN LÝ GIẢNG VIÊN
+        // ==========================================================
+
         [HttpGet]
         public async Task<IActionResult> GiaoVien()
         {
             var danhSach = await _context.GiaoViens
-                .Include(g => g.NguoiDung)
                 .AsNoTracking()
+                .OrderBy(g => g.MaGiaoVien)
                 .ToListAsync();
 
             return View(danhSach);
@@ -104,7 +107,13 @@ namespace EnlightEnglishCenter.Controllers
         [HttpGet]
         public async Task<IActionResult> ThemGiaoVien()
         {
-            await BuildNguoiDungChoGiaoVienViewBag();
+            // 🧠 Lấy danh sách các khóa học đang mở để làm chuyên môn
+            var dsKhoaHoc = await _context.KhoaHocs
+                .Where(k => k.TrangThai == "Đang mở")
+                .Select(k => new { k.MaKhoaHoc, k.TenKhoaHoc })
+                .ToListAsync();
+
+            ViewBag.DSKhoaHoc = new SelectList(dsKhoaHoc, "TenKhoaHoc", "TenKhoaHoc");
             return View();
         }
 
@@ -114,47 +123,104 @@ namespace EnlightEnglishCenter.Controllers
         {
             if (!ModelState.IsValid)
             {
-                await BuildNguoiDungChoGiaoVienViewBag();
+                // Nạp lại danh sách cho dropdown khi validation fail
+                var dsKhoaHoc = await _context.KhoaHocs
+                    .Where(k => k.TrangThai == "Đang mở")
+                    .Select(k => new { k.MaKhoaHoc, k.TenKhoaHoc })
+                    .ToListAsync();
+                ViewBag.DSKhoaHoc = new SelectList(dsKhoaHoc, "TenKhoaHoc", "TenKhoaHoc");
+
                 return View(model);
             }
 
-            // Chống trùng theo MaNguoiDung
-            bool tonTai = await _context.GiaoViens.AnyAsync(g => g.MaNguoiDung == model.MaNguoiDung);
-            if (tonTai)
+            try
             {
-                ModelState.AddModelError("", "Người dùng này đã có hồ sơ giảng viên.");
-                await BuildNguoiDungChoGiaoVienViewBag();
+                // ✅ Lưu giảng viên trực tiếp (không cần bảng NguoiDung)
+                _context.GiaoViens.Add(model);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "✅ Thêm giảng viên mới thành công!";
+                return RedirectToAction(nameof(GiaoVien));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "❌ Có lỗi khi thêm giảng viên: " + ex.Message;
+                return View(model);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SuaGiaoVien(int id)
+        {
+            var gv = await _context.GiaoViens.FindAsync(id);
+            if (gv == null)
+                return NotFound();
+
+            // Load lại danh sách khóa học đang mở
+            var dsKhoaHoc = await _context.KhoaHocs
+                .Where(k => k.TrangThai == "Đang mở")
+                .Select(k => new { k.MaKhoaHoc, k.TenKhoaHoc })
+                .ToListAsync();
+            ViewBag.DSKhoaHoc = new SelectList(dsKhoaHoc, "TenKhoaHoc", "TenKhoaHoc", gv.ChuyenMon);
+
+            return View(gv);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SuaGiaoVien(GiaoVien model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var dsKhoaHoc = await _context.KhoaHocs
+                    .Where(k => k.TrangThai == "Đang mở")
+                    .Select(k => new { k.MaKhoaHoc, k.TenKhoaHoc })
+                    .ToListAsync();
+                ViewBag.DSKhoaHoc = new SelectList(dsKhoaHoc, "TenKhoaHoc", "TenKhoaHoc", model.ChuyenMon);
                 return View(model);
             }
 
-            _context.GiaoViens.Add(model);
+            _context.Update(model);
             await _context.SaveChangesAsync();
-            TempData["Success"] = "✅ Thêm giảng viên thành công!";
+
+            TempData["Success"] = "✅ Cập nhật thông tin giảng viên thành công!";
             return RedirectToAction(nameof(GiaoVien));
         }
 
-        private async Task BuildNguoiDungChoGiaoVienViewBag()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> XoaGiaoVien(int id)
         {
-            // ví dụ vai trò GV = 5
-            var daCoGv = await _context.GiaoViens.Select(g => g.MaNguoiDung).ToListAsync();
-            var dsNguoiDung = await _context.NguoiDungs
-                .Where(nd => nd.MaVaiTro == 5 && !daCoGv.Contains(nd.MaNguoiDung))
-                .Select(nd => new { nd.MaNguoiDung, nd.HoTen })
-                .OrderBy(x => x.HoTen)
-                .ToListAsync();
+            var gv = await _context.GiaoViens.FindAsync(id);
+            if (gv == null)
+            {
+                TempData["Error"] = "❌ Không tìm thấy giảng viên cần xóa.";
+                return RedirectToAction(nameof(GiaoVien));
+            }
 
-            ViewBag.DSNguoiDung = new SelectList(dsNguoiDung, "MaNguoiDung", "HoTen");
+            try
+            {
+                _context.GiaoViens.Remove(gv);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "🗑️ Đã xóa giảng viên thành công.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "❌ Lỗi khi xóa giảng viên: " + ex.Message;
+            }
+
+            return RedirectToAction(nameof(GiaoVien));
         }
 
         // ==========================================================
         // 🧑‍🏫 PHÂN CÔNG GIẢNG VIÊN
         // ==========================================================
-        // ------------------ 📋 DANH SÁCH PHÂN CÔNG ------------------
+
         [HttpGet]
         public async Task<IActionResult> PhanCong()
         {
             var danhSach = await _context.PhanCongGiangDays
-                .Include(p => p.GiaoVien).ThenInclude(g => g.NguoiDung)
+                .Include(p => p.GiaoVien)
                 .Include(p => p.LopHoc).ThenInclude(l => l.MaKhoaHocNavigation)
                 .OrderByDescending(p => p.NgayPhanCong)
                 .AsNoTracking()
@@ -163,33 +229,45 @@ namespace EnlightEnglishCenter.Controllers
             return View(danhSach);
         }
 
-        // ------------------ ➕ THÊM PHÂN CÔNG (GET) ------------------
-        [HttpGet]
-        public async Task<IActionResult> ThemPhanCong()
+        // ------------------ 🧩 HÀM DÙNG CHUNG ------------------
+        private async Task BuildPhanCongViewBag()
         {
-            // Danh sách giảng viên
+            // ✅ Lấy danh sách giảng viên
             var dsGiaoVien = await _context.GiaoViens
-                .Include(g => g.NguoiDung)
-                .Select(g => new { g.MaGiaoVien, Ten = g.NguoiDung.HoTen })
+                .Select(g => new
+                {
+                    g.MaGiaoVien,
+                    TenGiaoVien = g.HoTen ?? ("Giảng viên #" + g.MaGiaoVien)
+                })
+                .OrderBy(g => g.TenGiaoVien)
                 .ToListAsync();
 
-            // Danh sách lớp chưa được phân công
+            // ✅ Lấy danh sách lớp học chưa được phân công
             var dsLop = await _context.LopHocs
                 .Include(l => l.MaKhoaHocNavigation)
                 .Where(l => !_context.PhanCongGiangDays.Any(p => p.MaLop == l.MaLop))
                 .Select(l => new
                 {
                     l.MaLop,
-                    Ten = l.TenLop + " - " + (l.MaKhoaHocNavigation.TenKhoaHoc ?? "")
+                    Ten = (l.TenLop ?? "Lớp " + l.MaLop) + " - " + (l.MaKhoaHocNavigation.TenKhoaHoc ?? "")
                 })
+                .OrderBy(l => l.Ten)
                 .ToListAsync();
 
-            ViewBag.GiaoVien = new SelectList(dsGiaoVien, "MaGiaoVien", "Ten");
+            // ✅ Gán dữ liệu dropdown cho View
+            ViewBag.GiaoVien = new SelectList(dsGiaoVien, "MaGiaoVien", "TenGiaoVien");
             ViewBag.LopHoc = new SelectList(dsLop, "MaLop", "Ten");
+        }
+
+        // ------------------ ➕ THÊM PHÂN CÔNG (GET) ------------------
+        [HttpGet]
+        public async Task<IActionResult> ThemPhanCong()
+        {
+            await BuildPhanCongViewBag();
             return View();
         }
 
-        // ------------------ 💾 LƯU PHÂN CÔNG (POST) ------------------
+        // ------------------ 💾 THÊM PHÂN CÔNG (POST) ------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemPhanCong(PhanCongGiangDay model)
@@ -197,40 +275,50 @@ namespace EnlightEnglishCenter.Controllers
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "⚠️ Vui lòng chọn đầy đủ thông tin!";
-                await ThemPhanCong();
+                await BuildPhanCongViewBag();
                 return View(model);
             }
 
-            // Kiểm tra trùng
-            bool tonTai = await _context.PhanCongGiangDays
-                .AnyAsync(p => p.MaGiaoVien == model.MaGiaoVien && p.MaLop == model.MaLop);
-
-            if (tonTai)
+            try
             {
-                TempData["Error"] = "⚠️ Giảng viên này đã được phân công lớp này rồi!";
-                await ThemPhanCong();
-                return View(model);
-            }
+                // 🔍 Kiểm tra trùng giảng viên - lớp
+                bool tonTai = await _context.PhanCongGiangDays
+                    .AnyAsync(p => p.MaGiaoVien == model.MaGiaoVien && p.MaLop == model.MaLop);
 
-            model.NgayPhanCong = DateTime.Now;
-            _context.PhanCongGiangDays.Add(model);
-            await _context.SaveChangesAsync();
-
-            // ✅ Cập nhật MaGiaoVien vào bảng LopHoc sau khi phân công
-            if (model.MaLop.HasValue && model.MaGiaoVien.HasValue)
-            {
-                var lop = await _context.LopHocs.FirstOrDefaultAsync(l => l.MaLop == model.MaLop);
-                if (lop != null)
+                if (tonTai)
                 {
-                    lop.MaGiaoVien = model.MaGiaoVien;
-                    await _context.SaveChangesAsync();
+                    TempData["Error"] = "⚠️ Giảng viên này đã được phân công cho lớp học này!";
+                    await BuildPhanCongViewBag();
+                    return View(model);
                 }
+
+                // ✅ Gán ngày phân công
+                model.NgayPhanCong = DateTime.Now;
+                _context.PhanCongGiangDays.Add(model);
+                await _context.SaveChangesAsync();
+
+                // ✅ Cập nhật giảng viên cho lớp học
+                if (model.MaLop.HasValue && model.MaGiaoVien.HasValue)
+                {
+                    var lop = await _context.LopHocs.FirstOrDefaultAsync(l => l.MaLop == model.MaLop);
+                    if (lop != null)
+                    {
+                        lop.MaGiaoVien = model.MaGiaoVien;
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                TempData["Success"] = "✅ Phân công giảng viên thành công!";
+                return RedirectToAction(nameof(PhanCong));
             }
-
-            TempData["Success"] = "✅ Phân công giảng viên thành công!";
-            return RedirectToAction(nameof(PhanCong));
-
+            catch (Exception ex)
+            {
+                TempData["Error"] = "❌ Có lỗi xảy ra: " + ex.Message;
+                await BuildPhanCongViewBag();
+                return View(model);
+            }
         }
+
         // ===============================
         // 🗑️ XÓA PHÂN CÔNG GIẢNG DẠY
         // ===============================

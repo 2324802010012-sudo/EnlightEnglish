@@ -10,12 +10,17 @@ namespace EnlightEnglishCenter.Models
         [Key]
         public int MaGiaoVien { get; set; }
 
+        [Required(ErrorMessage = "Vui lòng nhập họ tên giáo viên")]
+        [StringLength(100)]
+        [Display(Name = "Họ tên giáo viên")]
+        public string HoTen { get; set; } = null!;
+
         // 🔹 Khóa ngoại trỏ tới NguoiDung
         public int? MaNguoiDung { get; set; }
 
-        [ForeignKey("MaNguoiDung")]
-        [InverseProperty("GiaoViens")]
-        public virtual NguoiDung? NguoiDung { get; set; }
+        //[ForeignKey("MaNguoiDung")]
+        //[InverseProperty("GiaoViens")]
+        //public virtual NguoiDung? NguoiDung { get; set; }
 
         // 🔹 Bổ sung lại thông tin chuyên môn
         [StringLength(100)]
@@ -42,6 +47,8 @@ namespace EnlightEnglishCenter.Models
         public virtual ICollection<LuongGiaoVien> LuongGiaoViens { get; set; } = new List<LuongGiaoVien>();
         [InverseProperty("GiaoVien")]
         public virtual ICollection<PhanCongGiangDay> PhanCongGiangDays { get; set; } = new List<PhanCongGiangDay>();
-
+        [ForeignKey("MaNguoiDung")]
+        [InverseProperty(nameof(NguoiDung.GiaoViens))]
+        public virtual NguoiDung? NguoiDung { get; set; }
     }
 }

@@ -112,7 +112,7 @@ namespace EnlightEnglishCenter.Controllers
         public async Task<IActionResult> DanhSachHocVien()
         {
             var hocViens = await _context.HocViens
-                .Include(h => h.NguoiDung)
+                .Include(h => h.MaNguoiDung)
                 .OrderByDescending(h => h.NgayDangKy)
                 .ToListAsync();
             return View(hocViens);
@@ -277,7 +277,7 @@ namespace EnlightEnglishCenter.Controllers
         public IActionResult DanhSachHocVien(string? search)
         {
             var hocViens = _context.HocViens
-                 .Include(h => h.NguoiDung)
+                 .Include(h => h.MaNguoiDung)
 
                 .OrderByDescending(h => h.NgayDangKy)
                 .AsQueryable();

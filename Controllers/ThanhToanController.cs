@@ -42,7 +42,7 @@ namespace EnlightEnglishCenter.Controllers
 
             // 🔍 Chỉ lấy người dùng đã có bản ghi trong bảng HOCVIEN
             var hocVien = _context.HocViens
-             .Include(h => h.NguoiDung)
+             .Include(h => h.MaNguoiDung)
 
                 .FirstOrDefault(h => h.MaNguoiDung == maNguoiDung);
 

@@ -1,0 +1,32 @@
+﻿@model EnlightEnglishCenter.Models.NguoiDung
+@{
+    ViewData["Title"] = "Phân quyền người dùng";
+}
+
+<div class="container mt-4">
+    <h4 class="text-primary mb-4">
+        <i class="fa-solid fa-user-gear me-2"></i> Phân quyền cho người dùng: @Model.HoTen
+    </h4>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" name="id" value="@Model.MaNguoiDung" />
+
+        <div class="mb-3">
+            <label class="form-label">Chọn vai trò:</label>
+            <select name="maVaiTro" class="form-select">
+                @foreach (var vt in ViewBag.VaiTro)
+                {
+                    <option value="@vt.MaVaiTro" selected="@(vt.MaVaiTro == Model.MaVaiTro ? "selected" : null)">
+                        @vt.TenVaiTro
+                    </option>
+                }
+
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            <i class="fa-solid fa-check"></i> Lưu thay đổi
+        </button>
+        <a href="/PhanQuyen/Index" class="btn btn-secondary ms-2">Quay lại</a>
+    </form>
+</div>

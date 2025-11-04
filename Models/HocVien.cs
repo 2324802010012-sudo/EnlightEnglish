@@ -33,7 +33,9 @@ namespace EnlightEnglishCenter.Models
         public string? TrangThai { get; set; }
 
         public virtual ICollection<TestDauVao>? TestDauVaos { get; set; }
-   
+   [InverseProperty("MaHocVienNavigation")]
+public virtual ICollection<DiemSo> DiemSos { get; set; } = new List<DiemSo>();
+
 
 
     }

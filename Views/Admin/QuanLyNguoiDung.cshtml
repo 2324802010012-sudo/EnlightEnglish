@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Quản lý người dùng";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container mt-4">
@@ -13,6 +12,16 @@
     <a href="#" class="btn btn-success mb-3">
         <i class="fa-solid fa-user-plus me-1"></i> Thêm người dùng
     </a>
+
+    <!-- Hiển thị thông báo -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    else if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
 
     <table class="table table-bordered table-striped text-center align-middle">
         <thead class="table-primary">
@@ -38,11 +47,21 @@
                         <td>@u.HoTen</td>
                         <td>@u.MaVaiTroNavigation?.TenVaiTro</td>
                         <td>@u.Email</td>
-                        @(u.TrangThai == "true" ? "Hoạt động" : "Khóa")
-
                         <td>
-                            <a href="#" class="btn btn-sm btn-primary"><i class="fa-solid fa-pen"></i></a>
-                            <a href="#" class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i></a>
+                            @(u.TrangThai == "true" ? "Hoạt động" : "Khóa")
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-warning">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+
+                            <!-- Nút Xóa người dùng -->
+                            <form asp-action="DeleteNguoiDung" asp-route-id="@u.MaNguoiDung" method="post" class="d-inline"
+                                  onsubmit="return confirm('⚠️ Bạn có chắc muốn xóa người dùng này không?\n\nLưu ý: Tất cả dữ liệu học viên, điểm số và bài test sẽ bị xóa!');">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 }

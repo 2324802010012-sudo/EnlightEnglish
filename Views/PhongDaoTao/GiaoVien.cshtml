@@ -1,44 +1,97 @@
 ﻿@model IEnumerable<EnlightEnglishCenter.Models.GiaoVien>
 @{
-    ViewData["Title"] = "Giảng viên";
-}
-@section Breadcrumb {
-    <li class="breadcrumb-item active" aria-current="page">Giảng viên</li>
+    ViewData["Title"] = "Danh sách giảng viên";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="m-0">Danh sách giảng viên</h3>
-    <a asp-action="ThemGiaoVien" class="btn btn-success">+ Thêm giảng viên</a>
-</div>
+<div class="container mt-4">
+    <h3 class="fw-bold text-primary mb-3">
+        <i class="fa-solid fa-chalkboard-user me-2"></i> Danh sách giảng viên
+    </h3>
 
-<table class="table table-hover align-middle">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Họ tên</th>
-            <th>Chuyên môn</th>
-            <th>Trình độ</th>
-            <th>Kinh nghiệm</th>
-            <th style="width:160px;">Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var gv in Model)
-        {
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-semibold text-secondary m-0">Tổng số: @Model.Count() giảng viên</h5>
+        <a asp-action="ThemGiaoVien" class="btn btn-success">
+            <i class="fa-solid fa-plus me-1"></i> Thêm giảng viên
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover align-middle shadow-sm text-center">
+        <thead class="table-primary">
             <tr>
-                <td>@gv.MaGiaoVien</td>
-                <td>@(gv.NguoiDung?.HoTen ?? "—")</td>
-                <td>@(gv.ChuyenMon ?? "—")</td>
-                <td>@(gv.TrinhDo ?? "—")</td>
-                <td>@(gv.KinhNghiem ?? "—")</td>
-                <td>
-                    <a asp-action="SuaGiaoVien" asp-route-id="@gv.MaGiaoVien" class="btn btn-sm btn-primary">Sửa</a>
-                    <form asp-action="XoaGiaoVien" method="post" class="d-inline" onsubmit="return confirm('Xóa giảng viên này?')">
-                        <input type="hidden" name="id" value="@gv.MaGiaoVien" />
-                        <button class="btn btn-sm btn-outline-danger">Xóa</button>
-                    </form>
-                </td>
+                <th style="width:50px;">#</th>
+                <th>Tên giảng viên</th>
+                <th>Chuyên môn</th>
+                <th>Trình độ</th>
+                <th>Kinh nghiệm</th>
+                <th>Trạng thái</th>
+                <th style="width:180px;">Thao tác</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                int i = 1;
+                foreach (var gv in Model)
+                {
+                    <tr>
+                        <td>@(i++)</td>
+                        <td>@(gv.HoTen ?? $"Giảng viên #{gv.MaGiaoVien}")</td>
+                        <td>@(gv.ChuyenMon ?? "—")</td>
+                        <td>@(gv.TrinhDo ?? "—")</td>
+                        <td>@(gv.KinhNghiem ?? "—")</td>
+                        <td>
+                            @if (gv.TrangThai == "Đang dạy")
+                            {
+                                <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i> Đang dạy</span>
+                            }
+                            else if (gv.TrangThai == "Tạm nghỉ")
+                            {
+                                <span class="badge bg-warning text-dark"><i class="fa-solid fa-circle-pause me-1"></i> Tạm nghỉ</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary"><i class="fa-solid fa-circle-minus me-1"></i> @gv.TrangThai</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a asp-action="SuaGiaoVien" asp-route-id="@gv.MaGiaoVien" class="btn btn-sm btn-primary px-3">
+                                    <i class="fa-solid fa-pen-to-square"></i> Sửa
+                                </a>
+                                <form asp-action="XoaGiaoVien" method="post" class="d-inline"
+                                      onsubmit="return confirm('Bạn có chắc muốn xóa giảng viên này không?')">
+                                    <input type="hidden" name="id" value="@gv.MaGiaoVien" />
+                                    <button class="btn btn-sm btn-outline-danger px-3">
+                                        <i class="fa-solid fa-trash"></i> Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-muted py-3">Chưa có giảng viên nào.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

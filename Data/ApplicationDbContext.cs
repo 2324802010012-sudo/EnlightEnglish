@@ -58,9 +58,10 @@ namespace EnlightEnglishCenter.Data
                 e.HasIndex(x => x.MaLop);
 
                 e.HasOne(x => x.MaHocVienNavigation)
-                    .WithMany(nd => nd.DiemSos)   // đúng theo InverseProperty trong model
+                    .WithMany(hv => hv.DiemSos)
                     .HasForeignKey(x => x.MaHocVien)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade); // ✅ khi xóa học viên, xóa luôn điểm
+
 
                 e.HasOne(x => x.MaLopNavigation)
                     .WithMany(l => l.DiemSos)     // đúng theo InverseProperty trong model
@@ -119,6 +120,7 @@ namespace EnlightEnglishCenter.Data
             modelBuilder.Entity<HocVien>()
                 .HasKey(h => h.MaHocVien);
 
+
             // --- DkHocVienLopHoc (composite key) ---
             modelBuilder.Entity<DkHocVienLopHoc>()
                 .HasKey(d => new { d.MaHocVien, d.MaLop });
@@ -144,17 +146,19 @@ namespace EnlightEnglishCenter.Data
 
                 // FK: TestDauVao.MaHocVien -> NguoiDung.MaNguoiDung
                 // DÙNG .WithMany() (không tham số) để KHÔNG sinh cột ảo HocVienMaHocVien/NguoiDungMaNguoiDung
-                e.HasOne(t => t.HocVien)
-                 .WithMany()
-                 .HasForeignKey(t => t.MaHocVien)
+                e.HasOne(d => d.HocVien)
+    .WithMany()
+    .HasForeignKey(d => d.MaHocVien)
+    //.OnDelete(DeleteBehavior.Cascade);
                  .OnDelete(DeleteBehavior.Restrict);
-
+            
                 // FK: TestDauVao.KhoaHocDeXuat -> KhoaHoc.MaKhoaHoc
                 // DÙNG .WithMany() để KHÔNG sinh cột ảo KhoaHocMaKhoaHoc/TestDauVaoMaTest
                 e.HasOne(t => t.KhoaHocDeXuatNavigation)
                  .WithMany()
                  .HasForeignKey(t => t.KhoaHocDeXuat)
                  .OnDelete(DeleteBehavior.Restrict);
+
             });
 
             // --- TaiLieu ---

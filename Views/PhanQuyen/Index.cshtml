@@ -1,0 +1,49 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.NguoiDung>
+
+@{
+    ViewData["Title"] = "Quản lý phân quyền";
+}
+
+<div class="container mt-4">
+    <h3 class="text-primary text-center mb-4">
+        <i class="fa-solid fa-user-shield me-2"></i> Quản lý phân quyền
+    </h3>
+
+    <table class="table table-bordered table-striped text-center align-middle">
+        <thead class="table-primary">
+            <tr>
+                <th>#</th>
+                <th>Họ tên</th>
+                <th>Tên đăng nhập</th>
+                <th>Email</th>
+                <th>Vai trò</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                int stt = 1;
+                foreach (var u in Model)
+                {
+                    <tr>
+                        <td>@(stt++)</td>
+                        <td>@u.HoTen</td>
+                        <td>@u.TenDangNhap</td>
+                        <td>@u.Email</td>
+                        <td>@u.MaVaiTroNavigation?.TenVaiTro</td>
+                        <td>
+                            <a href="/PhanQuyen/Edit/@u.MaNguoiDung" class="btn btn-sm btn-warning">
+                                <i class="fa-solid fa-pen-to-square"></i> Phân quyền
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="6" class="text-muted">Chưa có dữ liệu người dùng</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

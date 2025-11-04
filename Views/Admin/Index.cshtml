@@ -1,7 +1,4 @@
-﻿
-
-
-<div class="container-fluid">
+﻿<div class="container-fluid">
     <h2 class="fw-bold text-primary mb-4">
         <i class="bi bi-speedometer2 me-2"></i> Trang quản trị hệ thống
     </h2>
@@ -11,7 +8,7 @@
             <div class="card shadow-sm border-0 bg-primary text-white">
                 <div class="card-body">
                     <h5><i class="bi bi-people-fill me-2"></i> Người dùng</h5>
-                    <p class="fs-4 fw-bold">128</p>
+                    <p class="fs-4 fw-bold">@ViewBag.TongNguoiDung</p>
                 </div>
             </div>
         </div>
@@ -20,7 +17,7 @@
             <div class="card shadow-sm border-0 bg-success text-white">
                 <div class="card-body">
                     <h5><i class="bi bi-book me-2"></i> Khóa học</h5>
-                    <p class="fs-4 fw-bold">15</p>
+                    <p class="fs-4 fw-bold">@ViewBag.TongKhoaHoc</p>
                 </div>
             </div>
         </div>
@@ -29,7 +26,7 @@
             <div class="card shadow-sm border-0 bg-warning text-white">
                 <div class="card-body">
                     <h5><i class="bi bi-building me-2"></i> Lớp học</h5>
-                    <p class="fs-4 fw-bold">23</p>
+                    <p class="fs-4 fw-bold">@ViewBag.TongLopHoc</p>
                 </div>
             </div>
         </div>
@@ -38,7 +35,7 @@
             <div class="card shadow-sm border-0 bg-info text-white">
                 <div class="card-body">
                     <h5><i class="bi bi-clipboard-check me-2"></i> Test đầu vào</h5>
-                    <p class="fs-4 fw-bold">42</p>
+                    <p class="fs-4 fw-bold">@ViewBag.TongTest</p>
                 </div>
             </div>
         </div>
@@ -47,9 +44,9 @@
     <div class="mt-5">
         <h5 class="text-muted">📊 Báo cáo nhanh:</h5>
         <ul>
-            <li>Tổng học viên đăng ký tháng này: <b>87</b></li>
-            <li>Số test đầu vào đã hoàn thành: <b>42</b></li>
-            <li>Lớp học đang hoạt động: <b>12</b></li>
+            <li>Tổng học viên đăng ký tháng này: <b>@ViewBag.TongHocVienThangNay</b></li>
+            <li>Số test đầu vào đã hoàn thành: <b>@ViewBag.TestHoanThanh</b></li>
+            <li>Lớp học đang hoạt động: <b>@ViewBag.LopHoatDong</b></li>
         </ul>
     </div>
 </div>

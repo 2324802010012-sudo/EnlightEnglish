@@ -28,7 +28,8 @@ namespace EnlightEnglishCenter.Models
 
         [ForeignKey("MaHocVien")]
         [InverseProperty("DiemSos")]
-        public virtual NguoiDung MaHocVienNavigation { get; set; } = null!;
+        public virtual HocVien MaHocVienNavigation { get; set; } = null!;  // ✅ Trỏ đúng sang HocVien
+
 
         [ForeignKey("MaLop")]
         [InverseProperty("DiemSos")]
