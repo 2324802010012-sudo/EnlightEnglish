@@ -94,12 +94,75 @@ namespace EnlightEnglishCenter.Controllers
             TempData["Success"] = $"✅ Đăng ký Test đầu vào cho khóa '{khoaHoc.TenKhoaHoc}' thành công! Vui lòng chờ duyệt.";
             return RedirectToAction("Index", "TestDauVao");
         }
-    
 
-// ======================================================
-// 3️⃣ Admin xem danh sách và duyệt Test
-// ======================================================
-public IActionResult DanhSach()
+        // ==========================
+        // 🧠 LỄ TÂN ĐĂNG KÝ TEST CHO HỌC VIÊN
+        // ==========================
+        [HttpGet]
+        public IActionResult DangKyTestHocVien(int id)
+        {
+            var hocVien = _context.HocViens.Find(id);
+            if (hocVien == null)
+            {
+                TempData["Error"] = "Không tìm thấy học viên.";
+                return RedirectToAction("DanhSachHocVien", "LeTan");
+            }
+
+            ViewBag.HocVien = hocVien;
+            ViewBag.KhoaHocList = _context.KhoaHocs.ToList();
+
+            return View("~/Views/LeTan/DangKyTestHocVien.cshtml");
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DangKyTestHocVien(int MaHocVien, int MaKhoaHoc)
+        {
+            var hocVien = _context.HocViens.Find(MaHocVien);
+            if (hocVien == null)
+            {
+                TempData["Error"] = "Không tìm thấy học viên để đăng ký test.";
+                return RedirectToAction("DanhSachHocVien", "LeTan");
+            }
+
+            var khoaHoc = _context.KhoaHocs.Find(MaKhoaHoc);
+            if (khoaHoc == null)
+            {
+                TempData["Error"] = "Khóa học không tồn tại.";
+                return RedirectToAction("DanhSachHocVien", "LeTan");
+            }
+
+            // Kiểm tra nếu đã đăng ký test trước đó
+            var testTonTai = _context.TestDauVaos
+                .FirstOrDefault(t => t.MaHocVien == MaHocVien && t.KhoaHocDeXuat == MaKhoaHoc);
+
+            if (testTonTai != null)
+            {
+                TempData["Error"] = $"Học viên '{hocVien.HoTen}' đã đăng ký test cho khóa '{khoaHoc.TenKhoaHoc}' rồi.";
+                return RedirectToAction("DanhSachHocVien", "LeTan");
+            }
+
+            // ✅ Tạo bản ghi test mới
+            var test = new TestDauVao
+            {
+                MaHocVien = MaHocVien,
+                KhoaHocDeXuat = MaKhoaHoc,
+                NgayTest = DateTime.Now,
+                TrangThai = "Chờ xác nhận"
+            };
+
+            _context.TestDauVaos.Add(test);
+            _context.SaveChanges();
+
+            TempData["Success"] = $"Đã đăng ký test đầu vào cho học viên '{hocVien.HoTen}' - Khóa '{khoaHoc.TenKhoaHoc}'.";
+            return RedirectToAction("DanhSachHocVien", "LeTan");
+        }
+
+        // ======================================================
+        // 3️⃣ Admin xem danh sách và duyệt Test
+        // ======================================================
+        public IActionResult DanhSach()
         {
             var vaiTro = HttpContext.Session.GetString("VaiTro")?.Trim();
 

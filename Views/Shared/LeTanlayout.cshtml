@@ -20,7 +20,18 @@
         <a href="/LeTan/LienHeHocVien"><i class="fa-solid fa-phone"></i> Liên hệ học viên</a>
         <a href="/LeTan/DanhSachHocVien"><i class="fa-solid fa-list"></i> Danh sách học viên</a>
         <a href="/LeTan/ThongTinLopHoc"><i class="fa-solid fa-book"></i> Lớp học</a>
-        <a href="/LeTan/BaoCao"><i class="fa-solid fa-chart-line"></i> Báo cáo</a>
+        <a href="/LeTan/BaoCao"><i class="fa-solid fa-chart-line"></i> Báo cáo doanh thu</a>
+
+
+        <!-- 🔹 Đăng xuất -->
+        <div class="text-center my-4">
+            <form asp-controller="Account" asp-action="Logout" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger px-4">
+                    <i class="fa-solid fa-right-from-bracket me-1"></i> Đăng xuất
+                </button>
+            </form>
+        </div>
     </div>
 
     <div class="main-content-letan">

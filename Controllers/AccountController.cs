@@ -1,8 +1,10 @@
 ﻿using EnlightEnglishCenter.Data;
 using EnlightEnglishCenter.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
+using BCrypt.Net;
 
 namespace EnlightEnglishCenter.Controllers
 {
@@ -29,11 +31,9 @@ namespace EnlightEnglishCenter.Controllers
             }
 
             var user = _context.NguoiDungs.FirstOrDefault(u =>
-           (u.TenDangNhap.ToLower() == Username.ToLower()
-            || u.Email.ToLower() == Username.ToLower())
-           && u.MatKhau == Password);
-
-
+                (u.TenDangNhap.ToLower() == Username.ToLower()
+                || u.Email.ToLower() == Username.ToLower())
+                && u.MatKhau == Password);
 
             if (user == null)
             {
@@ -49,7 +49,7 @@ namespace EnlightEnglishCenter.Controllers
                 return View();
             }
 
-            // ✅ So sánh mật khẩu (loại bỏ khoảng trắng 2 bên)
+            // ✅ So sánh mật khẩu
             if (user.MatKhau.Trim() != Password.Trim())
             {
                 user.SoLanSaiMatKhau++;
@@ -74,7 +74,7 @@ namespace EnlightEnglishCenter.Controllers
             user.KhoaDenNgay = null;
             _context.SaveChanges();
 
-            // ✅ Lưu session chung
+            // ✅ Lưu session
             HttpContext.Session.SetInt32("MaNguoiDung", user.MaNguoiDung);
             HttpContext.Session.SetString("TenDangNhap", user.TenDangNhap);
             var role = _context.VaiTros.FirstOrDefault(v => v.MaVaiTro == user.MaVaiTro)?.TenVaiTro ?? "Học viên";
@@ -162,7 +162,6 @@ namespace EnlightEnglishCenter.Controllers
             return RedirectToAction("Login");
         }
 
-
         // ======================= ĐĂNG XUẤT =======================
         public IActionResult Logout()
         {
@@ -220,12 +219,10 @@ namespace EnlightEnglishCenter.Controllers
             TempData["Success"] = "✅ Hồ sơ đã được cập nhật!";
             return RedirectToAction("Profile");
         }
+
         // ================== ĐỔI MẬT KHẨU ==================
         [HttpGet]
-        public IActionResult ChangePassword()
-        {
-            return View();
-        }
+        public IActionResult ChangePassword() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -258,14 +255,12 @@ namespace EnlightEnglishCenter.Controllers
                 return View();
             }
 
-            // Giả sử bạn chưa mã hóa mật khẩu
             if (user.MatKhau != oldPassword)
             {
                 ViewBag.Error = "Mật khẩu cũ không đúng.";
                 return View();
             }
 
-            // Cập nhật mật khẩu mới
             user.MatKhau = newPassword;
             _context.Update(user);
             _context.SaveChanges();
@@ -296,7 +291,6 @@ namespace EnlightEnglishCenter.Controllers
 
             string resetLink = Url.Action("ResetPassword", "Account", new { token = token }, Request.Scheme);
 
-            // ✅ Hiển thị link trực tiếp cho môi trường demo
             TempData["Message"] = "📩 Link đặt lại mật khẩu (chỉ hiển thị trong demo):";
             TempData["ResetLink"] = resetLink;
 
@@ -348,6 +342,70 @@ namespace EnlightEnglishCenter.Controllers
 
             TempData["ResetSuccess"] = "✅ Mật khẩu đã được thay đổi thành công!";
             return RedirectToAction("Login");
+        }
+
+        // ======================================================
+        // 💼 LỄ TÂN ĐĂNG KÝ HỘ HỌC VIÊN
+        // ======================================================
+        [HttpGet]
+        public IActionResult RegisterFromLeTan()
+        {
+            ViewBag.IsFromLeTan = true;
+            return View("Register");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterFromLeTan(NguoiDung model, string Password, string ConfirmPassword)
+        {
+            ViewBag.IsFromLeTan = true;
+
+            if (Password != ConfirmPassword)
+            {
+                ModelState.AddModelError("ConfirmPassword", "Mật khẩu xác nhận không khớp.");
+                return View("Register", model);
+            }
+
+            if (_context.NguoiDungs.Any(x => x.Email == model.Email))
+            {
+                ModelState.AddModelError("Email", "Email đã tồn tại.");
+                return View("Register", model);
+            }
+
+            var vaiTro = await _context.VaiTros.FirstOrDefaultAsync(v => v.TenVaiTro == "Học viên");
+            if (vaiTro == null)
+            {
+                TempData["Error"] = "⚠️ Không tìm thấy vai trò Học viên.";
+                return RedirectToAction("Index", "LeTan");
+            }
+
+            var nguoiDung = new NguoiDung
+            {
+                HoTen = model.HoTen,
+                Email = model.Email,
+                TenDangNhap = model.Email,
+                MatKhau = BCrypt.Net.BCrypt.HashPassword(Password ?? "123456"),
+                MaVaiTro = vaiTro.MaVaiTro,
+                TrangThai = "Hoạt động",
+                SoLanSaiMatKhau = 0
+            };
+            _context.NguoiDungs.Add(nguoiDung);
+            await _context.SaveChangesAsync();
+
+            var hocVien = new HocVien
+            {
+                HoTen = nguoiDung.HoTen,
+                Email = nguoiDung.Email,
+                SoDienThoai = nguoiDung.SoDienThoai,
+                MaNguoiDung = nguoiDung.MaNguoiDung,
+                NgayDangKy = DateTime.Now,
+                TrangThai = "Mới đăng ký"
+            };
+            _context.HocViens.Add(hocVien);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = $"✅ Lễ tân đã đăng ký học viên {hocVien.HoTen} thành công!";
+            return RedirectToAction("Index", "LeTan");
         }
     }
 }

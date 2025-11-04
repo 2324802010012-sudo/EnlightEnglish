@@ -4,133 +4,101 @@
 }
 <link rel="stylesheet" href="~/css/LeTan.css" />
 
+<!-- ✅ Hiển thị thông báo -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success text-start container mt-3 shadow-sm">
+        <i class="fa fa-check-circle me-1"></i> @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger text-start container mt-3 shadow-sm">
+        <i class="fa fa-triangle-exclamation me-1"></i> @TempData["Error"]
+    </div>
+}
+
 <div class="container py-5 text-center">
     <h2 class="fw-bold text-danger mb-3">
-        <i class="fa-solid fa-headset me-2"></i> Bảng điều khiển lễ tân
+        <i class="fa-solid fa-headset me-2"></i> BẢNG ĐIỀU KHIỂN LỄ TÂN
     </h2>
     <p class="text-muted mb-5">Quản lý và hỗ trợ học viên nhanh chóng, chính xác.</p>
 
     <div class="row g-4">
 
-        <!-- ✅ Nút mở modal -->
+        <!-- 🧍‍♂️ Đăng ký học viên -->
         <div class="col-md-4">
-            <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#registerStudentModal">
-                <div class="card border-0 shadow-sm p-4 hover-shadow">
+            <a href="@Url.Action("RegisterFromLeTan", "Account")" class="text-decoration-none">
+                <div class="card border-0 shadow-sm p-4 hover-shadow h-100">
                     <i class="fa-solid fa-user-plus fa-3x text-primary mb-3"></i>
-                    <h5 class="fw-bold text-dark">Đăng ký học viên</h5>
-                    <p class="text-muted small">Tạo hồ sơ mới cho học viên.</p>
-                </div>
-            </a>
-        </div>
-
-        <!-- ☎️ Liên hệ khách hàng -->
-        <div class="col-md-4">
-            <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#contactCustomerModal">
-                <div class="card border-0 shadow-sm p-4 hover-shadow">
-                    <i class="fa-solid fa-phone-volume fa-3x text-success mb-3"></i>
-                    <h5 class="fw-bold text-dark">Thêm liên hệ khách hàng</h5>
-                    <p class="text-muted small">Gọi điện, gửi tin nhắn hoặc email chăm sóc khách hàng.</p>
-                </div>
-            </a>
-        </div>
-
-
-        <!-- 📅 Lịch hẹn -->
-        <div class="col-md-4">
-            <a href="@Url.Action("LichHen","LeTan")" class="text-decoration-none">
-                <div class="card border-0 shadow-sm p-4">
-                    <i class="fa-solid fa-calendar-days fa-3x text-warning mb-3"></i>
-                    <h5 class="fw-bold text-dark">Lịch hẹn tư vấn</h5>
-                    <p class="text-muted small">Theo dõi lịch hẹn tư vấn của học viên.</p>
+                    <h5 class="fw-bold text-dark">Đăng ký học viên mới</h5>
+                    <p class="text-muted small">Tạo tài khoản và hồ sơ học viên trực tiếp trên hệ thống.</p>
                 </div>
             </a>
         </div>
 
         <!-- 💵 Thu học phí -->
         <div class="col-md-4">
-            <a href="@Url.Action("QuanLyThuHocPhi","LeTan")" class="text-decoration-none">
-                <div class="card border-0 shadow-sm p-4 hover-shadow">
+            <a href="@Url.Action("QuanLyThuHocPhi", "LeTan")" class="text-decoration-none">
+                <div class="card border-0 shadow-sm p-4 hover-shadow h-100">
                     <i class="fa-solid fa-sack-dollar fa-3x text-danger mb-3"></i>
                     <h5 class="fw-bold text-dark">Thu học phí</h5>
-                    <p class="text-muted small">Xử lý thanh toán học phí nhanh chóng.</p>
+                    <p class="text-muted small">Xử lý, xác nhận và quản lý các khoản thanh toán học phí.</p>
                 </div>
             </a>
         </div>
 
-        <!-- 📚 Quản lý lớp học -->
+        <!-- 🧾 Báo cáo -->
         <div class="col-md-4">
-            <a href="@Url.Action("QuanLyLopHoc","LeTan")" class="text-decoration-none">
-                <div class="card border-0 shadow-sm p-4 hover-shadow">
-                    <i class="fa-solid fa-chalkboard-teacher fa-3x text-info mb-3"></i>
-                    <h5 class="fw-bold text-dark">Quản lý lớp học</h5>
-                    <p class="text-muted small">Xem danh sách và lịch học của từng lớp.</p>
-                </div>
-            </a>
-        </div>
-
-        <!-- 🧾 Báo cáo thống kê -->
-        <div class="col-md-4">
-            <a href="@Url.Action("BaoCao","LeTan")" class="text-decoration-none">
-                <div class="card border-0 shadow-sm p-4 hover-shadow">
+            <a href="@Url.Action("BaoCao", "LeTan")" class="text-decoration-none">
+                <div class="card border-0 shadow-sm p-4 hover-shadow h-100">
                     <i class="fa-solid fa-chart-line fa-3x text-secondary mb-3"></i>
                     <h5 class="fw-bold text-dark">Báo cáo thống kê</h5>
-                    <p class="text-muted small">Theo dõi doanh thu và tình trạng học viên.</p>
+                    <p class="text-muted small">Thống kê doanh thu, học viên và hoạt động trung tâm.</p>
                 </div>
             </a>
         </div>
 
-        <!-- 👩‍🏫 Quản lý giáo viên -->
+        <!-- 👥 Danh sách học viên -->
         <div class="col-md-4">
-            <a href="@Url.Action("QuanLyGiaoVien","LeTan")" class="text-decoration-none">
-                <div class="card border-0 shadow-sm p-4 hover-shadow">
-                    <i class="fa-solid fa-user-tie fa-3x text-success mb-3"></i>
-                    <h5 class="fw-bold text-dark">Quản lý giáo viên</h5>
-                    <p class="text-muted small">Theo dõi thông tin và phân công giảng dạy.</p>
-                </div>
-            </a>
-        </div>
-
-        <!-- 🧍‍♂️ Danh sách học viên -->
-        <div class="col-md-4">
-            <a href="@Url.Action("DanhSachHocVien","LeTan")" class="text-decoration-none">
-                <div class="card border-0 shadow-sm p-4 hover-shadow">
+            <a href="@Url.Action("DanhSachHocVien", "LeTan")" class="text-decoration-none">
+                <div class="card border-0 shadow-sm p-4 hover-shadow h-100">
                     <i class="fa-solid fa-users fa-3x text-primary mb-3"></i>
                     <h5 class="fw-bold text-dark">Danh sách học viên</h5>
-                    <p class="text-muted small">Xem, sửa và tìm kiếm thông tin học viên.</p>
+                    <p class="text-muted small">Xem, chỉnh sửa hoặc tìm kiếm thông tin học viên.</p>
                 </div>
             </a>
         </div>
     </div>
 </div>
 
-<!-- 🧾 Modal: Đăng ký học viên mới -->
+
+<!-- 🧾 MODAL: Đăng ký học viên mới -->
 <div class="modal fade" id="registerStudentModal" tabindex="-1" aria-labelledby="registerStudentModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content shadow-lg border-0">
 
             <!-- Header -->
             <div class="modal-header text-white" style="background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);">
-                <h5 class="modal-title fw-bold" id="registerStudentModalLabel">
+                <h5 class="modal-title fw-bold">
                     <i class="bi bi-person-plus-fill me-2"></i> Đăng ký học viên mới
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <!-- Body -->
             <div class="modal-body bg-light">
-                <!-- 🟢 Form -->
                 <form id="hocVienForm" method="post" asp-action="DangKyHocVien" asp-controller="LeTan" class="row g-3">
                     @Html.AntiForgeryToken()
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Họ và tên</label>
-                        <input type="text" name="HoTen" class="form-control" required>
+                        <input type="text" name="HoTen" class="form-control" required />
                     </div>
 
                     <div class="col-md-3">
                         <label class="form-label fw-semibold">Giới tính</label>
-                        <select name="GioiTinh" class="form-select" required>
-                            <option value="">-- Chọn giới tính --</option>
+                        <select name="GioiTinh" class="form-select">
                             <option>Nam</option>
                             <option>Nữ</option>
                             <option>Khác</option>
@@ -139,64 +107,34 @@
 
                     <div class="col-md-3">
                         <label class="form-label fw-semibold">Ngày sinh</label>
-                        <input type="date" name="NgaySinh" class="form-control" required>
+                        <input type="date" name="NgaySinh" class="form-control" />
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Email</label>
-                        <input type="email" name="Email" class="form-control" required>
+                        <input type="email" name="Email" class="form-control" />
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Điện thoại</label>
-                        <input type="tel" name="DienThoai" class="form-control" required>
+                        <label class="form-label fw-semibold">Số điện thoại</label>
+                        <input type="tel" name="SoDienThoai" class="form-control" />
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <label class="form-label fw-semibold">Địa chỉ</label>
-                        <input type="text" name="DiaChi" class="form-control">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Trình độ</label>
-                        <select name="TrinhDo" class="form-select">
-                            <option>Beginner (Cơ bản)</option>
-                            <option>Intermediate (Trung cấp)</option>
-                            <option>Advanced (Nâng cao)</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Khóa học</label>
-                        <select name="KhoaHoc" class="form-select" required>
-                            <option>Cambridge English</option>
-                            <option>TOEIC Preparation</option>
-                            <option>IELTS Intensive</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Ngày bắt đầu học</label>
-                        <input type="date" name="NgayBatDauHoc" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Tình trạng học</label>
-                        <select name="TinhTrangHoc" class="form-select">
-                            <option>Đang học</option>
-                            <option>Tạm nghỉ</option>
-                            <option>Hoàn thành</option>
-                        </select>
+                        <input type="text" name="DiaChi" class="form-control" />
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Ngày đăng ký</label>
-                        <input type="date" name="NgayDangKy" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly>
+                        <input type="date" name="NgayDangKy" class="form-control"
+                               value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
                     </div>
 
                     <div class="col-md-12">
                         <label class="form-label fw-semibold">Ghi chú</label>
-                        <textarea name="GhiChu" class="form-control" rows="3" placeholder="Nhập ghi chú thêm (nếu có)..."></textarea>
+                        <textarea name="GhiChu" class="form-control" rows="3"
+                                  placeholder="Nhập ghi chú thêm (nếu có)..."></textarea>
                     </div>
                 </form>
             </div>
@@ -206,7 +144,6 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle me-1"></i> Hủy
                 </button>
-                <!-- ✅ Gắn form chính xác -->
                 <button type="submit" form="hocVienForm" class="btn btn-success">
                     <i class="bi bi-check2-circle me-1"></i> Đăng ký học viên
                 </button>
@@ -215,12 +152,12 @@
     </div>
 </div>
 
-<!-- 🧾 Modal:Thêm Liên hệ khách hàng -->
+
+<!-- 🧾 MODAL: Thêm liên hệ khách hàng -->
 <div class="modal fade" id="contactCustomerModal" tabindex="-1" aria-labelledby="contactCustomerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content shadow-lg border-0">
 
-            <!-- Header -->
             <div class="modal-header text-white" style="background: linear-gradient(90deg, #198754 0%, #20c997 100%);">
                 <h5 class="modal-title fw-bold">
                     <i class="fa-solid fa-headset me-2"></i> Thêm liên hệ khách hàng
@@ -228,31 +165,30 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
-            <!-- Body -->
             <div class="modal-body bg-light">
                 <form id="contactCustomerForm" method="post" asp-action="ThemLienHe" asp-controller="LeTan" class="row g-3">
                     @Html.AntiForgeryToken()
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Họ và tên</label>
-                        <input type="text" name="HoTen" class="form-control" placeholder="Nhập tên khách hàng" required>
+                        <input type="text" name="HoTen" class="form-control" placeholder="Nhập tên khách hàng" required />
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Số điện thoại</label>
-                        <input type="tel" name="DienThoai" class="form-control" placeholder="Nhập số điện thoại" required>
+                        <input type="tel" name="DienThoai" class="form-control" placeholder="Nhập số điện thoại" required />
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Email</label>
-                        <input type="email" name="Email" class="form-control" placeholder="example@email.com">
+                        <input type="email" name="Email" class="form-control" placeholder="example@email.com" />
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Trạng thái khách hàng</label>
                         <select name="TrangThai" class="form-select">
                             <option value="Tiềm năng">🧭 Khách hàng tiềm năng</option>
-                            <option value="Đã confirm">✅ Khách hàng confirm</option>
+                            <option value="Đã confirm">✅ Đã xác nhận</option>
                             <option value="Đặt lịch hẹn">📅 Đặt lịch hẹn</option>
                             <option value="Học viên đang học">🎓 Học viên đang học</option>
                         </select>
@@ -262,25 +198,26 @@
                         <label class="form-label fw-semibold">Khóa học quan tâm</label>
                         <select name="KhoaHoc" class="form-select">
                             <option value="">-- Chọn khóa học --</option>
-                            <option value="IELTS Intensive">IELTS Intensive</option>
-                            <option value="TOEIC Preparation">TOEIC Preparation</option>
-                            <option value="Cambridge English">Cambridge English</option>
+                            <option>IELTS </option>
+                            <option>TOEIC </option>
+                            <option>Cambridge </option>
                         </select>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Ngày liên hệ</label>
-                        <input type="date" name="NgayLienHe" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly>
+                        <input type="date" name="NgayLienHe" class="form-control"
+                               value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
                     </div>
 
                     <div class="col-12">
                         <label class="form-label fw-semibold">Ghi chú liên hệ</label>
-                        <textarea name="GhiChu" class="form-control" rows="3" placeholder="Nhập nội dung trao đổi hoặc hẹn lịch..."></textarea>
+                        <textarea name="GhiChu" class="form-control" rows="3"
+                                  placeholder="Nhập nội dung trao đổi hoặc hẹn lịch..."></textarea>
                     </div>
                 </form>
             </div>
 
-            <!-- Footer -->
             <div class="modal-footer bg-light">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle me-1"></i> Hủy
@@ -290,6 +227,7 @@
                 </button>
             </div>
         </div>
+      
     </div>
 </div>
 

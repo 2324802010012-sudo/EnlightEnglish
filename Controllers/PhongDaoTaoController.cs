@@ -372,6 +372,29 @@ namespace EnlightEnglishCenter.Controllers
                 new { Ten="Cambridge Flyers",     CapDo="Nâng cao", HocPhi=4500000, Tuan=14 }
             };
         }
+        [HttpGet]
+        public IActionResult SuaKhoaHoc(int id)
+        {
+            var khoaHoc = _context.KhoaHocs.FirstOrDefault(k => k.MaKhoaHoc == id);
+            if (khoaHoc == null)
+                return NotFound();
+
+            return View(khoaHoc);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SuaKhoaHoc(KhoaHoc model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            _context.Update(model);
+            _context.SaveChanges();
+
+            TempData["Success"] = "✅ Cập nhật khóa học thành công!";
+            return RedirectToAction(nameof(KhoaHoc));
+        }
 
         // ==========================================================
         // 🏫 LỚP HỌC

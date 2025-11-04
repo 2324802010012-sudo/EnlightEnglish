@@ -1,0 +1,56 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.LopHoc>
+@{
+    ViewData["Title"] = "Danh sách lớp học";
+    Layout = "~/Views/Shared/LeTanlayout.cshtml";
+}
+
+<div class="container mt-4">
+    <h3 class="fw-bold text-primary mb-4">
+        <i class="fa-solid fa-chalkboard-user me-2"></i> Danh sách lớp học
+    </h3>
+
+    <table class="table table-hover align-middle shadow-sm">
+        <thead class="table-primary text-center">
+            <tr>
+                <th>#</th>
+                <th>Tên lớp</th>
+                <th>Khóa học</th>
+                <th>Giáo viên</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Sĩ số</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                int i = 1;
+                foreach (var lop in Model)
+                {
+                    <tr class="text-center">
+                        <td>@(i++)</td>
+                        <td class="fw-semibold">@lop.TenLop</td>
+                        <td>@lop.MaKhoaHocNavigation?.TenKhoaHoc</td>
+                        <td>@lop.MaGiaoVienNavigation?.NguoiDung?.HoTen</td>
+
+                        <td>@lop.NgayBatDau?.ToString("dd/MM/yyyy")</td>
+                        <td>@lop.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
+                        <td>@lop.SiSoHienTai / @lop.SiSoToiDa</td>
+                        <td>
+                            <span class="badge bg-@(lop.TrangThai == "Đang học" ? "success" : "secondary")">
+                                @lop.TrangThai
+                            </span>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="8" class="text-center text-muted">Không có lớp học nào trong hệ thống.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

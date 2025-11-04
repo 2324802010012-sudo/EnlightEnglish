@@ -1,11 +1,15 @@
 ﻿using EnlightEnglishCenter.Data;
 using EnlightEnglishCenter.Models;
+using EnlightEnglishCenter.ViewModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using EnlightEnglishCenter.ViewModels;
 
 namespace EnlightEnglishCenter.Controllers
 {
@@ -18,66 +22,105 @@ namespace EnlightEnglishCenter.Controllers
             _context = context;
         }
 
-        // 🧾 Đăng ký học viên (từ modal)
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DangKyHocVien(HocVien model)
+        // ======================================
+        // 🧍‍♂️ 1. Đăng ký học viên mới → Mở form RegisterFromLeTan
+        // ======================================
+        [HttpGet]
+        public IActionResult DangKyHocVien()
         {
-            var dangKyList = (from dk in _context.DkHocVienLopHocs
-                              join hv in _context.NguoiDungs on dk.MaHocVien equals hv.MaNguoiDung
-                              join lop in _context.LopHocs on dk.MaLop equals lop.MaLop
-                              select new
-                              {
-                                  dk.MaHocVien,
-                                  dk.MaLop,
-                                  hv.HoTen,
-                                  Lop = lop.TenLop,
-                                  dk.NgayDangKy,
-                                  dk.TrangThai,
-                                  dk.TrangThaiHoc
-                              }).ToList();
-            if (!ModelState.IsValid)
-            {
-                TempData["Error"] = "⚠️ Dữ liệu nhập không hợp lệ.";
-                return RedirectToAction("DanhSachHocVien");
-            }
-
-            model.NgayDangKy = DateTime.Now;
-
-            _context.HocViens.Add(model);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "✅ Đã đăng ký học viên mới thành công!";
-            return RedirectToAction("DanhSachHocVien");
+            // ✅ Điều hướng sang trang đăng ký của AccountController
+            return RedirectToAction("RegisterFromLeTan", "Account");
         }
 
-
+        // ===============================
+        // 🔹 GET: Form đăng ký học viên từ lễ tân
+        // ===============================
+        [HttpGet]
+        public IActionResult RegisterFromLeTan()
+        {
+            ViewBag.IsFromLeTan = true; // đánh dấu là đang vào từ lễ tân
+            return View("Register");
+        }
 
         // ===============================
-        // 🧾 2. Danh sách học viên (cho lễ tân)
+        // 🔹 POST: Xử lý đăng ký học viên từ lễ tân
         // ===============================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterFromLeTan(NguoiDung model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.IsFromLeTan = true;
+                return View("Register", model);
+            }
+
+            // Kiểm tra trùng email hoặc username
+            if (_context.NguoiDungs.Any(x => x.Email == model.Email || x.TenDangNhap == model.TenDangNhap))
+            {
+                ModelState.AddModelError("Email", "Email hoặc tên đăng nhập đã tồn tại.");
+                ViewBag.IsFromLeTan = true;
+                return View("Register", model);
+            }
+
+            // Tìm vai trò học viên
+            var vaiTro = await _context.VaiTros.FirstOrDefaultAsync(v => v.TenVaiTro == "Học viên");
+            if (vaiTro == null)
+            {
+                ModelState.AddModelError("", "Không tìm thấy vai trò Học viên.");
+                ViewBag.IsFromLeTan = true;
+                return View("Register", model);
+            }
+
+            // Tạo người dùng
+            var nguoiDung = new NguoiDung
+            {
+                HoTen = model.HoTen,
+                Email = model.Email,
+                SoDienThoai = model.SoDienThoai,
+                TenDangNhap = model.Email ?? Guid.NewGuid().ToString(),
+             //   MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau ?? "123456"),
+                MaVaiTro = vaiTro.MaVaiTro,
+                TrangThai = "Hoạt động",
+                SoLanSaiMatKhau = 0
+            };
+
+            _context.NguoiDungs.Add(nguoiDung);
+            await _context.SaveChangesAsync();
+
+            // Tạo học viên tương ứng
+            var hocVien = new HocVien
+            {
+                HoTen = nguoiDung.HoTen,
+                Email = nguoiDung.Email,
+                SoDienThoai = nguoiDung.SoDienThoai,
+                MaNguoiDung = nguoiDung.MaNguoiDung,
+                NgayDangKy = DateTime.Now,
+                TrangThai = "Mới đăng ký"
+            };
+
+            _context.HocViens.Add(hocVien);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = $"✅ Đã tạo học viên {hocVien.HoTen} thành công (tài khoản: {hocVien.Email}, mật khẩu mặc định: 123456)";
+            return RedirectToAction("Index", "LeTan");
+        }
+
+        // ======================================
+        // 🧾 4. Danh sách học viên
+        // ======================================
         public async Task<IActionResult> DanhSachHocVien()
         {
-            var hocViens = await _context.HocViens.ToListAsync();
+            var hocViens = await _context.HocViens
+                .Include(h => h.NguoiDung)
+                .OrderByDescending(h => h.NgayDangKy)
+                .ToListAsync();
             return View(hocViens);
         }
 
-        // ===============================
-        // ✏️ 3. Sửa học viên
-        // ===============================
-        // Dùng để load dữ liệu khi bấm "Sửa"
-
-        // ---------------------- TẠO ĐĂNG KÝ MỚI ----------------------
-        [HttpGet]
-        public async Task<IActionResult> GetHocVien(int id)
-        {
-            var hv = await _context.HocViens.FindAsync(id);
-            if (hv == null) return NotFound();
-            return Json(hv);
-        }
-
-        // Dùng để lưu thay đổi
+        // ======================================
+        // ✏️ 5. Sửa học viên
+        // ======================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditHocVien(HocVien model)
@@ -91,81 +134,13 @@ namespace EnlightEnglishCenter.Controllers
             TempData["Success"] = "✅ Đã cập nhật thông tin học viên!";
             return RedirectToAction("DanhSachHocVien");
         }
-        public IActionResult XacNhanThanhToan()
-        {
-            var ds = _context.DonHocPhis
-                .Include(d => d.HocVien)
-                .Include(d => d.LopHoc)
-                .ThenInclude(l => l.MaKhoaHocNavigation)
-                .Where(d => d.TrangThai == "Chờ thanh toán")
-                .OrderByDescending(d => d.NgayTao)
-                .ToList();
-
-            return View(ds);
-        }
-
-        // ✅ Lễ tân xác nhận thanh toán
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult XacNhan(int id)
-        {
-            var don = _context.DonHocPhis
-                .Include(d => d.LopHoc)
-                .FirstOrDefault(d => d.MaDon == id);
-
-            if (don == null)
-            {
-                TempData["Error"] = "Không tìm thấy đơn học phí!";
-                return RedirectToAction(nameof(XacNhanThanhToan));
-            }
-
-            don.TrangThai = "Đã thanh toán";
-            don.NgayThanhToan = DateTime.Now;
-            _context.SaveChanges();
-
-            TempData["Success"] = "✅ Đã xác nhận thanh toán cho học viên.";
-            return RedirectToAction(nameof(XacNhanThanhToan));
-        }
-    
-
-        // ===============================
-        // ❌ 4. Xóa học viên
-        // ===============================
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> XoaHocVien(int id)
-        {
-            var hv = await _context.HocViens.FindAsync(id);
-            if (hv == null)
-            {
-                TempData["Error"] = "Không tìm thấy học viên để xóa!";
-                return RedirectToAction("DanhSachHocVien");
-            }
-
-            _context.HocViens.Remove(hv);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "🗑️ Đã xóa học viên thành công!";
-            return RedirectToAction("DanhSachHocVien");
-        }
 
 
-        // ===============================
-        // ✅ Tùy chọn: View index tổng hợp (nếu cần)
-        // ===============================
-        public async Task<IActionResult> Index()
-        {
-            var hocVienRole = await _context.VaiTros.FirstOrDefaultAsync(v => v.TenVaiTro == "Học viên");
-            int? roleId = hocVienRole?.MaVaiTro;
 
-            var ds = _context.NguoiDungs.AsQueryable();
-            if (roleId != null)
-                ds = ds.Where(n => n.MaVaiTro == roleId);
 
-            var list = await ds.ToListAsync();
-            return View(list);
-        }
-
+        // ======================================
+        // 📞 7. Liên hệ học viên & khách hàng
+        // ======================================
         public async Task<IActionResult> LienHeHocVien()
         {
             var viewModel = new LienHeHocVienViewModel
@@ -175,9 +150,7 @@ namespace EnlightEnglishCenter.Controllers
             };
             return View(viewModel);
         }
-        // ===============================
-        // 📞 Thêm khách hàng tiềm năng
-        // ===============================
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemLienHe(LienHeKhachHang model)
@@ -213,9 +186,10 @@ namespace EnlightEnglishCenter.Controllers
             TempData["Success"] = "🗑️ Đã xóa liên hệ khách hàng thành công!";
             return RedirectToAction("LienHeHocVien");
         }
-        // ===============================
-        // 💰 Quản lý thu học phí (cho Lễ tân)
-        // ===============================
+
+        // ======================================
+        // 💰 8. Quản lý thu học phí
+        // ======================================
         public IActionResult QuanLyThuHocPhi()
         {
             var ds = _context.DonHocPhis
@@ -227,7 +201,6 @@ namespace EnlightEnglishCenter.Controllers
 
             return View(ds);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult XacNhanHocPhi(int id)
@@ -235,6 +208,7 @@ namespace EnlightEnglishCenter.Controllers
             var don = _context.DonHocPhis
                 .Include(d => d.HocVien)
                 .Include(d => d.LopHoc)
+                    .ThenInclude(l => l.MaKhoaHocNavigation)
                 .FirstOrDefault(d => d.MaDon == id);
 
             if (don == null)
@@ -254,7 +228,7 @@ namespace EnlightEnglishCenter.Controllers
                 lop.SiSoHienTai = (lop.SiSoHienTai ?? 0) + 1;
             }
 
-            // ✅ Thêm học viên vào bảng DK_HocVien_LopHoc nếu chưa tồn tại
+            // ✅ Thêm học viên vào lớp nếu chưa có
             var daTonTai = _context.DkHocVienLopHocs
                 .Any(x => x.MaHocVien == don.MaHocVien && x.MaLop == don.MaLop);
 
@@ -271,31 +245,138 @@ namespace EnlightEnglishCenter.Controllers
                 _context.DkHocVienLopHocs.Add(dk);
             }
 
+            // ✅ Ghi nhận vào bảng BÁO CÁO DOANH THU
+            var baoCao = new BaoCao
+            {
+                LoaiBaoCao = "Doanh thu học phí",
+                NoiDung = $"Học viên {don.HocVien?.HoTen} đã thanh toán {don.TongTien:N0} đ cho lớp {don.LopHoc?.TenLop} ({don.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc}).",
+                NguoiLap = HttpContext.Session.GetInt32("MaNguoiDung"), // Lễ tân đăng nhập
+                NgayLap = DateTime.Now
+            };
+            _context.BaoCaos.Add(baoCao);
+
+            // ✅ Lưu toàn bộ thay đổi
             _context.SaveChanges();
 
-            TempData["Success"] = $"💰 Đã xác nhận thanh toán và thêm học viên {don.HocVien?.HoTen} vào lớp {don.LopHoc?.TenLop}.";
+            TempData["Success"] = $"💰 Đã xác nhận thanh toán và ghi nhận báo cáo doanh thu cho học viên {don.HocVien?.HoTen}.";
             return RedirectToAction(nameof(QuanLyThuHocPhi));
         }
-
-
-        // Optional: action để lấy chi tiết (AJAX)
-        [HttpGet]
-        public async Task<IActionResult> ChiTietLienHe(int id, string loai)
+        public IActionResult BaoCao()
         {
-            if (loai == "KhachHang")
+            var dsBaoCao = _context.BaoCaos
+                .Include(b => b.NguoiLapNavigation)
+                .OrderByDescending(b => b.NgayLap)
+                .ToList();
+
+            return View(dsBaoCao);
+        }
+        // ======================================
+        // 📋 DANH SÁCH HỌC VIÊN (CÓ TÌM KIẾM)
+        // ======================================
+        [HttpGet]
+        public IActionResult DanhSachHocVien(string? search)
+        {
+            var hocViens = _context.HocViens
+                 .Include(h => h.NguoiDung)
+
+                .OrderByDescending(h => h.NgayDangKy)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                var kh = await _context.LienHeKhachHang.FindAsync(id);
-                if (kh == null) return NotFound();
-                return PartialView("_PartialChiTietKhachHang", kh);
+                string keyword = search.Trim().ToLower();
+                hocViens = hocViens.Where(h =>
+                    h.HoTen.ToLower().Contains(keyword) ||
+                    (h.Email ?? "").ToLower().Contains(keyword) ||
+                    (h.SoDienThoai ?? "").Contains(keyword));
             }
-            else if (loai == "HocVien")
-            {
-                var hv = await _context.HocViens.FindAsync(id);
-                if (hv == null) return NotFound();
-                return PartialView("_PartialChiTietHocVien", hv);
-            }
-            return BadRequest();
+
+            ViewBag.CurrentSearch = search;
+            return View(hocViens.ToList());
         }
 
+        [HttpGet]
+        public IActionResult DangKyTestHocVien(int maHocVien)
+        {
+            var hocVien = _context.HocViens.Find(maHocVien);
+            if (hocVien == null)
+            {
+                TempData["Error"] = "Không tìm thấy học viên.";
+                return RedirectToAction("DanhSachHocVien");
+            }
+
+            ViewBag.HocVien = hocVien;
+            ViewBag.KhoaHocList = _context.KhoaHocs
+                .Where(k => k.TrangThai == "Đang mở")
+                .ToList();
+
+            return View("~/Views/LeTan/DangKyTestHocVien.cshtml");
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DangKyTestHocVien(int MaHocVien, int MaKhoaHoc)
+        {
+            var hv = _context.HocViens.Find(MaHocVien);
+            if (hv == null)
+            {
+                TempData["Error"] = "Không tìm thấy học viên.";
+                return RedirectToAction("DanhSachHocVien");
+            }
+
+            var tonTai = _context.TestDauVaos
+                .FirstOrDefault(t => t.MaHocVien == MaHocVien && t.KhoaHocDeXuat == MaKhoaHoc);
+            if (tonTai != null)
+            {
+                TempData["Error"] = "Học viên này đã đăng ký test cho khóa học này.";
+                return RedirectToAction("DanhSachHocVien");
+            }
+
+            var test = new TestDauVao
+            {
+                MaHocVien = MaHocVien,
+                KhoaHocDeXuat = MaKhoaHoc,
+                NgayDangKy = DateTime.Now,
+                TrangThai = "Chờ xác nhận"
+            };
+
+            _context.TestDauVaos.Add(test);
+            _context.SaveChanges();
+
+            TempData["Success"] = $"✅ Đã đăng ký test đầu vào cho học viên {hv.HoTen}.";
+            return RedirectToAction("DanhSachHocVien");
+        }
+        // ===============================
+        // 📘 XEM THÔNG TIN LỚP HỌC (lấy từ Phòng Đào Tạo)
+        // ===============================
+        public IActionResult ThongTinLopHoc()
+        {
+            // Lấy dữ liệu từ bảng LopHoc, có bao gồm thông tin khóa học và giáo viên
+            var dsLop = _context.LopHocs
+                .Include(l => l.MaKhoaHocNavigation)
+                .Include(l => l.MaGiaoVienNavigation)
+                    .ThenInclude(gv => gv.NguoiDung)
+                .OrderByDescending(l => l.NgayBatDau)
+                .ToList();
+
+            return View(dsLop);
+        }
+        // ======================================
+        // 🚪 9. Đăng xuất
+        // ======================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Account");
+        }
+
+        // ======================================
+        // 🏠 10. Trang chủ Lễ tân
+        // ======================================
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }
