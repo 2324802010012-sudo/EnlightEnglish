@@ -11,16 +11,20 @@
 
     <!-- 🧩 Danh sách khóa học -->
     <div class="row g-4 justify-content-center">
+        @{
+            var dsTest = ViewBag.DanhSachTest as List<EnlightEnglishCenter.Models.TestDauVao> ?? new();
+        }
+
         @foreach (var k in Model)
         {
-            var dsTest = ViewBag.DanhSachTest as List<EnlightEnglishCenter.Models.TestDauVao> ?? new();
             var test = dsTest.FirstOrDefault(t => t.KhoaHocDeXuat == k.MaKhoaHoc);
-
             string html;
 
             if (test == null)
             {
-                html = $@"<form asp-action='DangKy' method='get'>
+                // ✅ Chưa đăng ký → hiện nút đăng ký
+                html = $@"
+                <form asp-action='DangKy' method='get'>
                 <input type='hidden' name='maKhoaHoc' value='{k.MaKhoaHoc}' />
                 <button type='submit' class='btn btn-primary rounded-pill px-4 mt-2'>
                 <i class='fa-solid fa-pen-to-square me-1'></i> Đăng ký Test
@@ -29,7 +33,7 @@
             }
             else if (test.TrangThai == "Chờ xác nhận")
             {
-                html = "<span class='badge bg-warning text-dark rounded-pill px-3 py-2'>⏳ Chờ duyệt</span>";
+                html = "<span class='badge bg-warning text-dark rounded-pill px-3 py-2'><i class='fa fa-clock me-1'></i>Chờ duyệt</span>";
             }
             else if (test.TrangThai == "Được phép test")
             {
@@ -44,11 +48,11 @@
                 html = "<span class='text-muted'>Không xác định</span>";
             }
 
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="col-md-4 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-4 h-100 hover-shadow-sm">
                     <div class="card-body text-center p-4">
-                        <h5 class="fw-bold text-dark">@k.TenKhoaHoc</h5>
-                        <p class="text-muted small">@k.MoTa</p>
+                        <h5 class="fw-bold text-dark mb-2">@k.TenKhoaHoc</h5>
+                        <p class="text-muted small mb-3">@k.MoTa</p>
                         @Html.Raw(html)
                     </div>
                 </div>
@@ -60,15 +64,23 @@
     <div class="mt-5">
         @if (TempData["Success"] != null)
         {
-            <div class="alert alert-success text-center rounded-pill shadow-sm">
+            <div class="alert alert-success text-center rounded-pill shadow-sm fade show">
                 <i class="fa-solid fa-circle-check me-2"></i>@TempData["Success"]
             </div>
         }
         else if (TempData["Error"] != null)
         {
-            <div class="alert alert-danger text-center rounded-pill shadow-sm">
+            <div class="alert alert-danger text-center rounded-pill shadow-sm fade show">
                 <i class="fa-solid fa-triangle-exclamation me-2"></i>@TempData["Error"]
             </div>
         }
     </div>
 </div>
+
+<style>
+    .hover-shadow-sm:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+        transition: 0.2s;
+    }
+</style>

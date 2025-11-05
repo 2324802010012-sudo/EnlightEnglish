@@ -1,0 +1,113 @@
+﻿@{
+    ViewData["Title"] = "Báo cáo tài chính";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="fw-bold text-center mb-4 text-primary">
+        <i class="fa-solid fa-chart-line me-2"></i> Báo cáo tài chính tổng hợp
+    </h2>
+
+    <!-- Tổng quan -->
+    <div class="row text-center mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-success">
+                <div class="card-body">
+                    <h5 class="text-success">💰 Tổng thu học phí</h5>
+                    <h4 class="fw-bold text-success">@string.Format("{0:N0} đ", ViewBag.TongHocPhi)</h4>
+                    <small>@ViewBag.SoHocVienDaDong học viên đã đóng</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-warning">
+                <div class="card-body">
+                    <h5 class="text-warning">💵 Tổng chi lương GV</h5>
+                    <h4 class="fw-bold text-warning">@string.Format("{0:N0} đ", ViewBag.TongLuong)</h4>
+                    <small>@ViewBag.SoGiaoVien giáo viên được tính</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-info">
+                <div class="card-body">
+                    <h5 class="text-info">📅 Tháng hiện tại</h5>
+                    <h4 class="fw-bold text-info">@DateTime.Now.ToString("MM/yyyy")</h4>
+                    <small>Thống kê theo tháng</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-primary">
+                <div class="card-body">
+                    <h5 class="text-primary">📈 Lợi nhuận tạm tính</h5>
+                    <h4 class="fw-bold text-primary">@string.Format("{0:N0} đ", ViewBag.LoiNhuan)</h4>
+                    <small>= Thu học phí - Lương GV</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng chi tiết -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h5 class="fw-bold text-success mb-2">
+                <i class="fa-solid fa-coins me-2"></i> 5 khoản học phí gần nhất
+            </h5>
+            <table class="table table-sm table-hover align-middle">
+                <thead class="table-success">
+                    <tr>
+                        <th>Mã</th>
+                        <th>Học viên</th>
+                        <th>Số tiền</th>
+                        <th>Ngày đóng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var hp in (IEnumerable<EnlightEnglishCenter.Models.HocPhi>)ViewBag.DanhSachHocPhi)
+                    {
+                        <tr>
+                            <td>@hp.MaHocPhi</td>
+                            <td>@hp.MaHocVien</td>
+                            <td>@string.Format("{0:N0} đ", hp.SoTienPhaiDong)</td>
+                            <td>@(hp.NgayDongCuoi?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-md-6">
+            <h5 class="fw-bold text-warning mb-2">
+                <i class="fa-solid fa-hand-holding-dollar me-2"></i> 5 lương GV gần nhất
+            </h5>
+            <table class="table table-sm table-hover align-middle">
+                <thead class="table-warning">
+                    <tr>
+                        <th>Mã</th>
+                        <th>Giáo viên</th>
+                        <th>Tháng</th>
+                        <th>Tổng lương</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var lg in (IEnumerable<EnlightEnglishCenter.Models.LuongGiaoVien>)ViewBag.DanhSachLuong)
+                    {
+                        <tr>
+                            <td>@lg.MaLuong</td>
+                            <td>@lg.MaGiaoVien</td>
+                            <td>@lg.Thang/@lg.Nam</td>
+                            <td>@string.Format("{0:N0} đ", lg.TongLuong)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại trang kế toán
+        </a>
+    </div>
+</div>

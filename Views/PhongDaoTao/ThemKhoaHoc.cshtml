@@ -3,19 +3,109 @@
     var list = ViewBag.KhoaMau;
 }
 
+<div class="container mt-4">
+    <h3 class="fw-bold mb-4">Thêm khóa học</h3>
+
+    <form asp-action="ThemKhoaHoc" method="post">
+        @Html.AntiForgeryToken()
+
+        <!-- 🔹 Chọn khóa học mẫu -->
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Tên khóa học</label>
+            <select id="khoaSelect" class="form-select" onchange="chonKhoaHoc()">
+                <option value="">-- Chọn khóa học --</option>
+                @foreach (var k in list)
+                {
+                    <option value='@Newtonsoft.Json.JsonConvert.SerializeObject(k)'>@k.Ten</option>
+                }
+            </select>
+
+            <input id="TenKhoaHoc" name="TenKhoaHoc" class="form-control mt-2" readonly />
+        </div>
+
+        <div class="row">
+            <!-- 🔹 Cấp độ -->
+            <div class="col-md-4 mb-3">
+                <label class="form-label fw-semibold">Cấp độ</label>
+                <input id="CapDo" name="CapDoDisplay" class="form-control bg-light" readonly />
+                <input type="hidden" id="CapDoHidden" name="CapDo" /> <!-- ✅ giá trị thật gửi về Controller -->
+            </div>
+
+            <!-- 🔹 Học phí -->
+            <div class="col-md-4 mb-3">
+                <label class="fw-semibold">Học phí (VNĐ)</label>
+                <input id="HocPhi" name="HocPhi" class="form-control bg-light" readonly />
+            </div>
+
+            <!-- 🔹 Thời lượng -->
+            <div class="col-md-4 mb-3">
+                <label class="fw-semibold">Thời lượng (tuần)</label>
+                <input id="ThoiLuongTuan" name="ThoiLuongTuan" class="form-control bg-light" readonly />
+            </div>
+        </div>
+
+        <!-- 🔹 Ngày bắt đầu / kết thúc -->
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="fw-semibold">Ngày bắt đầu</label>
+                <input type="date" id="NgayBatDau" name="NgayBatDau" class="form-control" onchange="tinhNgayKetThuc()" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="fw-semibold">Ngày kết thúc</label>
+                <input type="date" id="NgayKetThuc" name="NgayKetThuc" class="form-control bg-light" readonly />
+            </div>
+        </div>
+
+        <!-- 🔹 Lịch học -->
+        <div class="mb-3">
+            <label class="fw-semibold">Lịch học</label>
+            <select id="LichHoc" name="LichHoc" class="form-select">
+                <option value="">-- Chọn lịch học --</option>
+                <option value="246">Thứ 2 - 4 - 6</option>
+                <option value="357">Thứ 3 - 5 - 7</option>
+            </select>
+        </div>
+
+        <!-- 🔹 Mô tả -->
+        <div class="mb-3">
+            <label class="fw-semibold">Mô tả</label>
+            <textarea name="MoTa" class="form-control" rows="3"></textarea>
+        </div>
+
+        <!-- 🔹 Nút thao tác -->
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-save me-1"></i> Lưu
+            </button>
+            <a asp-action="KhoaHoc" class="btn btn-secondary">
+                <i class="fa-solid fa-rotate-left me-1"></i> Hủy
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- ✅ Script xử lý logic -->
 <script>
     function chonKhoaHoc() {
         var selected = document.getElementById("khoaSelect").value;
         if (!selected) return;
 
         var data = JSON.parse(selected);
+
+        // ✅ Gán dữ liệu hiển thị
         document.getElementById("TenKhoaHoc").value = data.Ten;
         document.getElementById("CapDo").value = data.CapDo;
+
+        // ✅ Gán dữ liệu gửi về Controller
+        document.getElementById("CapDoHidden").value = data.CapDo;
+
         document.getElementById("HocPhi").value = data.HocPhi;
         document.getElementById("ThoiLuongTuan").value = data.Tuan;
-        tinhNgayKetThuc();
+
+        tinhNgayKetThuc(); // ✅ Tính ngày kết thúc
     }
 
+    // ✅ Hàm tính ngày kết thúc
     function tinhNgayKetThuc() {
         var batdau = document.getElementById("NgayBatDau").value;
         var tuan = parseInt(document.getElementById("ThoiLuongTuan").value);
@@ -26,67 +116,3 @@
         document.getElementById("NgayKetThuc").value = d.toISOString().split('T')[0];
     }
 </script>
-
-<div class="container mt-4">
-    <h3 class="fw-bold mb-4">Thêm khóa học</h3>
-
-    <form asp-action="ThemKhoaHoc" method="post">
-
-        <div class="mb-3">
-            <label class="form-label">Tên khóa học</label>
-            <select id="khoaSelect" class="form-select" onchange="chonKhoaHoc()">
-                <option value="">-- Chọn khóa học --</option>
-                @foreach (var k in list)
-                {
-                    <option value='@Newtonsoft.Json.JsonConvert.SerializeObject(k)'>@k.Ten</option>
-                }
-            </select>
-            <input id="TenKhoaHoc" name="TenKhoaHoc" class="form-control mt-2" readonly />
-        </div>
-
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <label>Cấp độ</label>
-                <input id="CapDo" name="CapDo" class="form-control" readonly />
-            </div>
-            <div class="col-md-4 mb-3">
-                <label>Học phí (VNĐ)</label>
-                <input id="HocPhi" name="HocPhi" class="form-control" readonly />
-            </div>
-            <div class="col-md-4 mb-3">
-                <label>Thời lượng (tuần)</label>
-                <input id="ThoiLuongTuan" name="ThoiLuongTuan" class="form-control" readonly />
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label>Ngày bắt đầu</label>
-                <input type="date" id="NgayBatDau" name="NgayBatDau"
-                       class="form-control" onchange="tinhNgayKetThuc()" />
-            </div>
-            <div class="col-md-6 mb-3">
-                <label>Ngày kết thúc</label>
-                <input type="date" id="NgayKetThuc" name="NgayKetThuc" class="form-control" readonly />
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label>Lịch học</label>
-            <select id="LichHoc" name="LichHoc" class="form-select">
-                <option value="">-- Chọn lịch học --</option>
-                <option value="246">Thứ 2 - 4 - 6</option>
-                <option value="357">Thứ 3 - 5 - 7</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label>Mô tả</label>
-            <textarea name="MoTa" class="form-control" rows="3"></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Lưu</button>
-        <a asp-action="KhoaHoc" class="btn btn-secondary">Hủy</a>
-
-    </form>
-</div>

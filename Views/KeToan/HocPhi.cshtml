@@ -1,73 +1,80 @@
 ﻿@model IEnumerable<dynamic>
 @{
     ViewData["Title"] = "Quản lý học phí";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="text-warning mb-0">
-            <i class="fa-solid fa-money-bill-wave me-2"></i> Danh sách học phí
-        </h3>
-        <!-- 🔗 Nút Thêm mới -->
-        <a asp-action="Create" asp-controller="KeToan" class="btn btn-success">
-            <i class="fa-solid fa-plus"></i> Thêm mới
-        </a>
-    </div>
+<div class="container mt-4">
+    <h3 class="fw-bold text-warning mb-4">
+        <i class="fa-solid fa-coins me-2"></i> Danh sách học phí
+    </h3>
 
-    <table class="table table-bordered table-hover align-middle">
-        <thead class="table-warning text-center">
+    <!-- ✅ Hiển thị thông báo -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success text-center">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger text-center">@TempData["Error"]</div>
+    }
+
+    <table class="table table-bordered table-striped text-center align-middle shadow-sm">
+        <thead class="table-warning">
             <tr>
                 <th>Mã</th>
                 <th>Học viên</th>
                 <th>Lớp học</th>
                 <th>Số tiền phải đóng</th>
-                <th>Số tiền đã đóng</th>
                 <th>Trạng thái</th>
                 <th>Ngày đóng cuối</th>
                 <th>Thao tác</th>
             </tr>
         </thead>
         <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.MaHocPhi</td>
-                        <td>@item.HocVien</td>
-                        <td>@item.Lop</td>
-                        <td class="text-end">@String.Format("{0:N0} đ", item.SoTienPhaiDong)</td>
-                        <td class="text-end">@String.Format("{0:N0} đ", item.SoTienDaDong)</td>
-                        <td class="text-center">@item.TrangThai</td>
-                        <td class="text-center">@((item.NgayDongCuoi as DateTime?)?.ToString("dd/MM/yyyy"))</td>
-                        <td class="text-center">
-                            <!-- 🔍 Chi tiết -->
-                            <a asp-action="Details" asp-controller="KeToan" asp-route-id="@item.MaHocPhi" class="btn btn-info btn-sm me-1" title="Xem chi tiết">
-                                <i class="fa-solid fa-circle-info"></i>
-                            </a>
-                            <!-- ✏️ Sửa -->
-                            <a asp-action="Edit" asp-controller="KeToan" asp-route-id="@item.MaHocPhi" class="btn btn-warning btn-sm me-1" title="Sửa">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
-                            <!-- 🗑️ Xóa -->
-                            <a asp-action="Delete" asp-controller="KeToan" asp-route-id="@item.MaHocPhi" class="btn btn-danger btn-sm" title="Xóa">
-                                <i class="fa-solid fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                }
-            }
-            else
+            @foreach (var item in Model)
             {
                 <tr>
-                    <td colspan="8" class="text-center text-muted">Chưa có dữ liệu học phí</td>
+                    <td>@item.MaHocPhi</td>
+                    <td>@item.HocVien</td>
+                    <td>@item.Lop</td>
+                    <td>@string.Format("{0:N0} đ", item.SoTienPhaiDong)</td>
+                    <td>
+                        @if (item.TrangThai == "Đã thanh toán")
+                        {
+                            <span class="badge bg-success">
+                                <i class="fa-solid fa-check-circle"></i> Đã thanh toán
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">
+                                <i class="fa-solid fa-hourglass-half"></i> Chưa thanh toán
+                            </span>
+                        }
+                    </td>
+                    <td>@(item.NgayDongCuoi?.ToString("dd/MM/yyyy") ?? "-")</td>
+                    <td>
+                        @if (item.TrangThai != "Đã thanh toán")
+                        {
+                            <form asp-action="CapNhatHocPhi" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@item.MaHocPhi" />
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="fa-solid fa-check"></i> Xác nhận
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="text-success">✔ Đã thu</span>
+                        }
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <!-- 🔙 Quay lại Trang kế toán -->
-    <a asp-action="Index" asp-controller="KeToan" class="btn btn-secondary mt-3">
+    <a asp-action="Index" class="btn btn-secondary mt-3">
         <i class="fa-solid fa-arrow-left"></i> Quay lại
     </a>
 </div>

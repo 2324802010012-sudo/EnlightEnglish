@@ -25,10 +25,18 @@ namespace EnlightEnglishCenter.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            int? maHocVien = HttpContext.Session.GetInt32("MaNguoiDung");
-            if (maHocVien == null)
+            int? maNguoiDung = HttpContext.Session.GetInt32("MaNguoiDung");
+            if (maNguoiDung == null)
             {
                 TempData["Error"] = "⚠️ Bạn cần đăng nhập để đăng ký test.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            // ✅ FIX: tìm đúng học viên theo mã người dùng
+            var hocVien = _context.HocViens.FirstOrDefault(h => h.MaNguoiDung == maNguoiDung);
+            if (hocVien == null)
+            {
+                TempData["Error"] = "❌ Không tìm thấy thông tin học viên.";
                 return RedirectToAction("Login", "Account");
             }
 
@@ -38,9 +46,9 @@ namespace EnlightEnglishCenter.Controllers
                 .OrderBy(k => k.NgayBatDau)
                 .ToList();
 
-            // 🔹 Lấy danh sách test của học viên
+            // 🔹 Lấy danh sách test của học viên (đúng mã học viên)
             var dsTest = _context.TestDauVaos
-                .Where(t => t.MaHocVien == maHocVien)
+                .Where(t => t.MaHocVien == hocVien.MaHocVien)
                 .ToList();
 
             ViewBag.DanhSachTest = dsTest;
@@ -54,16 +62,24 @@ namespace EnlightEnglishCenter.Controllers
         [HttpGet]
         public IActionResult DangKy(int maKhoaHoc = 1)
         {
-            int? maHocVien = HttpContext.Session.GetInt32("MaNguoiDung");
-            if (maHocVien == null)
+            int? maNguoiDung = HttpContext.Session.GetInt32("MaNguoiDung");
+            if (maNguoiDung == null)
             {
                 TempData["Error"] = "⚠️ Bạn cần đăng nhập trước khi đăng ký Test đầu vào.";
                 return RedirectToAction("Login", "Account");
             }
 
+            // ✅ FIX: tìm học viên đúng theo mã người dùng
+            var hocVien = _context.HocViens.FirstOrDefault(h => h.MaNguoiDung == maNguoiDung);
+            if (hocVien == null)
+            {
+                TempData["Error"] = "Không tìm thấy thông tin học viên.";
+                return RedirectToAction("Index", "TestDauVao");
+            }
+
             // 🔸 Kiểm tra học viên đã có test chưa
             var testCu = _context.TestDauVaos
-                .FirstOrDefault(t => t.MaHocVien == maHocVien && t.KhoaHocDeXuat == maKhoaHoc);
+                .FirstOrDefault(t => t.MaHocVien == hocVien.MaHocVien && t.KhoaHocDeXuat == maKhoaHoc);
 
             if (testCu != null)
             {
@@ -82,7 +98,7 @@ namespace EnlightEnglishCenter.Controllers
             // 🔸 Tạo bản ghi Test mới
             var test = new TestDauVao
             {
-                MaHocVien = maHocVien.Value,
+                MaHocVien = hocVien.MaHocVien,  // ✅ FIX: gán đúng mã học viên thật
                 KhoaHocDeXuat = khoaHoc.MaKhoaHoc,
                 NgayTest = DateTime.Now,
                 TrangThai = "Chờ xác nhận"
@@ -112,7 +128,6 @@ namespace EnlightEnglishCenter.Controllers
             ViewBag.KhoaHocList = _context.KhoaHocs.ToList();
 
             return View("~/Views/LeTan/DangKyTestHocVien.cshtml");
-
         }
 
         [HttpPost]
@@ -133,7 +148,6 @@ namespace EnlightEnglishCenter.Controllers
                 return RedirectToAction("DanhSachHocVien", "LeTan");
             }
 
-            // Kiểm tra nếu đã đăng ký test trước đó
             var testTonTai = _context.TestDauVaos
                 .FirstOrDefault(t => t.MaHocVien == MaHocVien && t.KhoaHocDeXuat == MaKhoaHoc);
 
@@ -143,7 +157,6 @@ namespace EnlightEnglishCenter.Controllers
                 return RedirectToAction("DanhSachHocVien", "LeTan");
             }
 
-            // ✅ Tạo bản ghi test mới
             var test = new TestDauVao
             {
                 MaHocVien = MaHocVien,
@@ -220,12 +233,10 @@ namespace EnlightEnglishCenter.Controllers
             if (!string.IsNullOrEmpty(vaiTro) &&
                 vaiTro.Equals("Phòng đào tạo", StringComparison.OrdinalIgnoreCase))
             {
-                // Khi người duyệt là Phòng đào tạo → quay lại đúng layout của họ
                 return RedirectToAction("DuyetTest", "PhongDaoTao");
             }
             else
             {
-                // Còn lại (Admin, vv) → quay về danh sách Test
                 return RedirectToAction("DanhSach", "TestDauVao");
             }
         }
@@ -235,17 +246,25 @@ namespace EnlightEnglishCenter.Controllers
         // ======================================================
         public IActionResult LamBai()
         {
-            int? maHocVien = HttpContext.Session.GetInt32("MaNguoiDung");
-            if (maHocVien == null)
+            int? maNguoiDung = HttpContext.Session.GetInt32("MaNguoiDung");
+            if (maNguoiDung == null)
             {
                 TempData["Error"] = "Vui lòng đăng nhập trước khi làm bài test.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            // ✅ FIX: tìm đúng học viên
+            var hocVien = _context.HocViens.FirstOrDefault(h => h.MaNguoiDung == maNguoiDung);
+            if (hocVien == null)
+            {
+                TempData["Error"] = "Không tìm thấy học viên.";
                 return RedirectToAction("Login", "Account");
             }
 
             var test = _context.TestDauVaos
                 .Include(t => t.HocVien)
                 .Include(t => t.KhoaHocDeXuatNavigation)
-                .FirstOrDefault(t => t.MaHocVien == maHocVien && t.TrangThai == "Được phép test");
+                .FirstOrDefault(t => t.MaHocVien == hocVien.MaHocVien && t.TrangThai == "Được phép test");
 
             if (test == null)
             {
@@ -271,12 +290,8 @@ namespace EnlightEnglishCenter.Controllers
             return View(allQuestions);
         }
 
-
         // ======================================================
         // 5️⃣ Nộp bài & tính điểm
-        // ======================================================
-        // ======================================================
-        // 5️⃣ Nộp bài & tính điểm (học viên làm test online)
         // ======================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -296,14 +311,18 @@ namespace EnlightEnglishCenter.Controllers
                           : score10 < 7 ? "Cấp độ Trung bình"
                           : "Cấp độ Nâng cao";
 
-            int? maHocVien = HttpContext.Session.GetInt32("MaNguoiDung");
-            if (maHocVien == null)
+            int? maNguoiDung = HttpContext.Session.GetInt32("MaNguoiDung");
+            if (maNguoiDung == null)
+                return RedirectToAction("Login", "Account");
+
+            var hocVien = _context.HocViens.FirstOrDefault(h => h.MaNguoiDung == maNguoiDung);
+            if (hocVien == null)
                 return RedirectToAction("Login", "Account");
 
             var test = _context.TestDauVaos
                 .Include(t => t.HocVien)
                 .Include(t => t.KhoaHocDeXuatNavigation)
-                .FirstOrDefault(t => t.MaHocVien == maHocVien && t.TrangThai == "Được phép test");
+                .FirstOrDefault(t => t.MaHocVien == hocVien.MaHocVien && t.TrangThai == "Được phép test");
 
             if (test != null)
             {
@@ -322,55 +341,8 @@ namespace EnlightEnglishCenter.Controllers
                 );
             }
 
-            // ✅ Cách 1: redirect sang trang Kết quả (sạch sẽ)
             return RedirectToAction("KetQua");
-
-            // ✅ Cách 2 (nếu bạn muốn giữ nguyên view):
-            // var testDaHoanThanh = _context.TestDauVaos
-            //     .Include(t => t.HocVien)
-            //     .Include(t => t.KhoaHocDeXuatNavigation)
-            //     .FirstOrDefault(t => t.MaHocVien == maHocVien);
-            // return View("KetQua", testDaHoanThanh);
         }
-
-
-
-
-        // ======================================================
-        // 5️⃣-bis. Cập nhật điểm test (Admin cập nhật hoặc chấm tay)
-        // ======================================================
-        [HttpPost]
-        [Route("TestDauVao/CapNhatDiem")]
-        public async Task<IActionResult> CapNhatDiem(int id, double diem)
-        {
-            var test = await _context.TestDauVaos
-                .Include(t => t.KhoaHocDeXuatNavigation)
-                .FirstOrDefaultAsync(t => t.MaTest == id);
-
-            if (test == null) return NotFound();
-
-            test.TongDiem = (decimal)diem;  // ✅ cột có thật
-            test.TrangThai = "Hoàn thành";
-
-            // ✅ Gợi ý lộ trình theo khóa đề xuất & điểm
-            string loTrinh = "Cấp độ Cơ bản";
-            var ten = test.KhoaHocDeXuatNavigation?.TenKhoaHoc?.ToUpperInvariant() ?? "";
-
-            if (ten.Contains("IELTS"))
-                loTrinh = diem >= 8 ? "IELTS Nâng cao" : diem >= 6 ? "IELTS Trung bình" : "IELTS Cơ bản";
-            else if (ten.Contains("TOEIC"))
-                loTrinh = diem >= 8 ? "TOEIC Nâng cao" : diem >= 6 ? "TOEIC Trung bình" : "TOEIC Cơ bản";
-            else if (ten.Contains("CAMBRIDGE"))
-                loTrinh = diem >= 8 ? "Cambridge Nâng cao" : diem >= 6 ? "Cambridge Trung bình" : "Cambridge Cơ bản";
-
-            test.LoTrinhHoc = loTrinh;       // ✅ cột có thật
-
-            await _context.SaveChangesAsync();
-            TempData["Success"] = $"✅ Đã cập nhật điểm và lộ trình: {loTrinh}";
-            return RedirectToAction("KetQua", new { id = test.MaTest });
-        }
-
-
 
         // ======================================================
         // 6️⃣ Trang Kết quả
@@ -378,8 +350,11 @@ namespace EnlightEnglishCenter.Controllers
         [HttpGet]
         public IActionResult KetQua(int? id)
         {
-            int? maHocVien = HttpContext.Session.GetInt32("MaNguoiDung");
-            if (maHocVien == null) return RedirectToAction("Login", "Account");
+            int? maNguoiDung = HttpContext.Session.GetInt32("MaNguoiDung");
+            if (maNguoiDung == null) return RedirectToAction("Login", "Account");
+
+            var hocVien = _context.HocViens.FirstOrDefault(h => h.MaNguoiDung == maNguoiDung);
+            if (hocVien == null) return RedirectToAction("Login", "Account");
 
             var query = _context.TestDauVaos
                 .Include(t => t.HocVien)
@@ -387,8 +362,8 @@ namespace EnlightEnglishCenter.Controllers
                 .AsQueryable();
 
             var test = id.HasValue
-                ? query.FirstOrDefault(t => t.MaTest == id.Value && t.MaHocVien == maHocVien)
-                : query.Where(t => t.MaHocVien == maHocVien)
+                ? query.FirstOrDefault(t => t.MaTest == id.Value && t.MaHocVien == hocVien.MaHocVien)
+                : query.Where(t => t.MaHocVien == hocVien.MaHocVien)
                        .OrderByDescending(t => t.NgayTest)
                        .FirstOrDefault();
 
@@ -401,8 +376,6 @@ namespace EnlightEnglishCenter.Controllers
             return View(test);
         }
 
-
-
         // ======================================================
         // 🔟 Gửi email kết quả và thông báo
         // ======================================================
@@ -411,13 +384,11 @@ namespace EnlightEnglishCenter.Controllers
             try
             {
                 if (string.IsNullOrWhiteSpace(email)) return;
-
                 var smtp = new SmtpClient("smtp.gmail.com", 587)
                 {
                     EnableSsl = true,
                     Credentials = new NetworkCredential("trungtamenlight@gmail.com", "app-password-gmail")
                 };
-
                 var message = new MailMessage(
                     new MailAddress("trungtamenlight@gmail.com", "Enlight English Center"),
                     new MailAddress(email))
@@ -431,7 +402,6 @@ namespace EnlightEnglishCenter.Controllers
                         <p>Chúc bạn học tốt cùng ENLIGHT 🌟</p>",
                     IsBodyHtml = true
                 };
-
                 smtp.Send(message);
             }
             catch { }
@@ -442,13 +412,11 @@ namespace EnlightEnglishCenter.Controllers
             try
             {
                 if (string.IsNullOrWhiteSpace(email)) return;
-
                 var smtp = new SmtpClient("smtp.gmail.com", 587)
                 {
                     EnableSsl = true,
                     Credentials = new NetworkCredential("trungtamenlight@gmail.com", "app-password-gmail")
                 };
-
                 var message = new MailMessage(
                     new MailAddress("trungtamenlight@gmail.com", "Enlight English Center"),
                     new MailAddress(email))
@@ -461,12 +429,10 @@ namespace EnlightEnglishCenter.Controllers
                         <a href='https://localhost:7153/TestDauVao/LamBai'>Làm bài Test ngay</a></p>",
                     IsBodyHtml = true
                 };
-
                 smtp.Send(message);
             }
             catch { }
         }
-     
 
         // ======================================================
         // Đọc file câu hỏi JSON

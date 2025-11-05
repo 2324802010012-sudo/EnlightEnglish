@@ -1,44 +1,30 @@
 ﻿@{
-    ViewData["Title"] = "Tính lương giáo viên";
+    ViewData["Title"] = "Tính lương tự động";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container py-4">
     <h3 class="text-success mb-3">
-        <i class="fa-solid fa-hand-holding-dollar me-2"></i> Tính lương giáo viên
+        <i class="fa-solid fa-hand-holding-dollar me-2"></i> Tính lương giáo viên (tự động)
     </h3>
 
-    <form asp-action="TinhLuong" method="post">
-        <div class="mb-3">
-            <label class="form-label fw-bold">Giáo viên</label>
-            <select name="MaGiaoVien" class="form-select" required>
-                <option value="">-- Chọn giáo viên --</option>
-                @foreach (var gv in ViewBag.GiaoVienList)
-                {
-                    <option value="@gv.MaNguoiDung">@gv.HoTen</option>
-                }
-            </select>
-        </div>
+    <div class="alert alert-info">
+        <i class="fa-solid fa-circle-info me-2"></i>
+        Khi bấm <b>"Tính lương toàn bộ giáo viên"</b>, hệ thống sẽ:
+        <ul>
+            <li>Tự động tính lương cho <b>tất cả giáo viên có phân công dạy</b>.</li>
+            <li>Dựa vào số buổi học trong bảng <b>LịchHocs</b> của từng lớp.</li>
+            <li>Tính theo lương mỗi buổi được lưu trong bảng <b>GiaoVien</b>.</li>
+            <li>Bỏ qua những tháng/năm đã được tính lương trước đó.</li>
+        </ul>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-bold">Tháng</label>
-            <input type="number" name="Thang" class="form-control" min="1" max="12" required />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label fw-bold">Năm</label>
-            <input type="number" name="Nam" class="form-control" min="2020" max="2100" required />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label fw-bold">Lương mỗi buổi (VNĐ)</label>
-            <input type="number" name="LuongMoiBuoi" class="form-control" step="1000" required />
-        </div>
-
+    <form asp-action="TinhLuongAll" method="post">
         <button type="submit" class="btn btn-success">
-            <i class="fa-solid fa-calculator me-1"></i> Tính lương
+            <i class="fa-solid fa-calculator me-1"></i> Tính lương toàn bộ giáo viên
         </button>
         <a asp-action="LuongGiaoVien" class="btn btn-secondary ms-2">
-            <i class="fa-solid fa-arrow-left"></i> Quay lại
+            <i class="fa-solid fa-list"></i> Xem danh sách lương
         </a>
     </form>
 </div>

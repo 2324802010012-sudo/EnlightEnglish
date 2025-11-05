@@ -1,0 +1,72 @@
+﻿@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Doanh thu trung tâm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <h3 class="text-success fw-bold mb-3">
+        <i class="fa-solid fa-sack-dollar me-2"></i> Doanh thu trung tâm
+    </h3>
+
+    <form method="get" class="row mb-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">Tìm kiếm học viên hoặc lớp</label>
+            <input type="text" name="keyword" value="@ViewBag.Keyword" class="form-control" placeholder="Nhập tên học viên hoặc lớp..." />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Trạng thái</label>
+            <select name="trangThai" class="form-select">
+                <option value="">-- Tất cả --</option>
+                <option value="Đã thanh toán" selected="@(ViewBag.TrangThai == "Đã thanh toán")">Đã thanh toán</option>
+                <option value="Chưa thanh toán" selected="@(ViewBag.TrangThai == "Chưa thanh toán")">Chưa thanh toán</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-success w-100">
+                <i class="fa fa-filter me-1"></i> Lọc
+            </button>
+        </div>
+    </form>
+
+    <table class="table table-hover table-bordered shadow-sm align-middle">
+        <thead class="table-warning text-center">
+            <tr>
+                <th>Học viên</th>
+                <th>Lớp học</th>
+                <th class="text-end">Số tiền phải đóng</th>
+                <th class="text-end">Số tiền đã đóng</th>
+                <th class="text-end">Còn nợ</th>
+                <th>Trạng thái</th>
+                <th>Ngày đóng cuối</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var conNo = (item.SoTienPhaiDong ?? 0m) - (item.SoTienDaDong ?? 0m);
+                <tr>
+                    <td>@item.HocVien</td>
+                    <td>@item.Lop</td>
+                    <td class="text-end">@string.Format("{0:N0} đ", item.SoTienPhaiDong)</td>
+                    <td class="text-end text-success">@string.Format("{0:N0} đ", item.SoTienDaDong)</td>
+                    <td class="text-end text-danger fw-bold">@string.Format("{0:N0} đ", conNo)</td>
+                    <td class="@(item.TrangThai == "Đã thanh toán" ? "text-success fw-bold" : "text-danger fw-bold")">@item.TrangThai</td>
+                    <td>@(item.NgayDongCuoi?.ToString("dd/MM/yyyy") ?? "-")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="alert alert-info fw-bold mt-3">
+        💰 Tổng phải thu: <span class="text-primary">@string.Format("{0:N0} đ", ViewBag.TongPhaiDong)</span><br />
+        ✅ Đã thu: <span class="text-success">@string.Format("{0:N0} đ", ViewBag.TongDaDong)</span><br />
+        ⚠️ Còn nợ: <span class="text-danger">@string.Format("{0:N0} đ", ViewBag.TongConNo)</span>
+    </div>
+
+    <a href="/KeToan/Index" class="btn btn-secondary mt-3">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại
+    </a>
+</div>

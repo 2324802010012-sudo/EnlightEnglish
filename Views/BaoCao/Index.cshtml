@@ -5,18 +5,23 @@
 }
 
 <div class="container mt-4">
-    <h3 class="text-primary text-center mb-4">
+    <h3 class="text-primary text-center mb-4 fw-bold">
         <i class="fa-solid fa-file-lines me-2"></i> Danh sách báo cáo
     </h3>
 
-    <table class="table table-bordered table-striped align-middle text-center">
-        <thead class="table-primary">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger text-center">@TempData["Error"]</div>
+    }
+
+    <table class="table table-bordered table-hover align-middle shadow-sm">
+        <thead class="table-primary text-center">
             <tr>
-                <th>#</th>
-                <th>Tên báo cáo</th>
-                <th>Loại báo cáo</th>
-                <th>Ngày lập</th>
-                <th>Người lập</th>
+                <th style="width:50px;">#</th>
+                <th style="width:180px;">Tên báo cáo</th>
+                <th style="width:160px;">Loại báo cáo</th>
+                <th style="width:120px;">Ngày lập</th>
+                <th style="width:180px;">Người lập</th>
                 <th>Nội dung</th>
             </tr>
         </thead>
@@ -26,21 +31,33 @@
                 int stt = 1;
                 foreach (var bc in Model)
                 {
+                    // Gợi ý: phân loại màu theo loại báo cáo
+                    var loai = bc.LoaiBaoCao?.ToLower() ?? "";
+                    var badgeClass = loai.Contains("lương") ? "bg-warning text-dark" :
+                    loai.Contains("doanh thu") ? "bg-success text-white" :
+                    "bg-secondary text-white";
+
                     <tr>
-                        <td>@(stt++)</td>
-         
-                        <td>@bc.LoaiBaoCao</td>
+                        <td class="text-center fw-bold">@stt</td>
+                        <td class="fw-semibold text-primary">@bc.LoaiBaoCao</td>
+
+                        <td>
+                            <span class="badge @badgeClass">@bc.LoaiBaoCao</span>
+                        </td>
                         <td>@bc.NgayLap.ToString("dd/MM/yyyy")</td>
-
-
                         <td>@bc.NguoiLapNavigation?.HoTen</td>
                         <td class="text-start">@bc.NoiDung</td>
                     </tr>
+                    stt++;
                 }
             }
             else
             {
-                <tr><td colspan="6" class="text-muted">Không có dữ liệu báo cáo</td></tr>
+                <tr>
+                    <td colspan="6" class="text-muted text-center py-3">
+                        Không có dữ liệu báo cáo để hiển thị.
+                    </td>
+                </tr>
             }
         </tbody>
     </table>

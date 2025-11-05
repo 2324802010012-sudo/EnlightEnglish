@@ -112,7 +112,7 @@ namespace EnlightEnglishCenter.Controllers
         public async Task<IActionResult> DanhSachHocVien()
         {
             var hocViens = await _context.HocViens
-                .Include(h => h.MaNguoiDung)
+              
                 .OrderByDescending(h => h.NgayDangKy)
                 .ToListAsync();
             return View(hocViens);
@@ -190,17 +190,23 @@ namespace EnlightEnglishCenter.Controllers
         // ======================================
         // 💰 8. Quản lý thu học phí
         // ======================================
+        // =======================================================
+        // 💰  QUẢN LÝ THU HỌC PHÍ
+        // =======================================================
         public IActionResult QuanLyThuHocPhi()
         {
-            var ds = _context.DonHocPhis
+            var danhSach = _context.DonHocPhis
                 .Include(d => d.HocVien)
                 .Include(d => d.LopHoc)
-                .ThenInclude(l => l.MaKhoaHocNavigation)
+                    .ThenInclude(l => l.MaKhoaHocNavigation)
                 .OrderByDescending(d => d.NgayTao)
                 .ToList();
 
-            return View(ds);
+            return View(danhSach);
         }
+        // =======================================================
+        // ✅ XÁC NHẬN THANH TOÁN HỌC PHÍ
+        // =======================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult XacNhanHocPhi(int id)
@@ -213,22 +219,28 @@ namespace EnlightEnglishCenter.Controllers
 
             if (don == null)
             {
-                TempData["Error"] = "Không tìm thấy đơn học phí!";
+                TempData["Error"] = "❌ Không tìm thấy đơn học phí!";
                 return RedirectToAction(nameof(QuanLyThuHocPhi));
             }
 
-            // ✅ Cập nhật trạng thái thanh toán
+            if (don.TrangThai == "Đã thanh toán")
+            {
+                TempData["Info"] = "⚠️ Đơn học phí này đã được xác nhận trước đó.";
+                return RedirectToAction(nameof(QuanLyThuHocPhi));
+            }
+
+            // 🔹 Cập nhật trạng thái thanh toán
             don.TrangThai = "Đã thanh toán";
             don.NgayThanhToan = DateTime.Now;
 
-            // ✅ Cập nhật sĩ số lớp
+            // 🔹 Cập nhật sĩ số lớp
             var lop = _context.LopHocs.FirstOrDefault(l => l.MaLop == don.MaLop);
             if (lop != null)
             {
                 lop.SiSoHienTai = (lop.SiSoHienTai ?? 0) + 1;
             }
 
-            // ✅ Thêm học viên vào lớp nếu chưa có
+            // 🔹 Ghi học viên vào danh sách lớp (nếu chưa có)
             var daTonTai = _context.DkHocVienLopHocs
                 .Any(x => x.MaHocVien == don.MaHocVien && x.MaLop == don.MaLop);
 
@@ -245,20 +257,19 @@ namespace EnlightEnglishCenter.Controllers
                 _context.DkHocVienLopHocs.Add(dk);
             }
 
-            // ✅ Ghi nhận vào bảng BÁO CÁO DOANH THU
+            // 🔹 Ghi nhận vào bảng BÁO CÁO DOANH THU
             var baoCao = new BaoCao
             {
                 LoaiBaoCao = "Doanh thu học phí",
-                NoiDung = $"Học viên {don.HocVien?.HoTen} đã thanh toán {don.TongTien:N0} đ cho lớp {don.LopHoc?.TenLop} ({don.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc}).",
-                NguoiLap = HttpContext.Session.GetInt32("MaNguoiDung"), // Lễ tân đăng nhập
+                NoiDung = $"💰 Học viên {don.HocVien?.HoTen} đã thanh toán {don.TongTien:N0} đ cho lớp {don.LopHoc?.TenLop} ({don.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc}).",
+                NguoiLap = HttpContext.Session.GetInt32("MaNguoiDung"),
                 NgayLap = DateTime.Now
             };
             _context.BaoCaos.Add(baoCao);
 
-            // ✅ Lưu toàn bộ thay đổi
             _context.SaveChanges();
 
-            TempData["Success"] = $"💰 Đã xác nhận thanh toán và ghi nhận báo cáo doanh thu cho học viên {don.HocVien?.HoTen}.";
+            TempData["Success"] = $"✅ Đã xác nhận thanh toán học phí cho học viên {don.HocVien?.HoTen}.";
             return RedirectToAction(nameof(QuanLyThuHocPhi));
         }
         public IActionResult BaoCao()
@@ -277,8 +288,6 @@ namespace EnlightEnglishCenter.Controllers
         public IActionResult DanhSachHocVien(string? search)
         {
             var hocViens = _context.HocViens
-                 .Include(h => h.MaNguoiDung)
-
                 .OrderByDescending(h => h.NgayDangKy)
                 .AsQueryable();
 
@@ -294,6 +303,7 @@ namespace EnlightEnglishCenter.Controllers
             ViewBag.CurrentSearch = search;
             return View(hocViens.ToList());
         }
+
 
         [HttpGet]
         public IActionResult DangKyTestHocVien(int maHocVien)

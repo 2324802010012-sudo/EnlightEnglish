@@ -1,0 +1,60 @@
+﻿@model IEnumerable<EnlightEnglishCenter.Models.KhoaHoc>
+@{
+    ViewData["Title"] = "Khóa kiểm tra đầu vào";
+}
+
+<div class="container mt-4">
+    <h3 class="fw-bold text-primary mb-4">
+        <i class="fa-solid fa-clipboard-check me-2"></i> Danh sách bài Test đầu vào
+    </h3>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <table class="table table-bordered text-center align-middle shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Tên bài Test</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                int i = 1;
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@i++</td>
+                        <td class="fw-semibold">@item.TenKhoaHoc</td>
+                        <td>@item.NgayBatDau?.ToString("dd/MM/yyyy")</td>
+                        <td>@item.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <span class="badge @(item.TrangThai == "Đang mở" ? "bg-success" : "bg-secondary")">
+                                @item.TrangThai
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/TestDauVao/DangKy?maKhoa=@item.MaKhoaHoc"
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fa fa-pen me-1"></i> Đăng ký Test
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6">⛔ Chưa có bài test nào được tạo.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -27,7 +27,7 @@
                         <label class="form-label">Khóa học</label>
                         <select id="MaKhoaHoc" name="MaKhoaHoc"
                                 class="form-select" asp-items="ViewBag.KhoaHocList"
-                                onchange="LayThongTinKhoaHoc()" required></select>
+                                required></select>
                     </div>
 
                     <div class="col-md-3 mb-3">
@@ -43,12 +43,12 @@
 
                     <div class="col-md-3 mb-3">
                         <label>Ngày bắt đầu</label>
-                        <input id="NgayBatDau" name="NgayBatDau" class="form-control" readonly />
+                        <input id="NgayBatDau" name="NgayBatDau" type="date" class="form-control" />
                     </div>
 
                     <div class="col-md-3 mb-3">
                         <label>Ngày kết thúc</label>
-                        <input id="NgayKetThuc" name="NgayKetThuc" class="form-control" readonly />
+                        <input id="NgayKetThuc" name="NgayKetThuc" type="date" class="form-control" readonly />
                     </div>
 
                     <div class="col-md-3 mb-3">
@@ -61,6 +61,22 @@
                         <input id="ThoiLuongTuan" name="ThoiLuongTuan" class="form-control" readonly />
                     </div>
 
+                    <!-- 🗓️ Thứ trong tuần -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Thứ trong tuần</label>
+                        <input name="ThuTrongTuan" list="dsThu" class="form-control" placeholder="VD: 2,4,6" required />
+                        <datalist id="dsThu">
+                            <option value="2,4,6"></option>
+                            <option value="3,5,7"></option>
+                            <option value="7,CN"></option>
+                        </datalist>
+                    </div>
+
+                    <!-- ⏰ Giờ học -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Giờ học (VD: 18:00-19:30)</label>
+                        <input name="LichHoc" class="form-control" placeholder="VD: 18:00-19:30" />
+                    </div>
                 </div>
 
                 <button class="btn btn-primary">✅ Tạo lớp học</button>
@@ -75,6 +91,7 @@
                 <th>#</th>
                 <th>Tên lớp</th>
                 <th>Khóa học</th>
+                <th>Giảng viên</th>
                 <th>Ngày bắt đầu</th>
                 <th>Sĩ số</th>
                 <th>Thao tác</th>
@@ -86,33 +103,66 @@
             }
             @foreach (var lop in Model)
             {
+                // ✅ Lấy giảng viên từ bảng phân công
+                string gv = lop.PhanCongGiangDays != null && lop.PhanCongGiangDays.Any()
+                ? lop.PhanCongGiangDays.FirstOrDefault()?.GiaoVien?.HoTen ?? "— Chưa phân công —"
+                : "— Chưa phân công —";
+
                 <tr>
                     <td>@stt++</td>
                     <td>@lop.TenLop</td>
                     <td>@lop.MaKhoaHocNavigation?.TenKhoaHoc</td>
+                    <td>@gv</td>
                     <td>@lop.NgayBatDau?.ToString("dd/MM/yyyy")</td>
                     <td>@lop.SiSoHienTai / @lop.SiSoToiDa</td>
-                    <td>
-                        <a asp-action="SuaLopHoc" asp-route-id="@lop.MaLop" class="btn btn-primary btn-sm">Sửa</a>
+                    <td class="text-nowrap">
+                        <a asp-action="SuaLopHoc" asp-route-id="@lop.MaLop" class="btn btn-sm btn-primary">
+                            <i class="fa-solid fa-pen"></i> Sửa
+                        </a>
+
                         <a asp-controller="LichHoc" asp-action="Index" asp-route-lopId="@lop.MaLop"
-                           class="btn btn-info btn-sm">Lịch học</a>
+                           class="btn btn-sm btn-info">
+                            <i class="fa-solid fa-calendar-days"></i> Lịch
+                        </a>
+
                         <form asp-action="XoaLopHoc" method="post" class="d-inline">
                             <input type="hidden" name="id" value="@lop.MaLop" />
-                            <button class="btn btn-danger btn-sm">Xóa</button>
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Xóa lớp @lop.TenLop?');">
+                                <i class="fa-solid fa-trash"></i> Xóa
+                            </button>
+                        </form>
+
+                        <!-- 🌟 Nút tạo lịch học tự động -->
+                        <form asp-action="TaoLichTuDong" asp-controller="PhongDaoTao" method="post" class="d-inline">
+                            <input type="hidden" name="maLop" value="@lop.MaLop" />
+                            <button type="submit" class="btn btn-sm btn-success"
+                                    onclick="return confirm('Tự động tạo lịch học cho lớp @lop.TenLop?');">
+                                <i class="fa-solid fa-calendar-plus"></i> Tạo lịch
+                            </button>
                         </form>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+
+    <!-- ✅ THÔNG BÁO -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success mt-3">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger mt-3">@TempData["Error"]</div>
+    }
+    @if (TempData["Info"] != null)
+    {
+        <div class="alert alert-info mt-3">@TempData["Info"]</div>
+    }
 </div>
 
-
-<script>
-    // Chờ toàn trang load xong
+ <script>
     $(document).ready(function () {
-
-        // Khi người dùng chọn khóa học
         $("#MaKhoaHoc").on("change", function () {
             var id = $(this).val();
             if (!id) return;
@@ -122,9 +172,6 @@
                 type: "GET",
                 data: { id: id },
                 success: function (data) {
-                    console.log("Dữ liệu nhận được:", data); // để kiểm tra console
-
-                    // ✅ Gán dữ liệu nhận được vào các ô input
                     $("#HocPhi").val(data.hocPhi?.toLocaleString("vi-VN") || "");
                     $("#NgayBatDau").val(data.ngayBatDau || "");
                     $("#NgayKetThuc").val(data.ngayKetThuc || "");
@@ -138,7 +185,3 @@
         });
     });
 </script>
-
-
-
-

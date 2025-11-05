@@ -1,48 +1,45 @@
 ﻿@model EnlightEnglishCenter.Models.LichHoc
 @{
-    ViewData["Title"] = "Sửa buổi học";
+    ViewData["Title"] = "Sửa lịch học";
 }
-<form asp-action="SuaLichHoc" method="post" class="card p-3">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="MaLich" />   <!-- ✅ -->
 
-    <div class="mb-3">
-        <label class="form-label">Lớp</label>
-        <select asp-for="MaLop" class="form-select" asp-items="ViewBag.DSLopHoc"></select>
-        <span asp-validation-for="MaLop" class="text-danger"></span>
-    </div>
+<div class="container mt-4">
+    <h3 class="fw-bold text-primary mb-4">✏️ Sửa lịch học</h3>
 
-    <div class="row g-3">
-        <div class="col-md-4">
-            <label class="form-label">Ngày học</label>
-            <input asp-for="NgayHoc" type="date" class="form-control" />
+    <form asp-action="SuaLichHoc" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="MaLich" />
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Lớp học</label>
+                <select asp-for="MaLop" class="form-select" asp-items="ViewBag.DSLopHoc"></select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Ngày học</label>
+                <input asp-for="NgayHoc" type="date" class="form-control" />
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label fw-semibold">Giờ bắt đầu</label>
+                <input asp-for="GioBatDau" type="time" class="form-control" />
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label fw-semibold">Giờ kết thúc</label>
+                <input asp-for="GioKetThuc" type="time" class="form-control" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Phòng học</label>
+                <input asp-for="PhongHoc" class="form-control" />
+            </div>
         </div>
-        <div class="col-md-4">
-            <label class="form-label">Giờ bắt đầu</label>
-            <input asp-for="GioBatDau" type="time" class="form-control" />
+
+        <div class="mt-4">
+            <button class="btn btn-primary"><i class="fa fa-save"></i> Lưu thay đổi</button>
+            <a asp-action="LichHoc" class="btn btn-secondary">⬅ Quay lại</a>
         </div>
-        <div class="col-md-4">
-            <label class="form-label">Giờ kết thúc</label>
-            <input asp-for="GioKetThuc" type="time" class="form-control" />
-        </div>
-    </div>
-
-    <div class="mt-3">
-        <label class="form-label">Nội dung</label>
-        <input asp-for="NoiDung" class="form-control" />
-    </div>
-
-    <div class="mt-3">
-        <label class="form-label">Phòng học</label>
-        <input asp-for="PhongHoc" class="form-control" />
-    </div>
-
-    <div class="mt-3">
-        <button class="btn btn-primary">Cập nhật</button>
-        <a asp-action="LichHoc" class="btn btn-outline-secondary">Hủy</a>
-    </div>
-</form>
-
-@section Scripts {
-<partial name="_ValidationScriptsPartial" />
- }
+    </form>
+</div>

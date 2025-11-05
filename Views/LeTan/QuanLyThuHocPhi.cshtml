@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Quản lý thu học phí";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container mt-5">
@@ -9,18 +10,23 @@
         <i class="fa-solid fa-cash-register me-2"></i> Quản lý thu học phí
     </h2>
 
+    <!-- ✅ THÔNG BÁO -->
     @if (TempData["Success"] != null)
     {
         <div class="alert alert-success text-center">@TempData["Success"]</div>
     }
-
     @if (TempData["Error"] != null)
     {
         <div class="alert alert-danger text-center">@TempData["Error"]</div>
     }
+    @if (TempData["Info"] != null)
+    {
+        <div class="alert alert-info text-center">@TempData["Info"]</div>
+    }
 
-    <table class="table table-bordered table-striped text-center align-middle shadow-sm">
-        <thead class="table-light">
+    <!-- ✅ BẢNG DỮ LIỆU -->
+    <table class="table table-bordered table-striped align-middle text-center shadow-sm">
+        <thead class="table-primary">
             <tr>
                 <th>Mã đơn</th>
                 <th>Học viên</th>
@@ -45,14 +51,19 @@
                     <td>
                         @if (item.TrangThai == "Đã thanh toán")
                         {
-                            <span class="badge bg-success">Đã thanh toán</span>
-                    
+                            <span class="badge bg-success">
+                                <i class="fa-solid fa-circle-check"></i> Đã thanh toán
+                            </span>
                             <br />
-                            <small>@item.NgayThanhToan?.ToString("dd/MM/yyyy")</small>
+                            <small class="text-muted">
+                                @item.NgayThanhToan?.ToString("dd/MM/yyyy")
+                            </small>
                         }
                         else
                         {
-                            <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                            <span class="badge bg-warning text-dark">
+                                <i class="fa-solid fa-hourglass-half"></i> Chờ xác nhận
+                            </span>
                         }
                     </td>
                     <td>
@@ -67,7 +78,9 @@
                         }
                         else
                         {
-                            <span class="text-muted">✔️ Đã thu</span>
+                            <span class="text-success">
+                                <i class="fa-solid fa-check-double"></i> Đã thu
+                            </span>
                         }
                     </td>
                 </tr>

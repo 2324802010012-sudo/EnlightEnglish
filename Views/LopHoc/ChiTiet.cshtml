@@ -1,12 +1,11 @@
 ﻿@model EnlightEnglishCenter.Models.LopHoc
-
 @{
     ViewData["Title"] = "Chi tiết lớp học";
 }
 
 <div class="container mt-5">
     <h2 class="fw-bold text-primary mb-4 text-center">
-        <i class="fa-solid fa-school me-2"></i> Thông tin lớp học
+        <i class="fa-solid fa-building me-2"></i> Thông tin lớp học
     </h2>
 
     @if (Model == null)
@@ -17,21 +16,24 @@
     }
     else
     {
+        <!-- 🏫 Thông tin lớp học -->
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
                 <h4 class="card-title text-success fw-bold">@Model.TenLop</h4>
-                <p><b>Khóa học:</b> @Model.MaKhoaHocNavigation?.TenKhoaHoc</p>
-                <p><b>Giáo viên:</b> @Model.MaGiaoVienNavigation?.NguoiDung?.HoTen</p>
-                <p><b>Ngày bắt đầu:</b> @Model.NgayBatDau?.ToString("dd/MM/yyyy")</p>
-                <p><b>Ngày kết thúc:</b> @Model.NgayKetThuc?.ToString("dd/MM/yyyy")</p>
-                <p><b>Sĩ số hiện tại:</b> @Model.SiSoHienTai / @Model.SiSoToiDa</p>
-                <p><b>Trạng thái:</b> @Model.TrangThai</p>
+                <p><b>Khóa học:</b> @ViewBag.KhoaHoc</p>
+                <p><b>Giáo viên:</b> @ViewBag.GiangVien</p>
+                <p><b>Ngày bắt đầu:</b> @ViewBag.NgayBatDau</p>
+                <p><b>Ngày kết thúc:</b> @ViewBag.NgayKetThuc</p>
+                <p><b>Sĩ số hiện tại:</b> @ViewBag.SiSoHienTai / @ViewBag.SiSoToiDa</p>
+                <p><b>Trạng thái:</b> @ViewBag.TrangThai</p>
             </div>
         </div>
 
+        <!-- 🕒 Thời khóa biểu -->
         <h5 class="fw-bold text-primary mb-3">
-            🕒 Thời khóa biểu (Lịch học)
+            <i class="fa-regular fa-clock me-2"></i> Thời khóa biểu (Lịch học)
         </h5>
+
         <table class="table table-bordered text-center align-middle shadow-sm">
             <thead class="table-light">
                 <tr>
@@ -57,47 +59,46 @@
                 else
                 {
                     <tr>
-                        <td colspan="4" class="text-muted">
-                            Chưa có lịch học cho lớp này.
-                        </td>
+                        <td colspan="4" class="text-muted">Chưa có lịch học cho lớp này.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- 📊 Kết quả học tập -->
+        <h5 class="fw-bold text-primary mb-3 mt-4">
+            <i class="fa-solid fa-star me-2"></i> Kết quả học tập
+        </h5>
+
+        <table class="table table-bordered text-center align-middle shadow-sm">
+            <thead class="table-light">
+                <tr>
+                    <th>Học viên</th>
+                    <th>Điểm giữa kỳ</th>
+                    <th>Điểm cuối kỳ</th>
+                    <th>Nhận xét</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.DiemSos != null && Model.DiemSos.Any())
+                {
+                    foreach (var diem in Model.DiemSos)
+                    {
+                        <tr>
+                            <td>@diem.MaHocVienNavigation?.HoTen</td>
+                            <td>@(diem.DiemGiuaKy?.ToString("0.0") ?? "-")</td>
+                            <td>@(diem.DiemCuoiKy?.ToString("0.0") ?? "-")</td>
+                            <td>@(string.IsNullOrWhiteSpace(diem.NhanXet) ? "Chưa có" : diem.NhanXet)</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-muted">Chưa có điểm nào được nhập cho lớp này.</td>
                     </tr>
                 }
             </tbody>
         </table>
     }
-    <h5 class="fw-bold text-primary mb-3 mt-4">
-        <i class="fa-solid fa-star me-2"></i> Kết quả học tập
-    </h5>
-
-    <table class="table table-bordered text-center align-middle shadow-sm">
-        <thead class="table-light">
-            <tr>
-                <th>Học viên</th>
-                <th>Điểm giữa kỳ</th>
-                <th>Điểm cuối kỳ</th>
-                <th>Nhận xét</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.DiemSos != null && Model.DiemSos.Any())
-            {
-                foreach (var diem in Model.DiemSos)
-                {
-                    <tr>
-                        <td>@diem.MaHocVienNavigation?.HoTen</td>
-                        <td>@(diem.DiemGiuaKy?.ToString("0.0") ?? "-")</td>
-                        <td>@(diem.DiemCuoiKy?.ToString("0.0") ?? "-")</td>
-                        <td>@(string.IsNullOrWhiteSpace(diem.NhanXet) ? "Chưa có" : diem.NhanXet)</td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="4" class="text-muted">Chưa có điểm nào được nhập cho lớp này.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
 </div>

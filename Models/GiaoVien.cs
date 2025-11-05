@@ -50,5 +50,8 @@ namespace EnlightEnglishCenter.Models
         [ForeignKey("MaNguoiDung")]
         [InverseProperty(nameof(NguoiDung.GiaoViens))]
         public virtual NguoiDung? NguoiDung { get; set; }
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal? LuongMoiBuoi { get; set; } = 0;
+
     }
 }

@@ -1,88 +1,107 @@
 ﻿@model IEnumerable<EnlightEnglishCenter.Models.KhoaHoc>
 @{
-    ViewData["Title"] = "Lịch khai giảng tháng này";
+    ViewData["Title"] = ViewBag.Title ?? "Lịch khai giảng";
 }
 
-<div class="container py-5">
-    <h2 class="fw-bold text-primary text-center mb-4">
-        <i class="fa-solid fa-calendar-days me-2"></i>Lịch khai giảng tháng này
-    </h2>
+<div class="container mt-4">
+    <!-- 🏷️ TIÊU ĐỀ -->
+    <h3 class="text-center text-primary fw-bold mb-4">
+        <i class="fa-solid fa-calendar-days me-2"></i> @ViewData["Title"]
+    </h3>
 
-    <table class="table table-bordered text-center align-middle shadow-sm">
-        <thead class="table-primary">
-            <tr>
-                <th>#</th>
-                <th>Tên khóa học</th>
-                <th>Trình độ</th>
-                <th>Ngày khai giảng</th>
-                <th>Thời lượng</th>
-                <th>Lịch học</th>
-                <th>Giảng viên</th>
-                <th>Trạng thái</th>
-                <th>Đăng ký</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                int stt = 1;
-                foreach (var k in Model)
+    <!-- 🗓️ NÚT CHUYỂN THÁNG -->
+    <div class="text-center mb-4">
+        <a href="/LichKhaiGiang/Index" class="btn btn-outline-primary btn-sm me-2">
+            <i class="fa fa-calendar-day me-1"></i> Tháng này (@DateTime.Now.Month/@DateTime.Now.Year)
+        </a>
+        <a href="/LichKhaiGiang/ThangSau" class="btn btn-outline-success btn-sm">
+            <i class="fa fa-calendar-plus me-1"></i> Tháng sau (@DateTime.Now.AddMonths(1).Month/@DateTime.Now.AddMonths(1).Year)
+        </a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <table class="table table-bordered table-striped text-center align-middle shadow-sm">
+            <thead class="table-primary">
+                <tr>
+                    <th>#</th>
+                    <th>Tên khóa học</th>
+                    <th>Trình độ</th>
+                    <th>Ngày khai giảng</th>
+                    <th>Thời lượng</th>
+                    <th>Lịch học</th>
+                    <th>Trạng thái</th>
+                    <th>Đăng ký</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int stt = 1;
+                }
+                @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@stt++</td>
-                        <td>@(k.TenKhoaHoc ?? "—")</td>
-                        <td>@(k.CapDo ?? "—")</td>
-                        <td>@(k.NgayBatDau?.ToString("dd/MM/yyyy") ?? "—")</td>
+                        <td>@(stt++)</td>
+                        <td>@item.TenKhoaHoc</td>
+                        <td>@(item.CapDo ?? "—")</td>
+                        <td>@item.NgayBatDau?.ToString("dd/MM/yyyy")</td>
+                        <td>@(item.ThoiLuong ?? "—")</td>
                         <td>
-                            @if (k.ThoiLuongTuan > 0)
+                            @if (item.NgayBatDau.HasValue && item.NgayKetThuc.HasValue)
                             {
-                                @($"{k.ThoiLuongTuan} tuần")
+                                @($"{item.NgayBatDau:dd/MM/yyyy} - {item.NgayKetThuc:dd/MM/yyyy}")
                             }
                             else
                             {
-                                @("—")
+                                @("Chưa cập nhật")
                             }
                         </td>
                         <td>
-                            @if (k.NgayBatDau.HasValue && k.NgayKetThuc.HasValue)
-                            {
-                                @($"{k.NgayBatDau.Value:dd/MM/yyyy} - {k.NgayKetThuc.Value:dd/MM/yyyy}")
-                            }
-                            else
-                            {
-                                @("—")
-                            }
-                        </td>
-                        <td>Chưa phân công</td>
-                        <td>
-                            @if (k.TrangThai == "Đang mở")
+                            @if (item.TrangThai == "Đang mở")
                             {
                                 <span class="badge bg-success">Đang mở</span>
                             }
-                            else if (k.TrangThai == "Đang học")
+                            else if (item.TrangThai == "Đang học")
                             {
-                                <span class="badge bg-warning text-dark">Đang học</span>
+                                <span class="badge bg-info text-dark">Đang học</span>
                             }
                             else
                             {
-                                <span class="badge bg-secondary">@((k.TrangThai ?? "Chưa xác định"))</span>
+                                <span class="badge bg-secondary">@item.TrangThai</span>
                             }
                         </td>
                         <td>
-                            <a asp-controller="TestDauVao"
-                               asp-action="DangKy"
-                               asp-route-maKhoaHoc="@k.MaKhoaHoc"
+                            <a href="/TestDauVao/DangKy?maKhoaHoc=@item.MaKhoaHoc"
                                class="btn btn-outline-primary btn-sm">
-                                <i class="fa-solid fa-pen-to-square me-1"></i>Đăng ký Test
+                                <i class="fa fa-pen me-1"></i> Đăng ký Test
                             </a>
                         </td>
                     </tr>
                 }
-            }
-            else
+            </tbody>
+        </table>
+
+        <!-- 🔽 NÚT XEM THÊM / THU GỌN -->
+        <div class="text-center mt-3">
+            @if (ViewBag.ShowAll == false && ViewBag.Total > 3)
             {
-                <tr><td colspan="9" class="text-muted">⛔ Không có khóa học nào đang mở.</td></tr>
+                <a href="/LichKhaiGiang/TatCa" class="btn btn-outline-primary btn-sm">
+                    <i class="fa fa-list"></i> Xem tất cả (@ViewBag.Total)
+                </a>
             }
-        </tbody>
-    </table>
+            else if (ViewBag.ShowAll == true)
+            {
+                <a href="/LichKhaiGiang/Index" class="btn btn-outline-secondary btn-sm">
+                    <i class="fa fa-chevron-up"></i> Thu gọn danh sách
+                </a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <i class="fa fa-info-circle me-2"></i>
+            Không có khóa học nào đang mở trong thời gian này.
+        </div>
+    }
 </div>

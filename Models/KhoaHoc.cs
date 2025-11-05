@@ -31,6 +31,8 @@ namespace EnlightEnglishCenter.Models
         [StringLength(10)]
         public string? LichHoc { get; set; }
 
+        [StringLength(20)]
+        public string? LoaiKhoaHoc { get; set; }  // Test / ChinhThuc
 
         [StringLength(20)]
         public string? TrangThai { get; set; } = "Đang mở";

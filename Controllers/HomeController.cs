@@ -17,7 +17,7 @@ namespace EnlightEnglishCenter.Controllers
             _context = context;
         }
 
-  
+
         public IActionResult Index()
         {
             return View();
@@ -43,30 +43,31 @@ namespace EnlightEnglishCenter.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DangKyHoTro(string HoTen, string Email, string SoDienThoai)
         {
-            if (string.IsNullOrWhiteSpace(HoTen) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(SoDienThoai))
+            if (string.IsNullOrWhiteSpace(HoTen) || string.IsNullOrWhiteSpace(SoDienThoai))
             {
-                TempData["Error"] = "Vui lòng nhập đầy đủ thông tin!";
+                TempData["Error"] = "⚠️ Vui lòng nhập đầy đủ thông tin!";
                 return RedirectToAction("Index");
             }
 
-            var dk = new DangKyTuVan
+            // ✅ Tạo bản ghi mới trong bảng LienHeKhachHang (bảng của Lễ Tân)
+            var lienHe = new LienHeKhachHang
             {
                 HoTen = HoTen.Trim(),
-                Email = Email.Trim(),
-                SoDienThoai = SoDienThoai.Trim(),
-                TrangThai = "Chưa liên hệ"
+                Email = Email?.Trim(),
+                DienThoai = SoDienThoai.Trim(),
+                TrangThai = "Đăng ký tư vấn",   // 👈 để hiển thị đúng cột
+                NgayLienHe = DateTime.Now,
+                GhiChu = "Đăng ký tư vấn từ trang chủ"
             };
 
-            _context.DangKyTuVan.Add(dk);
+            _context.LienHeKhachHang.Add(lienHe);
             _context.SaveChanges();
 
-            TempData["Success"] = "Gửi đăng ký thành công! Chúng tôi sẽ liên hệ trong 24 giờ.";
+            TempData["Success"] = "✅ Đăng ký thành công! Bộ phận Lễ Tân sẽ liên hệ với bạn sớm.";
             return RedirectToAction("Index");
         }
     }
-
-
-
 }
