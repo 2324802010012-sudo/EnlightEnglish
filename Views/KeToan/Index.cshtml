@@ -1,37 +1,130 @@
-﻿<div class="container py-5 text-center">
-    <h2 class="fw-bold text-warning">
-        <i class="fa-solid fa-calculator me-2"></i> Trang kế toán
-    </h2>
-    <p class="text-muted">Theo dõi học phí, lương giáo viên và báo cáo tài chính.</p>
+﻿@{
+    ViewData["Title"] = "Kế toán";
+    Layout = "~/Views/Shared/KeToanLayout.cshtml";
+}
 
-    <div class="row mt-4">
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary m-0">
+            <i class="fa-solid fa-coins me-2"></i> Bảng điều khiển Kế toán
+        </h3>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left me-1"></i> Trang chủ
+        </a>
+    </div>
+
+    <div class="row g-3">
         <!-- Quản lý học phí -->
         <div class="col-md-6">
-            <a href="@Url.Action("HocPhi", "KeToan")" class="text-decoration-none">
-                <div class="card border-warning shadow-sm p-3 hover-shadow">
-                    <i class="fa-solid fa-money-bill-wave fa-3x text-warning mb-2"></i>
-                    <h5 class="text-dark">Quản lý học phí</h5>
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex">
+                    <div class="me-3 flex-shrink-0">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                             style="width:56px;height:56px;background:#e7f1ff;">
+                            <i class="fa-solid fa-file-invoice-dollar fa-lg text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="card-title fw-semibold mb-1">Quản lý học phí</h5>
+                        <p class="text-muted mb-3">
+                            Xem/lọc đơn thu, xác nhận thanh toán, theo dõi trạng thái học phí theo lớp/khóa.
+                        </p>
+                        <div class="d-flex gap-2">
+                            <a asp-controller="KeToan" asp-action="HocPhi" class="btn btn-primary">
+                                <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Vào trang
+                            </a>
+                            <a asp-controller="KeToan" asp-action="HocPhi" asp-route-TrangThai="ChoXacNhan"
+                               class="btn btn-outline-primary">
+                                <i class="fa-solid fa-hourglass-half me-1"></i> Đơn chờ xác nhận
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </a>
+                <div class="card-footer bg-white">
+                    <small class="text-muted">
+                        Mẹo: lọc theo ngày tạo/ngày TT, HV, lớp, khóa để xuất danh sách nhanh.
+                    </small>
+                </div>
+            </div>
         </div>
 
         <!-- Tính lương giáo viên -->
         <div class="col-md-6">
-            <a href="@Url.Action("TinhLuong", "KeToan")" class="text-decoration-none">
-                <div class="card border-success shadow-sm p-3 hover-shadow">
-                    <i class="fa-solid fa-hand-holding-dollar fa-3x text-success mb-2"></i>
-                    <h5 class="text-dark">Tính lương giáo viên</h5>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-6">
-            <a asp-action="BaoCaoTaiChinh" class="card text-decoration-none border-info shadow-sm hover-shadow">
-                <div class="card-body text-center">
-                    <i class="fa-solid fa-chart-line fa-2x text-info mb-3"></i>
-                    <h5 class="text-info fw-bold">Báo cáo tài chính</h5>
-                </div>
-            </a>
-        </div>
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex">
+                    <div class="me-3 flex-shrink-0">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                             style="width:56px;height:56px;background:#e8fff3;">
+                            <i class="fa-solid fa-calculator fa-lg text-success"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="card-title fw-semibold mb-1">Tính lương giáo viên</h5>
+                        <p class="text-muted mb-3">
+                            Tính lương theo số buổi dạy trong tháng, điều chỉnh rate theo GV, lưu bảng lương.
+                        </p>
 
+                        <form asp-controller="KeToan" asp-action="TinhLuong" method="get" class="row g-2">
+                            <div class="col-4">
+                                <label class="form-label small mb-1">Tháng</label>
+                                <input class="form-control form-control-sm" type="number" name="thang"
+                                       min="1" max="12" value="@(DateTime.Today.Month)" />
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label small mb-1">Năm</label>
+                                <input class="form-control form-control-sm" type="number" name="nam"
+                                       min="2000" max="2100" value="@(DateTime.Today.Year)" />
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label small mb-1">Rate mặc định</label>
+                                <input class="form-control form-control-sm" type="number" name="defaultRate"
+                                       step="1000" value="200000" />
+                            </div>
+                            <div class="col-12 text-end">
+                                <button class="btn btn-success">
+                                    <i class="fa-solid fa-calculator me-1"></i> Tính lương
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <small class="text-muted">
+                        Mẹo: có thể cập nhật số buổi/rate trên bảng kết quả trước khi lưu.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Số liệu nhanh -->
+    <div class="row g-3 mt-3">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Đơn chờ xác nhận</div>
+                    <div class="fs-4 fw-bold">@((object?)ViewBag.PendingCount ?? "-")</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Đã thanh toán (tháng này)</div>
+                    <div class="fs-4 fw-bold">@((object?)ViewBag.MonthPaidCount ?? "-")</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Doanh thu (tháng này)</div>
+                    <div class="fs-4 fw-bold">
+                        @String.Format("{0:N0} đ", (ViewBag.MonthRevenue ?? 0m))
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

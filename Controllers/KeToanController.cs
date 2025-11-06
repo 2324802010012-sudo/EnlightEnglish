@@ -1,5 +1,6 @@
 ﻿using EnlightEnglishCenter.Data;
 using EnlightEnglishCenter.Models;
+using EnlightEnglishCenter.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -18,68 +19,113 @@ namespace EnlightEnglishCenter.Controllers
         // ==========================================================
         // 🏠 TRANG CHÍNH
         // ==========================================================
-        public IActionResult Index()
+       
+        // =========== HỌC PHÍ ===========
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            ViewData["Title"] = "Trang kế toán";
-            return View();
-        }
-        // ======================= 💵 DANH SÁCH HỌC PHÍ =======================
-        public IActionResult HocPhi()
-        {
-            var hocPhi = (from hp in _context.HocPhis
-                          join hv in _context.HocViens on hp.MaHocVien equals hv.MaHocVien
-                          join lop in _context.LopHocs on hp.MaLop equals lop.MaLop
-                          select new
-                          {
-                              hp.MaHocPhi,
-                              HocVien = hv.HoTen,
-                              Lop = lop.TenLop,
-                              hp.SoTienPhaiDong,
-                              hp.TrangThai,
-                              hp.NgayDongCuoi
-                          })
-                          .OrderByDescending(x => x.MaHocPhi)
-                          .ToList();
+            var today = DateTime.Today;
+            var first = new DateTime(today.Year, today.Month, 1);
+            var next = first.AddMonths(1);
 
-            return View(hocPhi);
+            ViewBag.PendingCount = await _context.DonHocPhis
+                .CountAsync(d => d.TrangThai != "Đã thanh toán");
+
+            ViewBag.MonthPaidCount = await _context.DonHocPhis
+                .CountAsync(d => d.TrangThai == "Đã thanh toán"
+                              && d.NgayThanhToan >= first
+                              && d.NgayThanhToan < next);
+
+            ViewBag.MonthRevenue = await _context.DonHocPhis
+                .Where(d => d.TrangThai == "Đã thanh toán"
+                         && d.NgayThanhToan >= first
+                         && d.NgayThanhToan < next)
+                .SumAsync(d => (decimal?)d.TongTien) ?? 0m;
+
+            return View(); // trả về Views/KeToan/Index.cshtml
         }
 
-        // ======================= 💰 XÁC NHẬN ĐÃ THANH TOÁN =======================
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult CapNhatHocPhi(int id)
+        [HttpGet]
+        public async Task<IActionResult> HocPhi([FromQuery] FinanceFilterVm f)
         {
-            var hocPhi = _context.HocPhis.FirstOrDefault(x => x.MaHocPhi == id);
-            if (hocPhi == null)
+            var q = _context.DonHocPhis
+                .AsNoTracking()
+                .Include(d => d.HocVien)
+                .Include(d => d.LopHoc).ThenInclude(l => l.MaKhoaHocNavigation)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(f.Keyword))
             {
-                TempData["Error"] = "Không tìm thấy bản ghi học phí!";
+                var kw = f.Keyword.Trim();
+                q = q.Where(d =>
+                    d.MaDon.ToString().Contains(kw) ||
+                    EF.Functions.Like(d.HocVien!.HoTen ?? "", $"%{kw}%") ||
+                    EF.Functions.Like(d.LopHoc!.TenLop ?? "", $"%{kw}%") ||
+                    EF.Functions.Like(d.LopHoc!.MaKhoaHocNavigation!.TenKhoaHoc ?? "", $"%{kw}%"));
+            }
+
+            if (f.From.HasValue) q = q.Where(d => d.NgayTao >= f.From.Value.Date);
+            if (f.To.HasValue) q = q.Where(d => d.NgayTao < f.To.Value.Date.AddDays(1));
+
+            if (string.Equals(f.TrangThai, "ChoXacNhan", StringComparison.OrdinalIgnoreCase))
+                q = q.Where(d => d.TrangThai != "Đã thanh toán");
+            else if (string.Equals(f.TrangThai, "DaThanhToan", StringComparison.OrdinalIgnoreCase))
+                q = q.Where(d => d.TrangThai == "Đã thanh toán");
+
+            var items = await q.OrderByDescending(d => d.NgayTao).ToListAsync();
+            return View(new FeeListVm { Items = items, Filter = f, Total = items.Count });
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> XacNhanHocPhi(int id)
+        {
+            var don = await _context.DonHocPhis
+                .Include(d => d.HocVien)
+                .Include(d => d.LopHoc).ThenInclude(l => l.MaKhoaHocNavigation)
+                .FirstOrDefaultAsync(d => d.MaDon == id);
+
+            if (don == null)
+            {
+                TempData["Error"] = "Không tìm thấy đơn học phí!";
+                return RedirectToAction(nameof(HocPhi));
+            }
+            if (don.TrangThai == "Đã thanh toán")
+            {
+                TempData["Success"] = "Đơn này đã xác nhận.";
                 return RedirectToAction(nameof(HocPhi));
             }
 
-            // ✅ Lấy tên học viên & lớp từ các bảng liên quan
-            var hocVien = _context.HocViens.FirstOrDefault(h => h.MaHocVien == hocPhi.MaHocVien);
-            var lop = _context.LopHocs.FirstOrDefault(l => l.MaLop == hocPhi.MaLop);
+            using var tx = await _context.Database.BeginTransactionAsync();
 
-            // ✅ Cập nhật học phí
-            hocPhi.TrangThai = "Đã thanh toán";
-            hocPhi.NgayDongCuoi = DateTime.Now;
+            // cập nhật đơn
+            don.TrangThai = "Đã thanh toán";
+            don.NgayThanhToan = DateTime.Now;
 
-            _context.SaveChanges();
+            // cập nhật sĩ số lớp (nếu có)
+            var lop = await _context.LopHocs.FirstOrDefaultAsync(l => l.MaLop == don.MaLop);
+            if (lop != null)
+            {
+                var cur = lop.SiSoHienTai ?? 0;
+                var max = lop.SiSoToiDa ?? int.MaxValue;
+                if (cur < max) lop.SiSoHienTai = cur + 1;
+            }
 
-            // ✅ Ghi vào báo cáo doanh thu
-            var baoCao = new BaoCao
+            // thêm đăng ký lớp nếu chưa có
+
+
+            // ghi báo cáo (DbSet tên BaoCaos – KHÔNG phải BaoCaoes)
+            _context.BaoCaos.Add(new BaoCao
             {
                 LoaiBaoCao = "Doanh thu học phí",
-                NoiDung = $"Kế toán xác nhận học viên {hocVien?.HoTen ?? "(Không rõ)"} " +
-                          $"đã thanh toán {hocPhi.SoTienPhaiDong:N0} đ cho lớp {lop?.TenLop ?? "(Không rõ)"}",
-                NgayLap = DateTime.Now,
-                NguoiLap = HttpContext.Session.GetInt32("MaNguoiDung")
-            };
+                NoiDung = $"HV {don.HocVien?.HoTen} thanh toán {don.TongTien:N0} đ cho lớp {don.LopHoc?.TenLop} ({don.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc}).",
+                NguoiLap = HttpContext.Session.GetInt32("MaNguoiDung"),
+                NgayLap = DateTime.Now
+            });
 
-            _context.BaoCaos.Add(baoCao);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+            await tx.CommitAsync();
 
-            TempData["Success"] = $"✅ Đã xác nhận thanh toán cho học viên {hocVien?.HoTen ?? "(Không rõ)"}!";
+            TempData["Success"] = "Đã xác nhận thanh toán.";
             return RedirectToAction(nameof(HocPhi));
         }
         // ===============================
@@ -245,6 +291,148 @@ namespace EnlightEnglishCenter.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<IActionResult> ChiTietDonHocPhi(int id)
+        {
+            var don = await _context.DonHocPhis
+                .AsNoTracking()
+                .Include(d => d.HocVien)
+                .Include(d => d.LopHoc).ThenInclude(l => l.MaKhoaHocNavigation)
+                .FirstOrDefaultAsync(d => d.MaDon == id);
+
+            if (don == null)
+            {
+                TempData["Error"] = $"Không tìm thấy đơn {id}.";
+                return RedirectToAction(nameof(HocPhi));
+            }
+
+            var vm = new FeeDetailVm
+            {
+                MaDon = don.MaDon.ToString(),
+                NgayTao = don.NgayTao,
+                NgayThanhToan = don.NgayThanhToan,
+                TrangThai = don.TrangThai ?? "Chờ xác nhận",
+
+                HocVien = new FeeStudentVm
+                {
+                    HoTen = don.HocVien?.HoTen ?? "(Không rõ)",
+                    Email = don.HocVien?.Email,
+                    SoDienThoai = don.HocVien?.SoDienThoai,
+                    // ✅ MaHocVien là int => KHÔNG dùng "?."
+                    MaHocVien = don.HocVien != null ? don.HocVien.MaHocVien.ToString() : null
+                },
+                LopHoc = new FeeClassVm
+                {
+                    TenLop = don.LopHoc?.TenLop,
+                    TenKhoaHoc = don.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc,
+                    // ✅ DB không có CaHoc → dùng LichHoc (hoặc ThuTrongTuan)
+                    CaHoc = don.LopHoc?.LichHoc
+                },
+                // ✅ DB không có bảng chi tiết khoản phí → tạo 1 dòng mặc định
+                Items = new List<FeeItemVm>
+        {
+            new FeeItemVm {
+                NoiDung = $"Học phí lớp {don.LopHoc?.TenLop} ({don.LopHoc?.MaKhoaHocNavigation?.TenKhoaHoc})",
+                SoLuong = 1,
+                DonGia = don.TongTien
+            }
+        },
+                GiamTru = 0,
+                GhiChu = null,
+                NhanVienLap = null
+            };
+
+            // ✅ Không có bảng BiênLai → nếu đã thanh toán thì tạo 1 payment từ NgayThanhToan
+            if (don.NgayThanhToan.HasValue)
+            {
+                vm.Payments.Add(new FeePaymentVm
+                {
+                    ThoiGian = don.NgayThanhToan.Value,
+                    SoTien = don.TongTien,
+                    HinhThuc = "Thanh toán 1 lần",
+                    GhiChu = null
+                });
+            }
+
+            ViewData["Title"] = $"Đơn học phí #{vm.MaDon}";
+            return View(vm);
+        }
+        // GET: /KeToan/TaoDonHocPhi
+        [HttpGet]
+        public IActionResult TaoDonHocPhi()
+        {
+            // TODO: trả về form tạo đơn
+            return View();
+        }
+
+        // POST: /KeToan/TaoDonHocPhi
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> TaoDonHocPhi(DonHocPhi model)
+        {
+            if (!ModelState.IsValid) return View(model);
+            model.NgayTao = DateTime.Now;
+            model.TrangThai = "Chờ xác nhận";
+            _context.DonHocPhis.Add(model);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Đã thêm đơn học phí.";
+            return RedirectToAction(nameof(HocPhi));
+        }
+
+        // GET: /KeToan/SuaDonHocPhi/{id}
+        [HttpGet]
+        public async Task<IActionResult> SuaDonHocPhi(int id)
+        {
+            var don = await _context.DonHocPhis.FindAsync(id);
+            if (don == null) { TempData["Error"] = "Không tìm thấy đơn."; return RedirectToAction(nameof(HocPhi)); }
+            if (string.Equals(don.TrangThai, "Đã thanh toán", StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Đơn đã thanh toán, không thể sửa.";
+                return RedirectToAction(nameof(HocPhi));
+            }
+            return View(don);
+        }
+
+        // POST: /KeToan/SuaDonHocPhi/{id}
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> SuaDonHocPhi(int id, DonHocPhi model)
+        {
+            if (id != model.MaDon) { return BadRequest(); }
+            var don = await _context.DonHocPhis.FindAsync(id);
+            if (don == null) { TempData["Error"] = "Không tìm thấy đơn."; return RedirectToAction(nameof(HocPhi)); }
+            if (string.Equals(don.TrangThai, "Đã thanh toán", StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Đơn đã thanh toán, không thể sửa.";
+                return RedirectToAction(nameof(HocPhi));
+            }
+
+            // TODO: cập nhật các trường cho phép sửa (ví dụ TongTien, MaLop, ghi chú…)
+            don.TongTien = model.TongTien;
+            don.MaLop = model.MaLop;
+           
+
+            _context.Update(don);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Đã cập nhật đơn học phí.";
+            return RedirectToAction(nameof(HocPhi));
+        }
+
+        // POST: /KeToan/XoaDonHocPhi
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> XoaDonHocPhi(int id)
+        {
+            var don = await _context.DonHocPhis.FindAsync(id);
+            if (don == null) { TempData["Error"] = "Không tìm thấy đơn."; return RedirectToAction(nameof(HocPhi)); }
+            if (string.Equals(don.TrangThai, "Đã thanh toán", StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Đơn đã thanh toán, không thể xóa.";
+                return RedirectToAction(nameof(HocPhi));
+            }
+
+            _context.DonHocPhis.Remove(don);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Đã xóa đơn học phí.";
+            return RedirectToAction(nameof(HocPhi));
+        }
 
         // ==========================================================
         // ⚙️ TRANG TÍNH LƯƠNG TỰ ĐỘNG
@@ -340,6 +528,7 @@ namespace EnlightEnglishCenter.Controllers
                     }
                 }
             }
+
 
             _context.SaveChanges();
 
