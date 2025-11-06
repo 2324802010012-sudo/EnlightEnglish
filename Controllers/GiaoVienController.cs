@@ -1,5 +1,6 @@
 ﻿using EnlightEnglishCenter.Data;
 using EnlightEnglishCenter.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -278,14 +279,33 @@ namespace EnlightEnglishCenter.Controllers
         }
 
         // ------------------ 📁 TÀI LIỆU GIẢNG DẠY: DANH SÁCH + TÌM KIẾM ------------------
+    
+
+        // ------------------ ⬆️ UPLOAD TÀI LIỆU ------------------
         [HttpGet]
+        [AllowAnonymous] // ⬅️ Cho phép truy cập không cần login
         public IActionResult TaiLieuGiangDay(string? search, int? lopId)
         {
-            // Trang danh sách công khai (không cần đăng nhập)
-            var lopList = _context.LopHocs.AsNoTracking().OrderBy(l => l.TenLop).ToList();
-            ViewBag.LopHocList = new SelectList(lopList, "MaLop", "TenLop", lopId);
+            var maGv = HttpContext.Session.GetInt32("MaGiaoVien");
+            if (maGv == null)
+            {
+                TempData["Error"] = "⚠️ Bạn cần đăng nhập với tài khoản giảng viên.";
+                return RedirectToAction("Login", "Account");
+            }
 
-            var q = _context.TaiLieus.AsNoTracking();
+            var lopDangDay = _context.PhanCongGiangDays
+                .Include(p => p.LopHoc)
+                .Where(p => p.MaGiaoVien == maGv)
+                .Select(p => p.LopHoc)
+                .Distinct()
+                .OrderBy(l => l.TenLop)
+                .ToList();
+
+            // ✅ tránh null
+            ViewBag.LopHocList = new SelectList(lopDangDay ?? new List<LopHoc>(), "MaLop", "TenLop");
+
+            var q = _context.TaiLieus
+                .Where(t => t.MaGiaoVien == maGv);
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -295,6 +315,7 @@ namespace EnlightEnglishCenter.Controllers
                     (t.MoTa ?? "").Contains(s) ||
                     (t.DuongDan ?? "").Contains(s));
             }
+
             if (lopId.HasValue)
                 q = q.Where(t => t.MaLop == lopId.Value);
 
@@ -303,16 +324,24 @@ namespace EnlightEnglishCenter.Controllers
             return View(list);
         }
 
+
         // ------------------ ⬆️ UPLOAD TÀI LIỆU ------------------
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public IActionResult UploadTaiLieu(string tenTaiLieu, string? moTa, int? maLop, IFormFile file)
         {
-            var gate = RequireGiaoVien(Url.Action(nameof(TaiLieuGiangDay)));
-            if (gate != null) return gate;
+            var maGv = HttpContext.Session.GetInt32("MaGiaoVien");
+            if (maGv == null) return RedirectToAction("Login", "Account");
 
-            var maGv = CurrentMaGiaoVien();
+            // 4) Nếu vẫn không xác định được GV -> báo lỗi nhẹ nhàng (không redirect Login)
+            if (ownerGv == null)
+            {
+                TempData["Err"] = "Không xác định được giảng viên. Hãy đăng nhập hoặc chọn lớp hợp lệ.";
+                return RedirectToAction(nameof(TaiLieuGiangDay));
+            }
 
+            // 5) Validate file
             if (file == null || file.Length == 0)
             {
                 TempData["Err"] = "Vui lòng chọn file.";
@@ -332,6 +361,7 @@ namespace EnlightEnglishCenter.Controllers
                 return RedirectToAction(nameof(TaiLieuGiangDay));
             }
 
+            // 6) Lưu file
             var folder = Path.Combine(_env.WebRootPath, "uploads", "tailieu");
             if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
 
@@ -341,30 +371,33 @@ namespace EnlightEnglishCenter.Controllers
             var path = Path.Combine(folder, fileName);
             using (var st = System.IO.File.Create(path)) file.CopyTo(st);
 
+            // 7) Lưu DB
             var entity = new TaiLieu
             {
                 TenTaiLieu = string.IsNullOrWhiteSpace(tenTaiLieu) ? file.FileName : tenTaiLieu.Trim(),
                 MoTa = string.IsNullOrWhiteSpace(moTa) ? null : moTa.Trim(),
                 DuongDan = $"/uploads/tailieu/{fileName}",
-                MaGiaoVien = maGv,
+                MaGiaoVien = ownerGv, // <— dùng GV đã xác định
                 MaLop = maLop,
                 NgayTaiLen = DateTime.UtcNow
             };
 
             _context.TaiLieus.Add(entity);
             _context.SaveChanges();
+
             TempData["Ok"] = "Tải lên thành công.";
             return RedirectToAction(nameof(TaiLieuGiangDay));
         }
 
         // ------------------ ⬇️ DOWNLOAD ------------------
+        // (Tuỳ chọn) Cho phép tải không cần login để tránh bị đá:
+        // Nếu muốn giữ ràng buộc theo GV, bỏ [AllowAnonymous] và lọc theo MaGiaoVien như cũ.
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult DownloadTaiLieu(int id)
         {
-            var gate = RequireGiaoVien(Url.Action(nameof(TaiLieuGiangDay)));
-            if (gate != null) return gate;
-
-            var maGv = CurrentMaGiaoVien();
+            var maGv = HttpContext.Session.GetInt32("MaGiaoVien");
+            if (maGv == null) return RedirectToAction("Login", "Account");
 
             var tl = _context.TaiLieus.FirstOrDefault(x => x.MaTaiLieu == id && x.MaGiaoVien == maGv);
             if (tl == null || string.IsNullOrEmpty(tl.DuongDan)) return NotFound();
@@ -373,35 +406,23 @@ namespace EnlightEnglishCenter.Controllers
             if (!System.IO.File.Exists(physical)) return NotFound("File không tồn tại.");
 
             var bytes = System.IO.File.ReadAllBytes(physical);
-            var mime = GetMimeFromExt(Path.GetExtension(physical));
+
+            // Lấy MIME theo đuôi file
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(physical, out var mime))
+                mime = "application/octet-stream";
+
             return File(bytes, mime, tl.TenTaiLieu ?? Path.GetFileName(physical));
         }
 
-        private static string GetMimeFromExt(string? ext)
-        {
-            ext = (ext ?? "").ToLowerInvariant();
-            return ext switch
-            {
-                ".pdf" => "application/pdf",
-                ".doc" => "application/msword",
-                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                ".ppt" => "application/vnd.ms-powerpoint",
-                ".pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                ".xls" => "application/vnd.ms-excel",
-                ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                _ => "application/octet-stream"
-            };
-        }
-
         // ------------------ 🗑️ XÓA ------------------
+        // Giữ bảo mật: chỉ GV của tài liệu (trong session) mới được xóa
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult XoaTaiLieu(int id)
         {
-            var gate = RequireGiaoVien(Url.Action(nameof(TaiLieuGiangDay)));
-            if (gate != null) return gate;
-
-            var maGv = CurrentMaGiaoVien();
+            var maGv = HttpContext.Session.GetInt32("MaGiaoVien");
+            if (maGv == null) return RedirectToAction("Login", "Account");
 
             var tl = _context.TaiLieus.FirstOrDefault(x => x.MaTaiLieu == id && x.MaGiaoVien == maGv);
             if (tl == null) return NotFound();
