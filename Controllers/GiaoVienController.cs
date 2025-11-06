@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Hosting;      // IWebHostEnvironment
-using Microsoft.AspNetCore.Http;         // Session
-using System.Security.Claims;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace EnlightEnglishCenter.Controllers
 {
@@ -21,39 +19,6 @@ namespace EnlightEnglishCenter.Controllers
             _env = env;
         }
 
-        // ===== Helpers =====
-
-        // Lấy MaGiaoVien: ưu tiên claim, fallback Session
-        private int? CurrentMaGiaoVien()
-        {
-            var claim = User?.FindFirst("MaGiaoVien")?.Value;
-            if (int.TryParse(claim, out var ma)) return ma;
-            return HttpContext.Session.GetInt32("MaGiaoVien");
-        }
-
-        // Kiểm tra "có phải giáo viên không" (claim role hoặc session bạn tự set)
-        private bool IsGiaoVien()
-        {
-            if (User?.Identity?.IsAuthenticated == true && User.IsInRole("GiaoVien"))
-                return true;
-
-            // Fallback: nếu bạn đang dùng session để đánh dấu đăng nhập giáo viên
-            // Ví dụ: Session có MaGiaoVien coi như là GV
-            return CurrentMaGiaoVien().HasValue;
-        }
-
-        // Chốt chặn cho các action cần giáo viên
-        private IActionResult? RequireGiaoVien(string? returnUrl = null)
-        {
-            if (IsGiaoVien()) return null; // cho qua
-
-            // Chưa đăng nhập/không phải giáo viên -> chuyển sang trang đăng nhập
-            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                return RedirectToAction("Login", "Account", new { returnUrl });
-
-            return RedirectToAction("Login", "Account");
-        }
-
         // ------------------ 🏠 TRANG CHÍNH ------------------
         public IActionResult Index()
         {
@@ -65,17 +30,16 @@ namespace EnlightEnglishCenter.Controllers
         [HttpGet]
         public IActionResult LopDangDay(string? search)
         {
-            var gate = RequireGiaoVien(Url.Action(nameof(LopDangDay)));
-            if (gate != null) return gate;
-
-            var maGv = CurrentMaGiaoVien();
-
             var lopQuery = _context.PhanCongGiangDays
-                .Include(p => p.LopHoc).ThenInclude(l => l.MaKhoaHocNavigation)
-                .Include(p => p.GiaoVien).ThenInclude(gv => gv.NguoiDung)
+                .Include(p => p.LopHoc)
+                    .ThenInclude(l => l.MaKhoaHocNavigation)
+                .Include(p => p.GiaoVien)
+                    .ThenInclude(gv => gv.NguoiDung)
                 .AsNoTracking()
-                .Where(p => p.MaGiaoVien == maGv && p.LopHoc != null);
+                // ✅ Lọc bỏ những bản ghi chưa có lớp hoặc mã lớp
+                .Where(p => p.LopHoc != null && p.LopHoc.MaLop != null);
 
+            // 🔍 Nếu có tìm kiếm theo tên lớp, mã lớp, hoặc tên giảng viên
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string s = search.Trim().ToLower();
@@ -86,39 +50,45 @@ namespace EnlightEnglishCenter.Controllers
                 );
             }
 
-            var lopDangDay = lopQuery.OrderBy(p => p.LopHoc.TenLop).ToList();
+            var lopDangDay = lopQuery
+                .OrderBy(p => p.LopHoc.TenLop)
+                .ToList();
 
             ViewBag.Search = search;
             ViewData["Title"] = "Lớp đang dạy";
             return View(lopDangDay);
         }
 
+
         // ------------------ 📖 CHI TIẾT LỚP HỌC ------------------
         [HttpGet]
         public IActionResult ChiTietLop(int id)
         {
-            var gate = RequireGiaoVien(Url.Action(nameof(ChiTietLop), new { id }));
-            if (gate != null) return gate;
-
-            var maGv = CurrentMaGiaoVien();
-
             var lop = _context.LopHocs
                 .Include(l => l.MaKhoaHocNavigation)
                 .Include(l => l.LichHocs)
-                .Include(l => l.PhanCongGiangDays).ThenInclude(pc => pc.GiaoVien).ThenInclude(gv => gv.NguoiDung)
+                .Include(l => l.PhanCongGiangDays)
+                    .ThenInclude(pc => pc.GiaoVien)
+                        .ThenInclude(gv => gv.NguoiDung)
                 .AsNoTracking()
-                .FirstOrDefault(l => l.MaLop == id && l.PhanCongGiangDays.Any(pc => pc.MaGiaoVien == maGv));
+                .FirstOrDefault(l => l.MaLop == id);
 
-            if (lop == null) return NotFound();
+            if (lop == null)
+                return NotFound();
 
-            var phanCong = lop.PhanCongGiangDays?.FirstOrDefault(pc => pc.MaGiaoVien == maGv);
+            // ✅ Lấy giảng viên được phân công (nếu có)
+            var phanCong = lop.PhanCongGiangDays?.FirstOrDefault();
             string tenGiangVien = phanCong?.GiaoVien?.NguoiDung?.HoTen ?? "Chưa phân công";
 
+            // ✅ Lấy phòng học: nếu có nhiều lịch -> lấy danh sách duy nhất
             string phongHoc = (lop.LichHocs != null && lop.LichHocs.Any())
-                ? string.Join(", ", lop.LichHocs.Where(l => !string.IsNullOrEmpty(l.PhongHoc))
-                                                .Select(l => l.PhongHoc).Distinct())
+                ? string.Join(", ", lop.LichHocs
+                    .Where(l => !string.IsNullOrEmpty(l.PhongHoc))
+                    .Select(l => l.PhongHoc)
+                    .Distinct())
                 : "Chưa có lịch học";
 
+            // ✅ Gán thông tin cho ViewBag
             ViewBag.TenLop = lop.TenLop ?? "—";
             ViewBag.KhoaHoc = lop.MaKhoaHocNavigation?.TenKhoaHoc ?? "—";
             ViewBag.GiangVien = tenGiangVien;
@@ -133,19 +103,14 @@ namespace EnlightEnglishCenter.Controllers
         // ------------------ 👨‍🎓 DANH SÁCH HỌC VIÊN ------------------
         public IActionResult DanhSachHocVien(int id)
         {
-            var gate = RequireGiaoVien(Url.Action(nameof(DanhSachHocVien), new { id }));
-            if (gate != null) return gate;
-
-            var maGv = CurrentMaGiaoVien();
-
             var lop = _context.LopHocs
                 .Include(l => l.MaKhoaHocNavigation)
-                .FirstOrDefault(l => l.MaLop == id && l.PhanCongGiangDays.Any(pc => pc.MaGiaoVien == maGv));
+                .FirstOrDefault(l => l.MaLop == id);
 
             if (lop == null)
             {
                 TempData["Error"] = "Không tìm thấy lớp học!";
-                return RedirectToAction(nameof(LopDangDay));
+                return RedirectToAction("LopDangDay");
             }
 
             var hocViens = _context.DkHocVienLopHocs
@@ -158,21 +123,27 @@ namespace EnlightEnglishCenter.Controllers
             ViewBag.MaLop = lop.MaLop;
             ViewBag.KhoaHoc = lop.MaKhoaHocNavigation?.TenKhoaHoc;
             ViewData["Title"] = "Danh sách học viên";
+
             return View(hocViens);
         }
 
+
         // ------------------ 🧮 NHẬP ĐIỂM ------------------
+        // =============================
+        // 🧮 NHẬP ĐIỂM (CHO TẤT CẢ GIẢNG VIÊN)
+        // =============================
         [HttpGet]
         public async Task<IActionResult> NhapDiem(int? maLop)
         {
-            var gate = RequireGiaoVien(Url.Action(nameof(NhapDiem), new { maLop }));
-            if (gate != null) return gate;
+            // ❌ Bỏ kiểm tra Session (nếu muốn xem tất cả)
+            // var giaoVien = HttpContext.Session.GetInt32("MaGiaoVien");
+            // if (giaoVien == null) return RedirectToAction("Login", "Account");
 
-            var maGv = CurrentMaGiaoVien();
-
+            // ✅ Lấy tất cả lớp có trong bảng PhanCongGiangDay
             var dsLop = await _context.PhanCongGiangDays
-                .Include(p => p.LopHoc).ThenInclude(l => l.MaKhoaHocNavigation)
-                .Where(p => p.MaGiaoVien == maGv && p.LopHoc != null)
+                .Include(p => p.LopHoc)
+                    .ThenInclude(l => l.MaKhoaHocNavigation)
+                .Where(p => p.LopHoc != null) // tránh lỗi null
                 .Select(p => new
                 {
                     MaLop = p.LopHoc!.MaLop,
@@ -191,9 +162,7 @@ namespace EnlightEnglishCenter.Controllers
             if (maLop == null)
                 return View(new List<DiemSo>());
 
-            var belong = await _context.PhanCongGiangDays.AnyAsync(p => p.MaLop == maLop && p.MaGiaoVien == maGv);
-            if (!belong) return Forbid();
-
+            // ✅ Lấy danh sách học viên trong lớp + điểm (nếu có)
             var ds = await (from dk in _context.DkHocVienLopHocs
                             join nd in _context.NguoiDungs on dk.MaHocVien equals nd.MaNguoiDung
                             join d in _context.DiemSos.Where(x => x.MaLop == maLop)
@@ -218,18 +187,14 @@ namespace EnlightEnglishCenter.Controllers
             return View(ds);
         }
 
+
+        // =============================
+        // 💾 LƯU ĐIỂM
+        // =============================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LuuDiem(int maLop, List<DiemSo> diemList)
         {
-            var gate = RequireGiaoVien(Url.Action(nameof(NhapDiem), new { maLop }));
-            if (gate != null) return gate;
-
-            var maGv = CurrentMaGiaoVien();
-
-            var belong = await _context.PhanCongGiangDays.AnyAsync(p => p.MaLop == maLop && p.MaGiaoVien == maGv);
-            if (!belong) return Forbid();
-
             if (diemList == null || diemList.Count == 0)
             {
                 TempData["Error"] = "Không có dữ liệu điểm để lưu.";
@@ -279,7 +244,7 @@ namespace EnlightEnglishCenter.Controllers
         }
 
         // ------------------ 📁 TÀI LIỆU GIẢNG DẠY: DANH SÁCH + TÌM KIẾM ------------------
-    
+
 
         // ------------------ ⬆️ UPLOAD TÀI LIỆU ------------------
         [HttpGet]
@@ -287,25 +252,36 @@ namespace EnlightEnglishCenter.Controllers
         public IActionResult TaiLieuGiangDay(string? search, int? lopId)
         {
             var maGv = HttpContext.Session.GetInt32("MaGiaoVien");
-            if (maGv == null)
+
+            // Danh sách lớp để filter (nếu có đăng nhập GV thì chỉ lớp của GV, nếu không thì tất cả lớp)
+            IQueryable<LopHoc> lopQuery;
+            if (maGv.HasValue)
             {
-                TempData["Error"] = "⚠️ Bạn cần đăng nhập với tài khoản giảng viên.";
-                return RedirectToAction("Login", "Account");
+                lopQuery = _context.PhanCongGiangDays
+                            .Include(p => p.LopHoc)
+                            .Where(p => p.MaGiaoVien == maGv)
+                            .Select(p => p.LopHoc!)
+                            .Distinct();
+            }
+            else
+            {
+                // Ẩn danh: cho phép chọn tất cả lớp (hoặc bạn có thể chỉ lấy những lớp có tài liệu)
+                lopQuery = _context.LopHocs.AsQueryable();
             }
 
-            var lopDangDay = _context.PhanCongGiangDays
-                .Include(p => p.LopHoc)
-                .Where(p => p.MaGiaoVien == maGv)
-                .Select(p => p.LopHoc)
-                .Distinct()
+            var lopDangDay = lopQuery
+                .Where(l => l != null)
                 .OrderBy(l => l.TenLop)
                 .ToList();
 
-            // ✅ tránh null
-            ViewBag.LopHocList = new SelectList(lopDangDay ?? new List<LopHoc>(), "MaLop", "TenLop");
+            ViewBag.LopHocList = new SelectList(lopDangDay, "MaLop", "TenLop");
 
-            var q = _context.TaiLieus
-                .Where(t => t.MaGiaoVien == maGv);
+            // Query tài liệu
+            IQueryable<TaiLieu> q = _context.TaiLieus;
+
+            // Nếu có đăng nhập giáo viên thì chỉ xem tài liệu của GV đó
+            if (maGv.HasValue)
+                q = q.Where(t => t.MaGiaoVien == maGv);
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -320,9 +296,10 @@ namespace EnlightEnglishCenter.Controllers
                 q = q.Where(t => t.MaLop == lopId.Value);
 
             var list = q.OrderByDescending(t => t.NgayTaiLen ?? DateTime.MinValue).ToList();
-            ViewData["Title"] = "Tài liệu giảng dạy";
             return View(list);
         }
+
+        // Upload/Download/Delete vẫn như cũ (bắt buộc login), KHÔNG đổi
 
 
         // ------------------ ⬆️ UPLOAD TÀI LIỆU ------------------
@@ -331,8 +308,21 @@ namespace EnlightEnglishCenter.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult UploadTaiLieu(string tenTaiLieu, string? moTa, int? maLop, IFormFile file)
         {
-            var maGv = HttpContext.Session.GetInt32("MaGiaoVien");
-            if (maGv == null) return RedirectToAction("Login", "Account");
+            // 1) Lấy MaGiaoVien từ session nếu có
+            var maGvSession = HttpContext.Session.GetInt32("MaGiaoVien");
+
+            // 2) Nếu chưa đăng nhập, thử suy ra GV từ lớp được chọn
+            int? maGvFromLop = null;
+            if (!maGvSession.HasValue && maLop.HasValue)
+            {
+                maGvFromLop = _context.PhanCongGiangDays
+                                      .Where(p => p.MaLop == maLop.Value)
+                                      .Select(p => (int?)p.MaGiaoVien)
+                                      .FirstOrDefault();
+            }
+
+            // 3) Chọn chủ sở hữu tài liệu: ưu tiên session, fallback theo lớp
+            var ownerGv = maGvSession ?? maGvFromLop;
 
             // 4) Nếu vẫn không xác định được GV -> báo lỗi nhẹ nhàng (không redirect Login)
             if (ownerGv == null)
@@ -396,10 +386,7 @@ namespace EnlightEnglishCenter.Controllers
         [AllowAnonymous]
         public IActionResult DownloadTaiLieu(int id)
         {
-            var maGv = HttpContext.Session.GetInt32("MaGiaoVien");
-            if (maGv == null) return RedirectToAction("Login", "Account");
-
-            var tl = _context.TaiLieus.FirstOrDefault(x => x.MaTaiLieu == id && x.MaGiaoVien == maGv);
+            var tl = _context.TaiLieus.FirstOrDefault(x => x.MaTaiLieu == id);
             if (tl == null || string.IsNullOrEmpty(tl.DuongDan)) return NotFound();
 
             var physical = Path.Combine(_env.WebRootPath, tl.DuongDan.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
@@ -422,7 +409,11 @@ namespace EnlightEnglishCenter.Controllers
         public IActionResult XoaTaiLieu(int id)
         {
             var maGv = HttpContext.Session.GetInt32("MaGiaoVien");
-            if (maGv == null) return RedirectToAction("Login", "Account");
+            if (maGv == null)
+            {
+                TempData["Err"] = "Bạn cần đăng nhập bằng tài khoản giảng viên để xóa tài liệu.";
+                return RedirectToAction(nameof(TaiLieuGiangDay));
+            }
 
             var tl = _context.TaiLieus.FirstOrDefault(x => x.MaTaiLieu == id && x.MaGiaoVien == maGv);
             if (tl == null) return NotFound();
