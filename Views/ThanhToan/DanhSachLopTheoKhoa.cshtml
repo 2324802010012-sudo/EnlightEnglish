@@ -3,6 +3,58 @@
 @{
     ViewData["Title"] = "Chọn lớp phù hợp";
     var khoa = ViewBag.Khoa as EnlightEnglishCenter.Models.KhoaHoc;
+
+    string CaHocText(string? thu) => thu switch
+    {
+        "2,4,6" => "Thứ 2 - 4 - 6",
+        "3,5,7" => "Thứ 3 - 5 - 7",
+        "7,CN" => "Thứ 7 - CN",
+        _ => string.IsNullOrWhiteSpace(thu) ? "—" : thu!
+    };
+
+    // Chuẩn hoá hiển thị giờ học
+    string NormalizeGioHoc(string? s)
+    {
+        if (string.IsNullOrWhiteSpace(s)) return "—";
+        var raw = s.Trim().ToLower().Replace(" ", "");
+        raw = raw.Replace("h", ":00");
+        var parts = raw.Split('-', StringSplitOptions.RemoveEmptyEntries);
+
+        string Fmt(string p)
+        {
+            if (string.IsNullOrEmpty(p)) return "";
+            if (!p.Contains(":")) p += ":00";
+            return TimeSpan.TryParse(p, out var ts) ? ts.ToString(@"hh\:mm") : "";
+        }
+
+        var a = Fmt(parts.ElementAtOrDefault(0) ?? "");
+        var b = Fmt(parts.ElementAtOrDefault(1) ?? "");
+        if (string.IsNullOrEmpty(a) && string.IsNullOrEmpty(b)) return "—";
+
+        // Nếu tròn giờ -> 18-19h
+        bool round(string t) => t.EndsWith(":00");
+        if (!string.IsNullOrEmpty(a) && !string.IsNullOrEmpty(b) && round(a) && round(b))
+            return $"{a[..2]}-{b[..2]}h";
+
+        return (!string.IsNullOrEmpty(a) && !string.IsNullOrEmpty(b)) ? $"{a}-{b}"
+             : (!string.IsNullOrEmpty(a) ? a : "—");
+    }
+
+    // Danh sách khung giờ ngẫu nhiên
+    string[] SLOT_POOL = new[]
+    {
+        "07:00-08:00", "08:00-09:30", "09:00-10:30",
+        "14:00-15:30", "17:30-19:00", "18:00-19:00",
+        "19:00-20:30", "20:00-21:00"
+    };
+
+    // Chọn "random ổn định" theo lớp (để không đổi mỗi lần load)
+    string PickRandomSlot(EnlightEnglishCenter.Models.LopHoc l)
+    {
+        int key = l.MaLop != 0 ? l.MaLop : (l.TenLop ?? "").GetHashCode();
+        if (key < 0) key = -key;
+        return SLOT_POOL[key % SLOT_POOL.Length];
+    }
 }
 
 <div class="container py-5">
@@ -20,6 +72,7 @@
                     <th>Tên lớp</th>
                     <th>Ngày bắt đầu</th>
                     <th>Ca học</th>
+                    <th>Giờ học</th>
                     <th>Học phí</th>
                     <th>Sĩ số</th>
                     <th>Trạng thái</th>
@@ -31,34 +84,26 @@
                 {
                     foreach (var lop in Model)
                     {
+                        var caHoc = CaHocText(lop.ThuTrongTuan);
+                        // Nếu có LichHoc -> chuẩn hoá; nếu trống -> random slot
+                        var gioHoc = NormalizeGioHoc(lop.LichHoc);
+                        if (gioHoc == "—")
+                        {
+                            gioHoc = NormalizeGioHoc(PickRandomSlot(lop));
+                        }
+
                         <tr>
                             <td class="fw-bold">@lop.TenLop</td>
                             <td>@lop.NgayBatDau?.ToString("dd/MM/yyyy")</td>
-
-                            <!-- 🕒 Ca học -->
-                            <td>
-                                @{
-                                    string caHoc = lop.LichHoc switch
-                                    {
-                                        "246" => "Thứ 2 - 4 - 6",
-                                        "357" => "Thứ 3 - 5 - 7",
-                                        "17" => "Thứ 7 - CN",
-                                        _ => "—"
-                                    };
-                                }
-                                @caHoc
-                            </td>
-
+                            <td>@caHoc</td>
+                            <td>@gioHoc</td>
                             <td>@String.Format("{0:#,0} đ", lop.HocPhi ?? 0)</td>
                             <td>@lop.SiSoHienTai / @lop.SiSoToiDa</td>
-
-                            <!-- ✅ Hiển thị trạng thái -->
                             <td>
                                 <span class="badge bg-@(lop.TrangThai == "Đang mở" ? "success" : "secondary")">
                                     @lop.TrangThai
                                 </span>
                             </td>
-
                             <td>
                                 <a asp-action="ChonLop" asp-route-id="@lop.MaLop" class="btn btn-success btn-sm">
                                     <i class="fa fa-check me-1"></i> Chọn & Thanh toán
@@ -70,11 +115,10 @@
                 else
                 {
                     <tr>
-                        <td colspan="7" class="text-muted">⚠️ Hiện chưa có lớp nào được mở trong khóa học này.</td>
+                        <td colspan="8" class="text-muted">⚠️ Hiện chưa có lớp nào được mở trong khóa học này.</td>
                     </tr>
                 }
             </tbody>
-
         </table>
     </div>
 </div>

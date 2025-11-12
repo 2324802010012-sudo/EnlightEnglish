@@ -43,46 +43,46 @@ namespace EnlightEnglishCenter.Controllers
         // ✅ TEST ĐẦU VÀO
         // ==========================================================
         // 📋 Danh sách Test đầu vào
-        public IActionResult DuyetTest()
-        {
-            var vaiTro = HttpContext.Session.GetString("VaiTro");
-            if (vaiTro != "Phòng đào tạo")
-            {
-                TempData["Error"] = "⚠️ Bạn không có quyền truy cập trang này!";
-                return RedirectToAction("Index", "Home");
-            }
+        //public IActionResult DuyetTest()
+        //{
+        //    var vaiTro = HttpContext.Session.GetString("VaiTro");
+        //    if (vaiTro != "Phòng đào tạo")
+        //    {
+        //        TempData["Error"] = "⚠️ Bạn không có quyền truy cập trang này!";
+        //        return RedirectToAction("Index", "Home");
+        //    }
 
-            var danhSach = _context.TestDauVaos
-                 .Include(t => t.HocVien)
-                .ToList();
+        //    var danhSach = _context.TestDauVaos
+        //         .Include(t => t.HocVien)
+        //        .ToList();
 
-            return View(danhSach);
-        }
+        //    return View(danhSach);
+        //}
 
-        [HttpPost]
-        public IActionResult XacNhan(int id)
-        {
-            var vaiTro = HttpContext.Session.GetString("VaiTro");
+        //[HttpPost]
+        //public IActionResult XacNhan(int id)
+        //{
+        //    var vaiTro = HttpContext.Session.GetString("VaiTro");
 
-            if (vaiTro != "Admin" && vaiTro != "Phòng đào tạo")
-            {
-                TempData["Error"] = "⚠️ Bạn không có quyền thực hiện thao tác này!";
-                return RedirectToAction("Index", "Home");
-            }
+        //    if (vaiTro != "Admin" && vaiTro != "Phòng đào tạo")
+        //    {
+        //        TempData["Error"] = "⚠️ Bạn không có quyền thực hiện thao tác này!";
+        //        return RedirectToAction("Index", "Home");
+        //    }
 
-            var test = _context.TestDauVaos.FirstOrDefault(t => t.MaTest == id);
-            if (test == null)
-                return NotFound();
+        //    var test = _context.TestDauVaos.FirstOrDefault(t => t.MaTest == id);
+        //    if (test == null)
+        //        return NotFound();
 
-            test.TrangThai = "Được phép test";
+        //    test.TrangThai = "Được phép test";
 
-            _context.SaveChanges();
+        //    _context.SaveChanges();
 
-            TempData["Success"] = "✅ Đã xác nhận bài Test của học viên thành công!";
+        //    TempData["Success"] = "✅ Đã xác nhận bài Test của học viên thành công!";
 
-            // ✅ Giữ lại ở trang duyệt test của Phòng đào tạo
-            return RedirectToAction("DuyetTest");
-        }
+        //    // ✅ Giữ lại ở trang duyệt test của Phòng đào tạo
+        //    return RedirectToAction("DuyetTest");
+        //}
 
 
         // ==========================

@@ -59,17 +59,17 @@ namespace EnlightEnglishCenter.Controllers
         // ======================================================
         // 2️⃣ Học viên đăng ký Test đầu vào
         // ======================================================
+        // 2️⃣ Học viên đăng ký Test đầu vào
         [HttpGet]
-        public IActionResult DangKy(int maKhoaHoc = 1)
+        public IActionResult DangKy(int? maKhoaHoc = null)
         {
             int? maNguoiDung = HttpContext.Session.GetInt32("MaNguoiDung");
             if (maNguoiDung == null)
             {
-                TempData["Error"] = "⚠️ Bạn cần đăng nhập trước khi đăng ký Test đầu vào.";
+                TempData["Error"] = "⚠️ Bạn cần đăng nhập trước khi bắt đầu Test.";
                 return RedirectToAction("Login", "Account");
             }
 
-            // ✅ FIX: tìm học viên đúng theo mã người dùng
             var hocVien = _context.HocViens.FirstOrDefault(h => h.MaNguoiDung == maNguoiDung);
             if (hocVien == null)
             {
@@ -77,39 +77,52 @@ namespace EnlightEnglishCenter.Controllers
                 return RedirectToAction("Index", "TestDauVao");
             }
 
-            // 🔸 Kiểm tra học viên đã có test chưa
-            var testCu = _context.TestDauVaos
-                .FirstOrDefault(t => t.MaHocVien == hocVien.MaHocVien && t.KhoaHocDeXuat == maKhoaHoc);
+            // 1) Nếu đã có test đang mở -> dùng lại và vào LamBai
+            var testDangMo = _context.TestDauVaos
+                .Where(t => t.MaHocVien == hocVien.MaHocVien && t.TrangThai != "Hoàn thành")
+                .OrderByDescending(t => t.NgayTest)
+                .FirstOrDefault();
 
-            if (testCu != null)
+            if (testDangMo != null)
             {
-                TempData["Error"] = "⚠️ Bạn đã đăng ký hoặc hoàn thành Test đầu vào cho khóa này.";
+                if (!string.Equals(testDangMo.TrangThai?.Trim(), "Được phép test", StringComparison.OrdinalIgnoreCase))
+                {
+                    testDangMo.TrangThai = "Được phép test";
+                    testDangMo.NgayTest = DateTime.Now;
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("LamBai", "TestDauVao");
+            }
+
+            // 2) Chưa có -> tạo mới, KHÔNG ràng buộc phải đúng mã khóa học
+            var khoaHocMacDinh =
+                (maKhoaHoc.HasValue ? _context.KhoaHocs.Find(maKhoaHoc.Value) : null)
+                ?? _context.KhoaHocs.FirstOrDefault(k => k.TrangThai == "Đang mở")
+                ?? _context.KhoaHocs.FirstOrDefault(); // fallback bất kỳ
+
+            if (khoaHocMacDinh == null)
+            {
+                TempData["Error"] = "❌ Hiện chưa có khóa học nào trong hệ thống.";
                 return RedirectToAction("Index", "TestDauVao");
             }
 
-            // 🔸 Kiểm tra khóa học hợp lệ
-            var khoaHoc = _context.KhoaHocs.Find(maKhoaHoc);
-            if (khoaHoc == null)
-            {
-                TempData["Error"] = "❌ Không tìm thấy khóa học.";
-                return RedirectToAction("Index", "TestDauVao");
-            }
-
-            // 🔸 Tạo bản ghi Test mới
             var test = new TestDauVao
             {
-                MaHocVien = hocVien.MaHocVien,  // ✅ FIX: gán đúng mã học viên thật
-                KhoaHocDeXuat = khoaHoc.MaKhoaHoc,
+                MaHocVien = hocVien.MaHocVien,
+                KhoaHocDeXuat = khoaHocMacDinh.MaKhoaHoc, // dùng khóa mặc định, không cần “đúng”
                 NgayTest = DateTime.Now,
-                TrangThai = "Chờ xác nhận"
+                TrangThai = "Được phép test",
+                LoTrinhHoc = null
             };
 
             _context.TestDauVaos.Add(test);
             _context.SaveChanges();
 
-            TempData["Success"] = $"✅ Đăng ký Test đầu vào cho khóa '{khoaHoc.TenKhoaHoc}' thành công! Vui lòng chờ duyệt.";
-            return RedirectToAction("Index", "TestDauVao");
+            // Vào làm bài ngay
+            return RedirectToAction("LamBai", "TestDauVao");
         }
+
+
 
         // ==========================
         // 🧠 LỄ TÂN ĐĂNG KÝ TEST CHO HỌC VIÊN
@@ -175,71 +188,50 @@ namespace EnlightEnglishCenter.Controllers
         // ======================================================
         // 3️⃣ Admin xem danh sách và duyệt Test
         // ======================================================
-        public IActionResult DanhSach()
-        {
-            var vaiTro = HttpContext.Session.GetString("VaiTro")?.Trim();
 
-            if (string.IsNullOrEmpty(vaiTro))
-            {
-                TempData["Error"] = "⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
-                return RedirectToAction("Login", "Account");
-            }
 
-            if (!vaiTro.Equals("Admin", StringComparison.OrdinalIgnoreCase) &&
-                !vaiTro.Equals("Phòng đào tạo", StringComparison.OrdinalIgnoreCase) &&
-                !vaiTro.Equals("Phòng Đào Tạo", StringComparison.OrdinalIgnoreCase))
-            {
-                TempData["Error"] = "⚠️ Chỉ Admin hoặc Phòng đào tạo được phép truy cập.";
-                return RedirectToAction("Index", "Home");
-            }
 
-            var ds = _context.TestDauVaos
-                .Include(t => t.HocVien)
-                .Include(t => t.KhoaHocDeXuatNavigation)
-                .OrderByDescending(t => t.NgayTest)
-                .ToList();
 
-            return View(ds);
-        }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult DuyetTest(int id)
-        {
-            var test = _context.TestDauVaos
-                .Include(t => t.HocVien)
-                .Include(t => t.KhoaHocDeXuatNavigation)
-                .FirstOrDefault(t => t.MaTest == id);
 
-            if (test == null)
-            {
-                TempData["Error"] = "Không tìm thấy bài test cần duyệt!";
-                return RedirectToAction("DanhSach");
-            }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public IActionResult DuyetTest(int id)
+        //{
+        //    var test = _context.TestDauVaos
+        //        .Include(t => t.HocVien)
+        //        .Include(t => t.KhoaHocDeXuatNavigation)
+        //        .FirstOrDefault(t => t.MaTest == id);
 
-            test.TrangThai = "Được phép test";
-            _context.SaveChanges();
+        //    if (test == null)
+        //    {
+        //        TempData["Error"] = "Không tìm thấy bài test cần duyệt!";
+        //        return RedirectToAction("DanhSach");
+        //    }
 
-            GuiEmailThongBao(
-                test.HocVien?.Email ?? "",
-                test.HocVien?.HoTen ?? "Học viên",
-                test.KhoaHocDeXuatNavigation?.TenKhoaHoc ?? "Khóa học"
-            );
+        //    test.TrangThai = "Được phép test";
+        //    _context.SaveChanges();
 
-            TempData["Success"] = "✅ Đã duyệt học viên làm test.";
+        //    GuiEmailThongBao(
+        //        test.HocVien?.Email ?? "",
+        //        test.HocVien?.HoTen ?? "Học viên",
+        //        test.KhoaHocDeXuatNavigation?.TenKhoaHoc ?? "Khóa học"
+        //    );
 
-            var vaiTro = HttpContext.Session.GetString("VaiTro")?.Trim();
+        //    TempData["Success"] = "✅ Đã duyệt học viên làm test.";
 
-            if (!string.IsNullOrEmpty(vaiTro) &&
-                vaiTro.Equals("Phòng đào tạo", StringComparison.OrdinalIgnoreCase))
-            {
-                return RedirectToAction("DuyetTest", "PhongDaoTao");
-            }
-            else
-            {
-                return RedirectToAction("DanhSach", "TestDauVao");
-            }
-        }
+        //    var vaiTro = HttpContext.Session.GetString("VaiTro")?.Trim();
+
+        //    if (!string.IsNullOrEmpty(vaiTro) &&
+        //        vaiTro.Equals("Phòng đào tạo", StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        return RedirectToAction("DuyetTest", "PhongDaoTao");
+        //    }
+        //    else
+        //    {
+        //        return RedirectToAction("DanhSach", "TestDauVao");
+        //    }
+        //}
 
         // ======================================================
         // 4️⃣ Học viên làm bài test
@@ -253,7 +245,7 @@ namespace EnlightEnglishCenter.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // ✅ FIX: tìm đúng học viên
+            // Tìm đúng học viên theo MaNguoiDung
             var hocVien = _context.HocViens.FirstOrDefault(h => h.MaNguoiDung == maNguoiDung);
             if (hocVien == null)
             {
@@ -261,17 +253,28 @@ namespace EnlightEnglishCenter.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            // Lấy bài test MỚI NHẤT chưa hoàn thành
             var test = _context.TestDauVaos
                 .Include(t => t.HocVien)
                 .Include(t => t.KhoaHocDeXuatNavigation)
-                .FirstOrDefault(t => t.MaHocVien == hocVien.MaHocVien && t.TrangThai == "Được phép test");
+                .Where(t => t.MaHocVien == hocVien.MaHocVien && t.TrangThai != "Hoàn thành")
+                .OrderByDescending(t => t.NgayTest)
+                .FirstOrDefault();
 
             if (test == null)
             {
-                TempData["Error"] = "❌ Bạn chưa được duyệt để làm bài test.";
-                return RedirectToAction("Index", "HocVien");
+                TempData["Error"] = "❌ Bạn chưa có bài test đang mở. Hãy chọn khóa học để bắt đầu test.";
+                return RedirectToAction("Index", "TestDauVao");
             }
 
+            // Nếu còn trạng thái cũ “Chờ xác nhận” → nâng lên “Được phép test” để thi ngay
+            if (string.Equals(test.TrangThai?.Trim(), "Chờ xác nhận", StringComparison.OrdinalIgnoreCase))
+            {
+                test.TrangThai = "Được phép test";
+                _context.SaveChanges();
+            }
+
+            // Xác định thư mục câu hỏi theo tên khóa học
             string khoaHoc = test.KhoaHocDeXuatNavigation?.TenKhoaHoc?.ToLower() ?? "ielts";
             if (khoaHoc.Contains("cambridge")) khoaHoc = "cambridge";
             else if (khoaHoc.Contains("toeic")) khoaHoc = "toeic";
@@ -283,12 +286,19 @@ namespace EnlightEnglishCenter.Controllers
 
             var allQuestions = grammar.Concat(reading).Concat(listening).ToList();
 
+            if (allQuestions.Count == 0)
+            {
+                TempData["Error"] = "❌ Chưa có dữ liệu câu hỏi cho khóa học này. Vui lòng liên hệ quản trị.";
+                return RedirectToAction("Index", "TestDauVao");
+            }
+
             ViewBag.Course = test.KhoaHocDeXuatNavigation?.TenKhoaHoc ?? "";
             ViewBag.HoTen = test.HocVien?.HoTen ?? "";
             ViewBag.TestId = test.MaTest;
 
             return View(allQuestions);
         }
+
 
         // ======================================================
         // 5️⃣ Nộp bài & tính điểm
